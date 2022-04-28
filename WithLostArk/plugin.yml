@@ -1,0 +1,74 @@
+name: WithLostArk
+version: 1.18.1
+description: Made by StarJ
+main: com.StarJ.LA.Core
+api-version: 1.18
+
+commands:
+  home:
+    description: "집으로 귀환합니다."
+    usage : "§3/귀환의노래\n§4/홈\n§4/귀환\n§4/귀노"
+    aliases: [귀환의노래,홈,gha,rnlghksdmlshfo,귀노,rnlsh,귀환,rnlghks]
+  exit:
+    description: "스퀘어홀로 귀환합니다."
+    usage : "§3/탈출의노래\n§4/홈\n§4/탈출\n§4/탈노"
+    aliases: [탈출의노래,xkfcnfdmlshfo,탈노,xkfsh,탈출,xkfcnf]
+  fixexit:
+    description: "스퀘어홀 수정"
+    usage : "§4/fe remove [name]\n§4/fe add [name]\n§3/fe add [name] [x] [y] [z]\n§3/fe add [name] [x] [y] [z] [yaw] [pitch]"
+    aliases: [fe]
+    permission: operator
+  bifrost:
+    description: "지정한 곳으로 돌아가는 비프로스트를 소환합니다."
+    usage : "§3/비프로스트\n§3/비프"
+    aliases: [비프로스트,qlvmfhtmxm,비프,qlvm]
+  money:
+    description: "돈 명령어"
+    usage : "§3/m - 돈 확인 명령어\n§3/m confirm <player> - 다른 사람 돈 액수 확인\n§3/m item [amount] - 돈을 아이템으로 꺼낸다.\n§3/m item [amount] [count]\n§3/m send <player> [amount] - 돈을 해당 사람에게 송금합니다.\n§3/m list - 접속중인 사람들 돈 목록을 보여줍니다."
+    aliases: [m,돈]
+  shop:
+    description: "상점 소환 명령어"
+    usage : "§3/sh <type>\n§3/sh <type> [x] [y] [z]§3/sh <type> [x] [y] [z] [yaw] [pitch]"
+    aliases: [sh]
+    permission: operator
+  item:
+    description: "아이템 소환 명령어"
+    usage : "§3/i [player] <type>\n§3/i [player] <type> [amount]"
+    aliases: [i]
+    permission: operator
+  gop:
+    description: "도박장 관리 명렁어"
+    usage : "§3/gop [player]"
+    permission : operator
+  degop:
+    description: "도박장 관리 명령어"
+    usage : "§3/degop [player]"
+    permission : operator
+  msg:
+    description: "메시지 명령어"
+    usage : "§3/msg [메시지]\n§3/msg [메시지] [x] [y] [z]"
+    permission : operator
+  inventory:
+    description: "인벤토리 명령어"
+    usage : "§3/inv"
+    aliases: [inv,dlsqps,ㅑㅜㅍ,인벤]
+  info:
+    description: "인벤토리 명령어"
+    usage : "§3/정보"
+    aliases: [ㅑㅜ래,인포,정보,wjdqh,dlsvh]
+  status:
+    description: "상태 전환 직업 -> 생활 / 생활 -> 직업"
+    usage : "§3/상태\n§3/b"
+    aliases: [상태,tkdxo,b]
+  pvp:
+    description: "PVP모드 전환"
+    usage : "§3/pvp\n§3/b"
+  multiworld:
+    description: "멀티월드 명령어"
+    usage : "§3/mw goto [world]\n§3/mw goto [world] <player>\n§3/mw load [world]\n§3/mw unload [world]\n§3/mw create [world]\n§3/mw delete [world]"
+    aliases: [mw]
+    permission: operator
+permission:
+    gambler:
+        description: 도박장 관리를 위한 권한
+        default: operator
