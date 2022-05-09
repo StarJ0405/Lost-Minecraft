@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class ArmorItems extends Items {
+	private static final List<ArmorItems> list = new ArrayList<ArmorItems>();
 	private final double percent;
 	private final EquipmentSlot slot;
 
@@ -22,6 +23,7 @@ public class ArmorItems extends Items {
 		super("ARMORS", key, type, color);
 		this.percent = percent;
 		this.slot = slot;
+		list.add(this);
 	}
 
 	public double getPercent() {
@@ -52,5 +54,9 @@ public class ArmorItems extends Items {
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;
+	}
+
+	public static List<ArmorItems> getArmorItems() {
+		return list;
 	}
 }

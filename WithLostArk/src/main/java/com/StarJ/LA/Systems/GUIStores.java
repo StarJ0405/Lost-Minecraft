@@ -1078,12 +1078,67 @@ public enum GUIStores {
 			List<String> lore = new ArrayList<String>();
 			int level = basic.getLevel(player);
 			lore.add(ChatColor.YELLOW + "레벨 : " + level + " / " + basic.getMaxLevel());
-			lore.add(ChatColor.WHITE + "경험치 : " + basic.getEXP(player) + " / " + basic.getNeedEXP(level));
+			if (level < basic.getMaxLevel())
+				lore.add(ChatColor.WHITE + "경험치 : " + basic.getEXP(player) + " / " + basic.getNeedEXP(level));
 			lore.addAll(basic.getLore(level));
 			meta.setLore(lore);
 			i.setItemMeta(meta);
 			return i;
 		}
+	},
+	cooking(ChatColor.GOLD + "요리", 1 * 9) {
+
+		@Override
+		public void openGUI(Player player, int page) {
+			Inventory inv = Bukkit.createInventory(null, 1 * 9, ChatColor.GOLD + "요리");
+
+			player.openInventory(inv);
+		}
+
+		@Override
+		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
+			return false;
+		}
+
+		@Override
+		public boolean Close(Player player, Inventory inv) {
+			return false;
+
+		}
+
+		@Override
+		public boolean Drag(Player player, Set<Integer> slots, Set<Integer> raw_slots) {
+			return false;
+
+		}
+
+	},
+	potioning(ChatColor.GOLD + "양조", 1 * 9) {
+		@Override
+		public void openGUI(Player player, int page) {
+			Inventory inv = Bukkit.createInventory(null, 1 * 9, ChatColor.GOLD + "양조");
+
+			player.openInventory(inv);
+		}
+
+		@Override
+		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
+			return false;
+
+		}
+
+		@Override
+		public boolean Close(Player player, Inventory inv) {
+			return false;
+
+		}
+
+		@Override
+		public boolean Drag(Player player, Set<Integer> slots, Set<Integer> raw_slots) {
+			return false;
+
+		}
+
 	},
 	enchant(ChatColor.DARK_PURPLE + "인챈트", 6 * 9) {
 
@@ -1105,8 +1160,32 @@ public enum GUIStores {
 					} else
 						inv.setItem(c, empty);
 				player.openInventory(inv);
-			} else if (enchant.equals(EnchantsType.Pickaxe) || enchant.equals(EnchantsType.Shovel)
-					|| enchant.equals(EnchantsType.Hoe)) {
+			} else if (enchant.equals(EnchantsType.Hoe)) {
+				Inventory inv = Bukkit.createInventory(null, 3 * 9, ChatColor.DARK_PURPLE + "인챈트");
+				for (int c = 0; c < inv.getSize(); c++)
+					if (c % 9 == 4) {
+						inv.setItem(c, red);
+					} else
+						inv.setItem(c, brown);
+				inv.setItem(1, tool);
+				inv.setItem(2, empty);
+				if (book != null)
+					inv.setItem(2, book);
+				// 내구성
+				Enchantment ench = Enchantment.DURABILITY;
+				int slot = 8;
+				inv.setItem(slot, EnchantsType.getEnchantItem(ench, 1 + tool.getEnchantmentLevel(ench), book));
+				// 수선
+				ench = Enchantment.MENDING;
+				slot += 9;
+				inv.setItem(slot, EnchantsType.getEnchantItem(ench, 1 + tool.getEnchantmentLevel(ench), book));
+				// 행운
+				ench = Enchantment.LOOT_BONUS_BLOCKS;
+				slot += 9;
+				inv.setItem(slot, EnchantsType.getEnchantItem(ench, 1 + tool.getEnchantmentLevel(ench), book));
+
+				player.openInventory(inv);
+			} else if (enchant.equals(EnchantsType.Pickaxe) || enchant.equals(EnchantsType.Shovel)) {
 				Inventory inv = Bukkit.createInventory(null, 5 * 9, ChatColor.DARK_PURPLE + "인챈트");
 				for (int c = 0; c < inv.getSize(); c++)
 					if (c % 9 == 4) {

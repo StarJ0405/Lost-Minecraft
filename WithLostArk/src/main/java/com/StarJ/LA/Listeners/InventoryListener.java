@@ -1,14 +1,18 @@
 package com.StarJ.LA.Listeners;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -27,13 +31,9 @@ public class InventoryListener implements Listener {
 	public void Events(InventoryClickEvent e) {
 		Player player = (Player) e.getWhoClicked();
 		Inventory inv = e.getClickedInventory();
-//		int slot = e.getSlot();
-//		if (e.getClick().equals(ClickType.SWAP_OFFHAND) && ConfigStore.getPlayerStatus(player)) {
-//			e.setCancelled(true);
-//			return;
-//		}
-		if (ConfigStore.getPlayerStatus(player))
+		if (ConfigStore.getPlayerStatus(player)) {
 			e.setCancelled(true);
+		}
 		if (inv != null) {
 			String title = e.getView().getTitle();
 			if (title != null) {
@@ -41,25 +41,23 @@ public class InventoryListener implements Listener {
 				if (store != null) {
 					e.setCancelled(
 							store.Click(player, e.getClick(), e.getSlot(), e.getRawSlot(), e.getCurrentItem(), inv));
-				} else if (title.equalsIgnoreCase("Shulker Box")
-						&& (e.getRawSlot() - 54) == player.getInventory().getHeldItemSlot()
-						&& player.getInventory().getItemInMainHand().getType().name().contains("SHULKER_BOX"))
-					e.setCancelled(true);
-			}
-//			if (inv.equals(player.getInventory()) && ConfigStore.getPlayerStatus(player)) {
-//				if (((slot >= 0 && slot < 9) || (slot >= 36 && slot <= 40)))
-//				e.setCancelled(true);
-//				if (e.getView().getType().equals(InventoryType.CRAFTING)) {
-//					ItemStack curn = e.getCurrentItem();
-//					if (curn != null) {
-//						String armor = curn.getType().name();
-//						if (e.getClick().isShiftClick() && (armor.contains("HELMET") || armor.contains("CHESTPLATE")
-//								|| armor.contains("LEGGINGS") || armor.contains("BOOTS")))
-//							e.setCancelled(true);
-//					}
-//				}
-//			}
+				} else if (title.equalsIgnoreCase("Shulker Box")) {
+					if (e.getAction().equals(InventoryAction.HOTBAR_SWAP)
+							&& !(player.getInventory().getItemInMainHand() != null && player.getInventory()
+									.getItemInMainHand().getType().name().contains("SHULKER_BOX"))
+							&& player.getInventory().getItemInOffHand() != null
+							&& player.getInventory().getItemInOffHand().getType().name().contains("SHULKER_BOX")) {
+						ItemStack off = player.getInventory().getItemInOffHand();
+						e.setCancelled(true);
+						player.getInventory().setItemInOffHand(off);
+					} else if ((e.getRawSlot() - 54) == player.getInventory().getHeldItemSlot()
+							&& player.getInventory().getItemInMainHand() != null
+							&& player.getInventory().getItemInMainHand().getType().name().contains("SHULKER_BOX"))
+						e.setCancelled(true);
 
+				}
+
+			}
 		}
 	}
 
@@ -76,17 +74,6 @@ public class InventoryListener implements Listener {
 			}
 			if (ConfigStore.getPlayerStatus(player))
 				e.setCancelled(true);
-//			if (ConfigStore.getPlayerStatus(player) && e.getView().getType().equals(InventoryType.CRAFTING)) {
-//				for (int slot : e.getRawSlots())
-//					if ((slot >= 5 && slot <= 8) || (slot >= 36 && slot <= 45))
-//						e.setCancelled(true);
-//			} else {
-//				int zero = inv.getSize() + 27;
-//				for (int raw : e.getRawSlots())
-//					if (zero - raw >= 0 && zero - raw < 9)
-//						e.setCancelled(true);
-//			}
-
 		}
 	}
 
@@ -100,16 +87,26 @@ public class InventoryListener implements Listener {
 				GUIStores store = GUIStores.getGUI(title);
 				if (store != null) {
 					store.Close(player, inv);
-				} else if (title.equalsIgnoreCase("Shulker Box") && player.getInventory().getItemInMainHand() != null
-						&& player.getInventory().getItemInMainHand().getType().name().contains("SHULKER_BOX")) {
+				} else if (title.equalsIgnoreCase("Shulker Box")) {
 					ItemStack item = player.getInventory().getItemInMainHand();
+					boolean main = true;
+					if (!(player.getInventory().getItemInMainHand() != null
+							&& player.getInventory().getItemInMainHand().getType().name().contains("SHULKER_BOX"))
+							&& player.getInventory().getItemInOffHand() != null
+							&& player.getInventory().getItemInOffHand().getType().name().contains("SHULKER_BOX")) {
+						item = player.getInventory().getItemInOffHand();
+						main = false;
+					}
 					BlockStateMeta meta = (BlockStateMeta) item.getItemMeta();
 					ShulkerBox box = (ShulkerBox) meta.getBlockState();
 					box.getInventory().setContents(inv.getContents());
 					meta.setBlockState(box);
 					box.update();
 					item.setItemMeta(meta);
-					player.getInventory().setItemInMainHand(item);
+					if (main) {
+						player.getInventory().setItemInMainHand(item);
+					} else
+						player.getInventory().setItemInOffHand(item);
 				}
 			}
 		}
@@ -139,7 +136,7 @@ public class InventoryListener implements Listener {
 					EnchantmentStorageMeta t_meta = (EnchantmentStorageMeta) two.getItemMeta();
 					ItemStack result = one.clone();
 					EnchantmentStorageMeta r_meta = (EnchantmentStorageMeta) result.getItemMeta();
-					
+
 					Map<Enchantment, Integer> o_map = o_meta.getStoredEnchants();
 					Map<Enchantment, Integer> t_map = t_meta.getStoredEnchants();
 					HashMap<Enchantment, Integer> r_map = new HashMap<Enchantment, Integer>();
@@ -151,9 +148,15 @@ public class InventoryListener implements Listener {
 							r_map.put(ench, o_level + t_level);
 						} else
 							r_map.put(ench, t_map.get(ench));
-					for (Enchantment ench : r_map.keySet())
-						r_meta.addStoredEnchant(ench, r_map.get(ench), true);
-
+					List<String> lore = new ArrayList<String>();
+					for (Enchantment ench : r_map.keySet()) {
+						int level = r_map.get(ench);
+						r_meta.addStoredEnchant(ench, level, true);
+						if (level > 255) {
+							lore.add(ChatColor.GRAY + ench.getKey().getKey() + " 레벨 : " + level);
+						}
+					}
+					r_meta.setLore(lore);
 					result.setItemMeta(r_meta);
 					e.setResult(result);
 				}

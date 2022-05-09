@@ -29,12 +29,12 @@ public class RageSpear extends Skills {
 
 	public double getDrainDamage(Player player, boolean persona) {
 		return 2 * (1 + ConfigStore.getWeaponLevel(player) * 0.1)
-				* (persona ? (2 * (1+Stats.Specialization.getStat(player) * 0.0005)) : 1);
+				* (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1);
 	}
 
 	public double getAttackDamage(Player player, boolean persona) {
 		return 32 * (1 + ConfigStore.getWeaponLevel(player) * 0.1)
-				* (persona ? (2 * (1+Stats.Specialization.getStat(player) * 0.0005)) : 1);
+				* (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1);
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class RageSpear extends Skills {
 
 		@Override
 		public void run() {
-			if (off.isOnline()) {
+			if (off.isOnline() && ConfigStore.getPlayerStatus(off.getPlayer())) {
 				if (this.time > 0) {
 					Player player = off.getPlayer();
 					Location now = start.clone();
@@ -132,7 +132,7 @@ public class RageSpear extends Skills {
 
 		@Override
 		public void run() {
-			if (off.isOnline()) {
+			if (off.isOnline() && ConfigStore.getPlayerStatus(off.getPlayer())) {
 				Player player = off.getPlayer();
 				Location now = start.clone();
 				List<UUID> list = new ArrayList<UUID>();

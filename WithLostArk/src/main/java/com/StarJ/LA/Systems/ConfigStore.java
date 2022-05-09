@@ -42,6 +42,179 @@ import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
 
 public class ConfigStore {
 	//
+	public static boolean isBasicsDuration(Player player, Basics basic, int num) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null && fc.isConfigurationSection("basics")) {
+				ConfigurationSection cs = fc.getConfigurationSection("basics");
+				if (cs.isLong(basic.name() + "_duration_" + num))
+					return cs.getLong(basic.name() + "_duration_" + num) - System.currentTimeMillis() > 0;
+			}
+
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static long getBasicsDuration(Player player, Basics basic, int num) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null && fc.isConfigurationSection("basics")) {
+				ConfigurationSection cs = fc.getConfigurationSection("basics");
+				if (cs.isLong(basic.name() + "_duration_" + num))
+					return cs.getLong(basic.name() + "_duration_" + num) - System.currentTimeMillis();
+			}
+
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public static void setBasicsDuration(Player player, Basics basic, int num, long duration) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null) {
+				ConfigurationSection cs = fc.isConfigurationSection("basics") ? fc.getConfigurationSection("basics")
+						: fc.createSection("basics");
+				cs.set(basic.name() + "_duration_" + num, System.currentTimeMillis() + duration * 1000);
+			}
+			fc.save(file);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static int getBasicsNumber(Player player, Basics basic, int num) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null && fc.isConfigurationSection("basics")) {
+				ConfigurationSection cs = fc.getConfigurationSection("basics");
+				if (cs.isInt(basic.name() + "_number_" + num))
+					return cs.getInt(basic.name() + "_number_" + num);
+			}
+
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public static void setBasicsNumber(Player player, Basics basic, int num, int number) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null) {
+				ConfigurationSection cs = fc.isConfigurationSection("basics") ? fc.getConfigurationSection("basics")
+						: fc.createSection("basics");
+				cs.set(basic.name() + "_number_" + num, number);
+			}
+			fc.save(file);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static boolean isBasicsCool(Player player, Basics basic, int num) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null && fc.isConfigurationSection("basics")) {
+				ConfigurationSection cs = fc.getConfigurationSection("basics");
+				if (cs.isLong(basic.name() + "_cool_" + num))
+					return cs.getLong(basic.name() + "_cool_" + num) - System.currentTimeMillis() > 0;
+			}
+
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static long getBasicsCool(Player player, Basics basic, int num) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null && fc.isConfigurationSection("basics")) {
+				ConfigurationSection cs = fc.getConfigurationSection("basics");
+				if (cs.isLong(basic.name() + "_cool_" + num))
+					return cs.getLong(basic.name() + "_cool_" + num) - System.currentTimeMillis();
+			}
+
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public static void setBasicsCool(Player player, Basics basic, int num, long cool) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (basic != null) {
+				ConfigurationSection cs = fc.isConfigurationSection("basics") ? fc.getConfigurationSection("basics")
+						: fc.createSection("basics");
+				cs.set(basic.name() + "_cool_" + num, System.currentTimeMillis() + cool * 1000);
+			}
+			fc.save(file);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static int getBasicsLevel(Player player, Basics basic) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
@@ -54,8 +227,8 @@ public class ConfigStore {
 			fc.load(file);
 			if (basic != null && fc.isConfigurationSection("basics")) {
 				ConfigurationSection cs = fc.getConfigurationSection("basics");
-				if (cs.isInt(basic.name() + "LEVEL"))
-					return cs.getInt(basic.name() + "LEVEL");
+				if (cs.isInt(basic.name() + "_LEVEL"))
+					return cs.getInt(basic.name() + "_LEVEL");
 			}
 
 		} catch (IOException | InvalidConfigurationException e) {
@@ -77,7 +250,7 @@ public class ConfigStore {
 			if (basic != null) {
 				ConfigurationSection cs = fc.isConfigurationSection("basics") ? fc.getConfigurationSection("basics")
 						: fc.createSection("basics");
-				cs.set(basic.name() + "LEVEL", level);
+				cs.set(basic.name() + "_LEVEL", level);
 				fc.set("basics", cs);
 			}
 			fc.save(file);
@@ -98,8 +271,8 @@ public class ConfigStore {
 			fc.load(file);
 			if (basic != null && fc.isConfigurationSection("basics")) {
 				ConfigurationSection cs = fc.getConfigurationSection("basics");
-				if (cs.isInt(basic.name() + "EXP"))
-					return cs.getInt(basic.name() + "EXP");
+				if (cs.isInt(basic.name() + "_EXP"))
+					return cs.getInt(basic.name() + "_EXP");
 			}
 
 		} catch (IOException | InvalidConfigurationException e) {
@@ -121,7 +294,7 @@ public class ConfigStore {
 			if (basic != null) {
 				ConfigurationSection cs = fc.isConfigurationSection("basics") ? fc.getConfigurationSection("basics")
 						: fc.createSection("basics");
-				cs.set(basic.name() + "EXP", exp);
+				cs.set(basic.name() + "_EXP", exp);
 				fc.set("basics", cs);
 			}
 			fc.save(file);

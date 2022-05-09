@@ -1,25 +1,36 @@
 package com.StarJ.LA.Listeners;
 
+import java.util.List;
+import java.util.Random;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 
 import com.StarJ.LA.Core;
 import com.StarJ.LA.Skills.Skills;
+import com.StarJ.LA.Systems.Basics;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.EnchantsType;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
 import com.StarJ.LA.Systems.Stats;
@@ -79,6 +90,7 @@ public class EntityDamageListener implements Listener {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void Events(EntityDamageByEntityEvent e) {
 		Entity vic_e = e.getEntity();
@@ -97,6 +109,26 @@ public class EntityDamageListener implements Listener {
 				if (job != null && !e.isCancelled())
 					HashMapStore.setIdentity(att, HashMapStore.getIdentity(att) + job.getWeapon().getIdentity());
 				critical = Stats.isCritical(att);
+			} else {
+				ItemStack main = att.getInventory().getItemInMainHand();
+				if (main != null) {
+					EnchantsType tool = EnchantsType.getEnchantType(main.getType());
+					if (tool != null && tool.equals(EnchantsType.Sword)) {
+						if (ConfigStore.isBasicsDuration(att, Basics.Hunting, 3)) {
+							Location loc = vic_e.getLocation().clone().add(0, 1, 0);
+							Random r = new Random();
+							for (ItemStack i : Basics.getHunting(vic_e.getType())) {
+								ItemStack drop = i.clone();
+								int amount = i.getDurability() + r.nextInt(drop.getAmount());
+								if (amount > 0) {
+									drop.setAmount(amount);
+									loc.getWorld().dropItemNaturally(loc, drop);
+								}
+							}
+							e.setDamage(0.01d);
+						}
+					}
+				}
 			}
 		}
 
@@ -204,9 +236,46 @@ public class EntityDamageListener implements Listener {
 		if (e.getCause().equals(RemoveCause.EXPLOSION))
 			e.setCancelled(true);
 	}
+
 	@EventHandler
 	public void Events(HangingBreakEvent e) {
 		if (e.getCause().equals(RemoveCause.EXPLOSION))
 			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void Events(EntityDeathEvent e) {
+		if (!e.getEntityType().equals(EntityType.PLAYER)) {
+			LivingEntity le = e.getEntity();
+			if (le.getKiller() != null) {
+				Player player = le.getKiller();
+				if (!ConfigStore.getPlayerStatus(player)) {
+					ItemStack main = player.getInventory().getItemInMainHand();
+					if (main != null) {
+						EnchantsType tool = EnchantsType.getEnchantType(main.getType());
+						if (tool != null) {
+							if (tool.equals(EnchantsType.Sword)) {
+								if (Basics.isHunting(le.getType())) {
+									int level = Basics.Hunting.getLevel(player);
+									List<ItemStack> list = e.getDrops();
+									for (ItemStack item : list)
+										if (Basics.Hunting.isActive(level))
+											item.setAmount(item.getAmount() + 2 + new Random().nextInt(level / 5 + 1));
+									Basics.Hunting.addEXP(player, Basics.getHuntingExp(le.getType()));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void Events(EntityInteractEvent e) {
+		Block b = e.getBlock();
+		if (b != null)
+			if (b.getType().equals(Material.FARMLAND))
+				e.setCancelled(true);
 	}
 }

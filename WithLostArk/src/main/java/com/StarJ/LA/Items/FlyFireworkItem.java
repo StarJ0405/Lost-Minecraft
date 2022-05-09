@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
-public class FlyItem extends Items implements Buyable {
+public class FlyFireworkItem extends Items implements Buyable {
 
-	public FlyItem(String key, Material type, ChatColor color) {
+	public FlyFireworkItem(String key, Material type, ChatColor color) {
 		super(key, type, color);
 		if (lore.size() == 0)
 			lore.add(ChatColor.GREEN + "비행용 폭죽");

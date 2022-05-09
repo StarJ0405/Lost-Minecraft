@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class EquipItem extends Items implements Buyable {
-	private List<Material> list = new ArrayList<Material>();
+	private static List<Material> list = getList();
 
 	public EquipItem(String key, Material type, ChatColor color) {
 		super(key, type, color);
@@ -19,14 +19,18 @@ public class EquipItem extends Items implements Buyable {
 			lore.add(ChatColor.GREEN + "랜덤 전투");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
-		if (list.size() == 0)
-			for (Material m : Material.values())
-				if (m.name().contains("_SWORD") || m.equals(Material.BOW) || m.equals(Material.CROSSBOW)
-						|| m.name().contains("_HELMET") || m.name().contains("_CHESTPLATE")
-						|| m.name().contains("_HORSE_ARMOR") || m.name().contains("_LEGGINGS")
-						|| m.name().contains("_BOOTS") || m.equals(Material.SHIELD)
-						|| m.equals(Material.TRIDENT) && !m.name().contains("LEGACY"))
-					list.add(m);
+	}
+
+	private static List<Material> getList() {
+		List<Material> list = new ArrayList<Material>();
+		for (Material m : Material.values())
+			if (m.name().contains("_SWORD") || m.equals(Material.BOW) || m.equals(Material.CROSSBOW)
+					|| m.name().contains("_HELMET") || m.name().contains("_CHESTPLATE")
+					|| m.name().contains("_HORSE_ARMOR") || m.name().contains("_LEGGINGS")
+					|| m.name().contains("_BOOTS") || m.equals(Material.SHIELD)
+					|| m.equals(Material.TRIDENT) && !m.name().contains("LEGACY"))
+				list.add(m);
+		return list;
 	}
 
 	@Override

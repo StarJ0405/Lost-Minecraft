@@ -36,7 +36,7 @@ public class FishingrodItem extends Items implements Buyable {
 			lore.add(ChatColor.WHITE + "어떤 물고기든 잘 잡힌다.");
 		} else {
 			meta.setDisplayName(ChatColor.GREEN + size.getName() + " 낚시대");
-			lore.add(ChatColor.WHITE + "잘 잡히는 크기 : " + size.name());
+			lore.add(ChatColor.WHITE + "잡히는 크기 : " + size.name());
 		}
 		meta.setLore(lore);
 		i.setItemMeta(meta);
