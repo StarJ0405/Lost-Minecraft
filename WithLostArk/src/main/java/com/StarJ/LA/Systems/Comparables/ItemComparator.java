@@ -25,8 +25,9 @@ public class ItemComparator implements Comparator<ItemStack> {
 					if (o1.hasItemMeta() && o2.hasItemMeta()) {
 						ItemMeta mo1 = o1.getItemMeta();
 						ItemMeta mo2 = o2.getItemMeta();
-						if (mo1.getDisplayName().equals(mo2.getDisplayName())) {
-							if (mo1.getLore().equals(mo2.getLore())) {
+						if (mo1.hasDisplayName() && mo2.hasDisplayName()
+								&& mo1.getDisplayName().equals(mo2.getDisplayName())) {
+							if (mo1.hasLore() && mo2.hasLore() && mo1.getLore().equals(mo2.getLore())) {
 								if (o2.getAmount() == o2.getAmount()) {
 									if (mo1.getEnchants().equals(mo2.getEnchants())) {
 										if (o1.getDurability() == o2.getDurability())
@@ -37,9 +38,9 @@ public class ItemComparator implements Comparator<ItemStack> {
 								}
 								return 4;// Lore까지 같음
 							}
-							if (o2.getAmount() == o2.getAmount()) 
+							if (o2.getAmount() == o2.getAmount())
 								return 8;// 개수만 같음
-							
+
 							return 3;// 아이템 이름이 같음
 						}
 					}

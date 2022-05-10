@@ -29,7 +29,7 @@ public class SkillCoolRunnable extends BukkitRunnable {
 	public static void run(Player player, Skills skill, int slot) {
 		if (skill != null) {
 			int cool = (int) (skill.getCooldown(player) * 20);
-			ConfigStore.setSkillCooldown(player, skill, cool * 1000 / 20);
+			ConfigStore.setSkillCooldown(player, ConfigStore.getJob(player), skill, cool * 1000 / 20);
 			if (cool > 0)
 				new SkillCoolRunnable(player, skill, slot).runTaskLater(Core.getCore(), cool);
 		}

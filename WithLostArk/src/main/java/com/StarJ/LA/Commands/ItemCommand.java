@@ -64,7 +64,8 @@ public class ItemCommand implements CommandExecutor, TabCompleter {
 					list.add(player.getName());
 		} else if (args.length == 2) {
 			for (Items i : Items.values())
-				if (args[1].equals("") || i.getKeyName().toLowerCase().startsWith(args[1].toLowerCase()))
+				if (args[1].equals("") || i.getKeyName().toLowerCase().startsWith(args[1].toLowerCase())
+						|| i.getKeyName().toLowerCase().contains(args[1].toLowerCase()))
 					list.add(i.getKeyName());
 		}
 		return list;

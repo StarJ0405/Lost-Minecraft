@@ -1,6 +1,7 @@
 package com.StarJ.LA.Systems;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -20,14 +21,7 @@ public class Jobs {
 	//
 	private final String key;
 	private final String displayname;
-	private final Skills skill1;
-	private final Skills skill2;
-	private final Skills skill3;
-	private final Skills skill4;
-	private final Skills skill5;
-	private final Skills skill6;
-	private final Skills skill7;
-	private final Skills skill8;
+	private final Skills[] skills = new Skills[8];
 	private final Skills specialarts;
 	private final Skills identity;
 	private final boolean identity_percent;
@@ -44,14 +38,14 @@ public class Jobs {
 		jobs.add(this);
 		this.key = key;
 		this.displayname = displayname;
-		this.skill1 = skill1;
-		this.skill2 = skill2;
-		this.skill3 = skill3;
-		this.skill4 = skill4;
-		this.skill5 = skill5;
-		this.skill6 = skill6;
-		this.skill7 = skill7;
-		this.skill8 = skill8;
+		this.skills[0] = skill1;
+		this.skills[1] = skill2;
+		this.skills[2] = skill3;
+		this.skills[3] = skill4;
+		this.skills[4] = skill5;
+		this.skills[5] = skill6;
+		this.skills[6] = skill7;
+		this.skills[7] = skill8;
 		this.specialarts = awakening;
 		this.identity = identity;
 		this.weapon = weapon;
@@ -82,21 +76,25 @@ public class Jobs {
 		return identity_percent;
 	}
 
-	public List<Skills> getSkills() {
-		List<Skills> skills = new ArrayList<Skills>();
-		skills.add(skill1);
-		skills.add(skill2);
-		skills.add(skill3);
-		skills.add(skill4);
-		skills.add(skill5);
-		skills.add(skill6);
-		skills.add(skill7);
-		skills.add(skill8);
+	public Skills[] getSkills(Player player) {
+		Skills[] skills = new Skills[8];
+		LinkedHashSet<Integer> slots = ConfigStore.getSkillSlots(player, this);
+		if (slots.size() < 8 || slots.contains(-1)) {
+			for (int num = 1; num <= 8; num++)
+				ConfigStore.setSkillSlot(player, this, num, num);
+			slots = ConfigStore.getSkillSlots(player, this);
+		}
+
+		int num = 0;
+		for (int slot : slots) {
+			num++;
+			skills[num - 1] = this.skills[slot - 1];
+		}
 		return skills;
 	}
 
 	public double getMaxHealth(Player player) {
-		return max_health * ConfigStore.getArmorHealth(player);
+		return max_health * ConfigStore.getArmorHealth(player, this);
 	}
 
 	public float getWalkspeed() {
@@ -117,9 +115,9 @@ public class Jobs {
 
 	public List<ItemStack> getJobitems(Player player) {
 		final List<ItemStack> items = new ArrayList<ItemStack>();
-		for (Skills skill : getSkills())
+		for (Skills skill : getSkills(player))
 			items.add(skill.getItemStack());
-		items.add(7, weapon.getItemStack(ConfigStore.getWeaponLevel(player)));
+		items.add(7, weapon.getItemStack(ConfigStore.getWeaponLevel(player, this)));
 		return items;
 	}
 

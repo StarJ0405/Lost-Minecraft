@@ -11,12 +11,11 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import com.StarJ.LA.Items.FishItem;
 import com.StarJ.LA.Items.FishingrodItem;
 
 public class Fishes {
@@ -229,22 +228,11 @@ public class Fishes {
 	private final Length length;
 	private final long price;
 	private final CustomAdvancements advancement;
+	private final HashMap<Rarity, FishItem> items;
 
 	public Fishes(String key, String name, Biomes[] biomes, Cycle[] cycles, Weather weather, Size size,
 			double man_chance, Length length, long price) {
-		this.key = key;
-		this.name = name;
-		this.biomes = biomes;
-		this.cycles = cycles;
-		this.weather = weather;
-		this.size = size;
-		this.man_chance = man_chance;
-		this.length = length;
-		this.price = price;
-		this.advancement = null;
-		list.add(this);
-		for (Biomes biome : biomes)
-			biome.addFishes(this);
+		this(key, name, biomes, cycles, weather, size, man_chance, length, price, null);
 	}
 
 	public Fishes(String key, String name, Biomes[] biomes, Cycle[] cycles, Weather weather, Size size,
@@ -262,6 +250,10 @@ public class Fishes {
 		list.add(this);
 		for (Biomes biome : biomes)
 			biome.addFishes(this);
+		this.items = new HashMap<Rarity, FishItem>();
+		for (Rarity r : Rarity.values())
+			items.put(r, new FishItem(ChatColor.stripColor(r.prefix + "_" + name).replace(' ', '_'), r.getColor(), name,
+					size, man_chance, length, price, r));
 	}
 
 	public String getKey() {
@@ -304,37 +296,10 @@ public class Fishes {
 		return advancement;
 	}
 
-	private Material getType() {
-		Material[] types = new Material[] { Material.COD, Material.SALMON, Material.TROPICAL_FISH,
-				Material.PUFFERFISH };
-		return types[new Random().nextInt(types.length)];
-	}
-
 	public ItemStack getItemStack(double money_multi, HashMap<Rarity, BigDecimal> ench,
 			HashMap<Rarity, BigDecimal> abil, List<Rarity> remove, HashMap<Rarity, BigDecimal> remove_multi) {
-		ItemStack i = new ItemStack(getType());
-		ItemMeta meta = i.getItemMeta();
-		Rarity rarity = Rarity.getRandomRarity(ench, abil, remove, remove_multi);
-		meta.setDisplayName(rarity.getPrefix() + " " + name);
-		List<String> lore = new ArrayList<String>();
-		lore.add(ChatColor.WHITE + "크기 : " + size.getName());
-		lore.add(ChatColor.WHITE + "희귀도 : " + rarity.getColor() + rarity.name());
-		double len = length.getRandom();
-		if (len > 0)
-			lore.add(ChatColor.WHITE + "길이 : " + Math.ceil(len));
-		double now_chance = new Random().nextDouble();
-		if (man_chance > 0)
-			lore.add(ChatColor.WHITE + "성별 : " + (now_chance < man_chance ? "수컷" : "암컷"));
-		lore.add(ChatColor.WHITE + "가격 : "
-				+ (long) (money_multi * rarity.getMoney() * price
-						* (1 + length.getPercent(len) * 3
-								* (man_chance == 0.5 ? 1
-										: (man_chance > 0.5 ? (now_chance < man_chance ? 2 - man_chance : 1)
-												: (now_chance > man_chance ? 1 + man_chance : 1))))));
-
-		meta.setLore(lore);
-		i.setItemMeta(meta);
-		return i;
+		return items.get(Rarity.getRandomRarity(ench, abil, remove, remove_multi))
+				.getItemStack(Double.valueOf(money_multi));
 	}
 
 	public static Rarity getRarity(ItemStack item) {
@@ -444,13 +409,13 @@ public class Fishes {
 		private final int chance;
 		private final ChatColor color;
 		private final String prefix;
-		private final int money;
+		private final int multi;
 
 		private Rarity(ChatColor color, String prefix, int chance, int money) {
 			this.color = color;
 			this.prefix = prefix;
 			this.chance = chance;
-			this.money = money;
+			this.multi = money;
 		}
 
 		public String getPrefix() {
@@ -461,8 +426,8 @@ public class Fishes {
 			return BigDecimal.valueOf(chance);
 		}
 
-		public int getMoney() {
-			return money;
+		public int getMulti() {
+			return multi;
 		}
 
 		public ChatColor getColor() {

@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.StarJ.LA.Systems.ConfigStore;
 
-public class InventoryItem extends Items implements Buyable, RightClickable {
+public class InventoryItem extends Items implements Buyable {
 	public InventoryItem(String key, Material type, ChatColor color) {
 		super(key, type, color);
 		lore.add(ChatColor.GREEN + "사용시 확장 인벤토리가 1줄 늘어납니다.");
@@ -29,8 +29,7 @@ public class InventoryItem extends Items implements Buyable, RightClickable {
 		return 1;
 	}
 
-	@Override
-	public void RightClick(Player player, ItemStack item, Block b, Entity et) {
+	public void Use(Player player, ItemStack item, Block b, Entity et) {
 		int size = ConfigStore.getPlayerInventorySize(player) + 9;
 		ConfigStore.setPlayerInventory(player, size);
 		if (item != null && !item.getType().equals(Material.AIR))
@@ -41,11 +40,6 @@ public class InventoryItem extends Items implements Buyable, RightClickable {
 		for (int c = items.size(); c < size; c++)
 			items.add(new ItemStack(Material.AIR));
 		ConfigStore.setPlayerInventory(player, items);
-	}
-
-	@Override
-	public boolean isRightCancel() {
-		return true;
 	}
 
 }

@@ -11,6 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.StarJ.LA.Items.JewerlyItems.Rank;
 import com.StarJ.LA.Items.Cooking.CookingIngredient;
+import com.StarJ.LA.Items.Cooking.CookingIngredient.IngredientType;
+import com.StarJ.LA.Systems.Fishes.Rarity;
 import com.StarJ.LA.Systems.Stats;
 
 public abstract class Items {
@@ -28,6 +30,7 @@ public abstract class Items {
 	public final static FlyFireworkItem fly = new FlyFireworkItem("날기용_폭죽", Material.FIREWORK_ROCKET, ChatColor.GREEN);
 	public final static InventoryItem inv = new InventoryItem("인벤토리_확장", Material.PINK_SHULKER_BOX,
 			ChatColor.LIGHT_PURPLE);
+	public final static FishBoxItem fishbox = new FishBoxItem("어항", ChatColor.AQUA);
 	// ARMORS
 	public final static ArmorItems helmet = new ArmorItems("투구", Material.IRON_HELMET, ChatColor.AQUA, 0.03,
 			EquipmentSlot.HEAD);
@@ -38,7 +41,7 @@ public abstract class Items {
 	public final static ArmorItems boots = new ArmorItems("바지", Material.IRON_BOOTS, ChatColor.AQUA, 0.03,
 			EquipmentSlot.FEET);
 	// Jewerly
-	public final static JewerlyItems zero = new JewerlyItems("빈_보석", Material.WHITE_DYE, ChatColor.WHITE, null,
+	public final static JewerlyItems jewerly_zero = new JewerlyItems("빈_보석", Material.WHITE_DYE, ChatColor.WHITE, null,
 			Rank.One);
 
 	public final static JewerlyItems speed_one = new JewerlyItems("신속의_보석", Material.LIGHT_BLUE_DYE, ChatColor.AQUA,
@@ -70,40 +73,85 @@ public abstract class Items {
 	// COOKING
 	public final static CookingItem cooking = new CookingItem("요리", ChatColor.LIGHT_PURPLE);
 
-	public final static CookingIngredient beetroot = new CookingIngredient("비트", Material.BEETROOT, ChatColor.WHITE, 1);
+	public final static CookingIngredient beetroot = new CookingIngredient("비트", Material.BEETROOT, ChatColor.WHITE, 1,
+			1 + 0, (short) 1, IngredientType.Farming);
 	public final static CookingIngredient melon_slice = new CookingIngredient("수박_조각", Material.MELON_SLICE,
-			ChatColor.WHITE, 1);
+			ChatColor.WHITE, 1, 1 + 4, (short) 3, IngredientType.Farming);
 	public final static CookingIngredient dried_kelp = new CookingIngredient("말린_켈프", Material.DRIED_KELP,
-			ChatColor.WHITE, 1);
+			ChatColor.WHITE, 1, IngredientType.Farming);
 	public final static CookingIngredient sweet_berries = new CookingIngredient("달콤한_열매", Material.SWEET_BERRIES,
-			ChatColor.WHITE, 1);
-	public final static CookingIngredient carrot = new CookingIngredient("당근", Material.CARROT, ChatColor.WHITE, 1);
-	public final static CookingIngredient potato = new CookingIngredient("감자", Material.POTATO, ChatColor.WHITE, 1);
+			ChatColor.WHITE, 1, 1 + 1, (short) 2, IngredientType.Farming);
+	public final static CookingIngredient carrot = new CookingIngredient("당근", Material.CARROT, ChatColor.WHITE, 1,
+			1 + 3, (short) 2, IngredientType.Farming);
+	public final static CookingIngredient potato = new CookingIngredient("감자", Material.POTATO, ChatColor.WHITE, 1,
+			1 + 4, (short) 1, IngredientType.Farming);
 
 	public final static CookingIngredient baked_potato = new CookingIngredient("구운_감자", Material.BAKED_POTATO,
-			ChatColor.WHITE, 2);
-	public final static CookingIngredient cookie = new CookingIngredient("쿠키", Material.COOKIE, ChatColor.WHITE, 2);
+			ChatColor.WHITE, 2, IngredientType.Farming);
+	public final static CookingIngredient cookie = new CookingIngredient("쿠키", Material.COOKIE, ChatColor.WHITE, 2,
+			IngredientType.Farming);
 	public final static CookingIngredient glow_berries = new CookingIngredient("발광_열매", Material.GLOW_BERRIES,
-			ChatColor.WHITE, 2);
+			ChatColor.WHITE, 2, IngredientType.Farming);
 
 	public final static CookingIngredient poisonous_potato = new CookingIngredient("독이_있는_감자",
-			Material.POISONOUS_POTATO, ChatColor.WHITE, 3);
-	public final static CookingIngredient apple = new CookingIngredient("사과", Material.APPLE, ChatColor.WHITE, 3);
-	public final static CookingIngredient bread = new CookingIngredient("빵", Material.BREAD, ChatColor.WHITE, 3);
+			Material.POISONOUS_POTATO, ChatColor.WHITE, 3, 1 + 1, IngredientType.Farming);
+	public final static CookingIngredient apple = new CookingIngredient("사과", Material.APPLE, ChatColor.WHITE, 3, 1 + 1,
+			IngredientType.Farming);
+	public final static CookingIngredient bread = new CookingIngredient("빵", Material.BREAD, ChatColor.WHITE, 3,
+			IngredientType.Farming);
 	public final static CookingIngredient golden_apple = new CookingIngredient("황금_사과", Material.GOLDEN_APPLE,
-			ChatColor.WHITE, 3);
+			ChatColor.WHITE, 3, IngredientType.Farming);
 
 	public final static CookingIngredient honey_bottle = new CookingIngredient("꿀이_든_병", Material.HONEY_BOTTLE,
-			ChatColor.WHITE, 4);
+			ChatColor.WHITE, 4, IngredientType.Farming);
 	public final static CookingIngredient pumpkin_pie = new CookingIngredient("호박_파이", Material.PUMPKIN_PIE,
-			ChatColor.WHITE, 5);
+			ChatColor.WHITE, 5, IngredientType.Farming);
 	public final static CookingIngredient beetroot_soup = new CookingIngredient("비트_수프", Material.BEETROOT_SOUP,
-			ChatColor.WHITE, 24);
+			ChatColor.WHITE, 24, IngredientType.Farming);
 	public final static CookingIngredient mushroom_stew = new CookingIngredient("버섯_수프", Material.MUSHROOM_STEW,
-			ChatColor.WHITE, 48);
-	public final static CookingIngredient cake = new CookingIngredient("케이크", Material.CAKE, ChatColor.WHITE, 192);
-	public final static CookingIngredient enchanted_golden_apple= new CookingIngredient("황금_사과", Material.ENCHANTED_GOLDEN_APPLE,
-			ChatColor.WHITE, 192);
+			ChatColor.WHITE, 48, IngredientType.Farming);
+	public final static CookingIngredient cake = new CookingIngredient("케이크", Material.CAKE, ChatColor.WHITE, 192,
+			IngredientType.Farming);
+	public final static CookingIngredient enchanted_golden_apple = new CookingIngredient("황금_사과",
+			Material.ENCHANTED_GOLDEN_APPLE, ChatColor.WHITE, 192, IngredientType.Farming);
+
+	public final static CookingIngredient trash_cooked_cod = new CookingIngredient(Rarity.Trash.getPrefix() + "_익힌_대구",
+			Material.COOKED_COD, Rarity.Trash.getColor(), Rarity.Trash.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient common_cooked_cod = new CookingIngredient(
+			Rarity.Common.getPrefix() + "_익힌_대구", Material.COOKED_COD, Rarity.Common.getColor(),
+			Rarity.Common.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient uncommon_cooked_cod = new CookingIngredient(
+			Rarity.Uncommon.getPrefix() + "_익힌_대구", Material.COOKED_COD, Rarity.Uncommon.getColor(),
+			Rarity.Uncommon.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient rare_cooked_cod = new CookingIngredient(Rarity.Rare.getPrefix() + "_익힌_대구",
+			Material.COOKED_COD, Rarity.Rare.getColor(), Rarity.Rare.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient epic_cooked_cod = new CookingIngredient(Rarity.Epic.getPrefix() + "_익힌_대구",
+			Material.COOKED_COD, Rarity.Epic.getColor(), Rarity.Epic.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient treasure_cooked_cod = new CookingIngredient(
+			Rarity.Treasure.getPrefix() + "_익힌_대구", Material.COOKED_COD, Rarity.Treasure.getColor(),
+			Rarity.Treasure.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient god_cooked_cod = new CookingIngredient(Rarity.God.getPrefix() + "_익힌_대구",
+			Material.COOKED_COD, Rarity.God.getColor(), Rarity.God.getMulti() * 32 * 1.5, IngredientType.Fishing);
+
+	public final static CookingIngredient trash_cooked_salmon = new CookingIngredient(
+			Rarity.Trash.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Trash.getColor(),
+			Rarity.Trash.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient common_cooked_salmon = new CookingIngredient(
+			Rarity.Common.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Common.getColor(),
+			Rarity.Common.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient uncommon_cooked_salmon = new CookingIngredient(
+			Rarity.Uncommon.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Uncommon.getColor(),
+			Rarity.Uncommon.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient rare_cooked_salmon = new CookingIngredient(Rarity.Rare.getPrefix() + "_익힌_연어",
+			Material.COOKED_SALMON, Rarity.Rare.getColor(), Rarity.Rare.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient epic_cooked_salmon = new CookingIngredient(Rarity.Epic.getPrefix() + "_익힌_연어",
+			Material.COOKED_SALMON, Rarity.Epic.getColor(), Rarity.Epic.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient treasure_cooked_salmon = new CookingIngredient(
+			Rarity.Treasure.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Treasure.getColor(),
+			Rarity.Treasure.getMulti() * 32 * 1.5, IngredientType.Fishing);
+	public final static CookingIngredient god_cooked_salmon = new CookingIngredient(Rarity.God.getPrefix() + "_익힌_연어",
+			Material.COOKED_SALMON, Rarity.God.getColor(), Rarity.God.getMulti() * 32 * 1.5, IngredientType.Fishing);
+
 	
 	// WEAPON
 	public final static WeaponItems reaper = new WeaponItems("단검", Material.IRON_SWORD, ChatColor.DARK_RED, 2.5, 3, 10,

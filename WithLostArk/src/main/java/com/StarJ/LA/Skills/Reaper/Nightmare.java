@@ -15,7 +15,6 @@ import org.bukkit.util.Vector;
 import com.StarJ.LA.Core;
 import com.StarJ.LA.Skills.ProjectileRunnable;
 import com.StarJ.LA.Skills.Skills;
-import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Runnable.BuffRunnable;
@@ -33,11 +32,11 @@ public class Nightmare extends Skills {
 	}
 
 	private double getHitDamage(Player player) {
-		return 5 * (1 + ConfigStore.getWeaponLevel(player) * 0.1);
+		return 5 * getWeaponPercent(player);
 	}
 
 	private double getTelportDamage(Player player) {
-		return 3 * (1 + ConfigStore.getWeaponLevel(player) * 0.1);
+		return 3 * getWeaponPercent(player);
 	}
 
 	private double getHitIdentity() {

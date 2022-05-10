@@ -20,11 +20,11 @@ public class PlayerLogListener implements Listener {
 		ConfigStore.LoadPlayerAllData(player);
 		ConfigStore.LoadPlayerAdvancement(player);
 		ScoreboarStore.join(player);
-		ConfigStore.confirmHealth(player);
-		ConfigStore.confirmIdentity(player);
+		Jobs job = ConfigStore.getJob(player);
+		ConfigStore.loadJobHealth(player, job);
+		ConfigStore.loadIdentity(player, job);
 		ScoreboarStore.confirmTeam(player);
 		if (ConfigStore.getPlayerStatus(player)) {
-			Jobs job = ConfigStore.getJob(player);
 			double max = job != null ? job.getMaxHealth(player) : 20;
 			double health = HashMapStore.getHealth(player);
 
@@ -54,8 +54,9 @@ public class PlayerLogListener implements Listener {
 		Player player = e.getPlayer();
 		ConfigStore.SavePlayerAllData(player);
 		ConfigStore.SavePlayerAdvancement(player);
-		ConfigStore.setHealth(player);
-		ConfigStore.setIdentity(player);
+		Jobs job = ConfigStore.getJob(player);
+		ConfigStore.saveJobHealth(player, job);
+		ConfigStore.saveIdentity(player, job);
 	}
 
 }

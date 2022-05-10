@@ -67,7 +67,7 @@ public class FishListener implements Listener {
 				if (rod.containsEnchantment(Enchantment.LUCK)) {
 					int ench_level = rod.getEnchantmentLevel(Enchantment.LUCK);
 					ench.put(Rarity.God, BigDecimal.valueOf(ench_level).multiply(BigDecimal.valueOf(0.13)));
-					ench.put(Rarity.Treasure,BigDecimal.valueOf(ench_level).multiply(BigDecimal.valueOf(0.12)));
+					ench.put(Rarity.Treasure, BigDecimal.valueOf(ench_level).multiply(BigDecimal.valueOf(0.12)));
 					ench.put(Rarity.Epic, BigDecimal.valueOf(ench_level).multiply(BigDecimal.valueOf(0.11)));
 					ench.put(Rarity.Rare, BigDecimal.valueOf(ench_level).multiply(BigDecimal.valueOf(0.1)));
 				}
@@ -112,6 +112,7 @@ public class FishListener implements Listener {
 						if (exp > 0) {
 							Basics.Fishing.addEXP(player, exp);
 						}
+						player.sendMessage(i.getItemMeta().getDisplayName() + ChatColor.WHITE + "을 낚았습니다.");
 					}
 				}
 			}

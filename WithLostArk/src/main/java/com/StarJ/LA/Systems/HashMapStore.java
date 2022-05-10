@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -34,6 +35,7 @@ public class HashMapStore {
 	private static HashMap<String, EnchantsType> enchant_type = new HashMap<String, EnchantsType>();// 인챈트창
 	private static HashMap<String, ItemStack> enchant_item = new HashMap<String, ItemStack>();// 인챈트창
 	private static HashMap<String, ItemStack> enchant_book = new HashMap<String, ItemStack>();// 인챈트창
+	private static HashMap<UUID, Integer> skill_change_slot = new HashMap<UUID, Integer>();
 
 	public static BigInteger getHomeCool(String key) {
 		return home_cool.containsKey(key) ? home_cool.get(key) : BigInteger.ZERO;
@@ -299,4 +301,13 @@ public class HashMapStore {
 		enchant_book.put(key, book);
 	}
 
+	//
+	public static int getSkillChangeSlot(Player player) {
+		UUID uuid = player.getUniqueId();
+		return skill_change_slot.containsKey(uuid) ? skill_change_slot.get(uuid) : -1;
+	}
+
+	public static void setSkillChangeSlot(Player player, int slot) {
+		skill_change_slot.put(player.getUniqueId(), slot);
+	}
 }

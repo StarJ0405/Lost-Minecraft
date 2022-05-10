@@ -40,7 +40,7 @@ public class MultiWorldCommand implements CommandExecutor, TabCompleter {
 			} else if (args[0].equalsIgnoreCase("create")) {
 				World world = Bukkit.getWorld(args[1]);
 				if (world == null) {
-					Bukkit.unloadWorld(args[1], true);
+					new WorldCreator(args[1]).createWorld();
 					sender.sendMessage(ChatColor.RED + args[1] + "를 생성했습니다.");
 				} else
 					sender.sendMessage(ChatColor.RED + args[1] + "가 존재합니다.");
@@ -51,6 +51,7 @@ public class MultiWorldCommand implements CommandExecutor, TabCompleter {
 					World world = Bukkit.getWorld(args[1]);
 					if (world != null)
 						Bukkit.unloadWorld(args[1], true);
+					file.delete();
 					sender.sendMessage(ChatColor.RED + args[1] + "를 삭제했습니다.");
 				} else
 					sender.sendMessage(ChatColor.RED + args[1] + "가 존재하지 않습니다.");

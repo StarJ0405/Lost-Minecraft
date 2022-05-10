@@ -95,8 +95,8 @@ public class PlayerInteractListener implements Listener {
 													while (loc.getBlock().getType().equals(Material.SUGAR_CANE)) {
 														loc.setY(loc.getBlockY() + 1);
 													}
-													for (int height = loc.getBlockY(); height >= b.getY(); height--) {
-														loc.setY(height);
+													loc.setY(loc.getBlockY() - 1);
+													while (loc.getBlock().getType().equals(Material.SUGAR_CANE)) {
 														Location confirm = loc.clone();
 														confirm.setY(confirm.getBlockY() - 1);
 														if (confirm.getBlock().getType().equals(Material.SUGAR_CANE)) {
@@ -106,14 +106,18 @@ public class PlayerInteractListener implements Listener {
 															player.playSound(loc, Sound.BLOCK_CROP_BREAK, 0.5f, 0.5f);
 														} else
 															break;
+														loc.setY(loc.getBlockY() - 1);
 													}
-												} else if (b_type.equals(Material.KELP_PLANT)) {
+												} else if (b_type.equals(Material.KELP_PLANT)
+														|| b_type.equals(Material.KELP)) {
 													Location loc = b.getLocation().clone();
-													while (loc.getBlock().getType().equals(Material.KELP_PLANT)) {
+													while (loc.getBlock().getType().equals(Material.KELP_PLANT)
+															|| loc.getBlock().getType().equals(Material.KELP)) {
 														loc.setY(loc.getBlockY() + 1);
 													}
-													for (int height = loc.getBlockY(); height >= b.getY(); height--) {
-														loc.setY(height);
+													loc.setY(loc.getBlockY() - 1);
+													while (loc.getBlock().getType().equals(Material.KELP_PLANT)
+															|| loc.getBlock().getType().equals(Material.KELP)) {
 														Location confirm = loc.clone();
 														confirm.setY(confirm.getBlockY() - 1);
 														if (confirm.getBlock().getType().equals(Material.KELP_PLANT)) {
@@ -123,6 +127,7 @@ public class PlayerInteractListener implements Listener {
 															player.playSound(loc, Sound.BLOCK_CROP_BREAK, 0.5f, 0.5f);
 														} else
 															break;
+														loc.setY(loc.getBlockY() - 1);
 													}
 												} else if (b_type.equals(Material.COCOA)) {
 													if (((Cocoa) b.getBlockData()).getAge() >= Basics
@@ -273,16 +278,18 @@ public class PlayerInteractListener implements Listener {
 		} else {
 			Block block = e.getClickedBlock();
 			if (block != null) {
-				if (block.getType().equals(Material.ENCHANTING_TABLE)) {
+				if (block.getType().equals(Material.ENCHANTING_TABLE)
+						&& e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					GUIStores.enchant.openGUI(player, 0);
 					e.setCancelled(true);
 					return;
-				} else if (block.getType().equals(Material.CAMPFIRE)
-						|| block.getType().equals(Material.SOUL_CAMPFIRE)) {
+				} else if ((block.getType().equals(Material.CAMPFIRE) || block.getType().equals(Material.SOUL_CAMPFIRE))
+						&& e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					GUIStores.cooking.openGUI(player, 0);
 					e.setCancelled(true);
 					return;
-				} else if (block.getType().equals(Material.BREWING_STAND)) {
+				} else if (block.getType().equals(Material.BREWING_STAND)
+						&& e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					GUIStores.potioning.openGUI(player, 0);
 					e.setCancelled(true);
 					return;
@@ -312,7 +319,8 @@ public class PlayerInteractListener implements Listener {
 					lc.LeftClick(player, item, e.getClickedBlock(), null);
 					e.setCancelled(lc.isLeftCancel());
 					return;
-				}
+				} else
+					e.setCancelled(true);
 			} else {
 				item = player.getInventory().getItemInMainHand();
 				if (e.getHand().equals(EquipmentSlot.OFF_HAND))
@@ -395,8 +403,7 @@ public class PlayerInteractListener implements Listener {
 																	if (kelp.getBlockX() == loc.getBlockX()
 																			&& kelp.getBlockZ() == loc.getBlockZ())
 																		continue z;
-																while (loc.getBlock().getType()
-																		.equals(Material.KELP)) {
+																while (loc.getBlock().getType().equals(Material.KELP)) {
 																	loc.setY(loc.getBlockY() + 1);
 																}
 																if (loc.getBlock().getType().equals(Material.WATER))
@@ -472,8 +479,8 @@ public class PlayerInteractListener implements Listener {
 													while (loc.getBlock().getType().equals(Material.SUGAR_CANE)) {
 														loc.setY(loc.getBlockY() + 1);
 													}
-													for (int height = loc.getBlockY(); height >= b.getY(); height--) {
-														loc.setY(height);
+													loc.setY(loc.getBlockY() - 1);
+													while (loc.getBlock().getType().equals(Material.SUGAR_CANE)) {
 														Location confirm = loc.clone();
 														confirm.setY(confirm.getBlockY() - 1);
 														if (confirm.getBlock().getType().equals(Material.SUGAR_CANE)) {
@@ -493,17 +500,22 @@ public class PlayerInteractListener implements Listener {
 															}
 														} else
 															break;
+														loc.setY(loc.getBlockY() - 1);
 													}
-												} else if (b_type.equals(Material.KELP_PLANT)||b_type.equals(Material.KELP)) {
+												} else if (b_type.equals(Material.KELP_PLANT)
+														|| b_type.equals(Material.KELP)) {
 													Location loc = b.getLocation().clone();
-													while (loc.getBlock().getType().equals(Material.KELP_PLANT)||loc.getBlock().getType().equals(Material.KELP)) {
+													while (loc.getBlock().getType().equals(Material.KELP_PLANT)
+															|| loc.getBlock().getType().equals(Material.KELP)) {
 														loc.setY(loc.getBlockY() + 1);
 													}
-													for (int height = loc.getBlockY(); height >= b.getY(); height--) {
-														loc.setY(height);
+													loc.setY(loc.getBlockY() - 1);
+													while (loc.getBlock().getType().equals(Material.KELP_PLANT)
+															|| loc.getBlock().getType().equals(Material.KELP)) {
 														Location confirm = loc.clone();
 														confirm.setY(confirm.getBlockY() - 1);
-														if (confirm.getBlock().getType().equals(Material.KELP_PLANT)||confirm.getBlock().getType().equals(Material.KELP)) {
+														if (confirm.getBlock().getType().equals(Material.KELP_PLANT)
+																|| confirm.getBlock().getType().equals(Material.KELP)) {
 															DropItem(item, loc.getBlock(), world);
 															loc.getBlock().setType(Material.WATER);
 															player.playSound(loc, Sound.BLOCK_CROP_BREAK, 0.5f, 0.5f);
@@ -520,6 +532,7 @@ public class PlayerInteractListener implements Listener {
 															}
 														} else
 															break;
+														loc.setY(loc.getBlockY() - 1);
 													}
 												} else if (b_type.equals(Material.COCOA)) {
 													if (((Cocoa) b.getBlockData()).getAge() >= Basics
@@ -969,9 +982,9 @@ public class PlayerInteractListener implements Listener {
 			Jobs job = ConfigStore.getJob(player);
 			int slot = e.getNewSlot();
 			if (slot < 7) {
-				job.getSkills().get(slot).Use(player, slot);
+				job.getSkills(player)[slot].Use(player, slot);
 			} else if (slot == 8)
-				job.getSkills().get(7).Use(player, slot);
+				job.getSkills(player)[7].Use(player, slot);
 			player.getInventory().setHeldItemSlot(7);
 		}
 	}

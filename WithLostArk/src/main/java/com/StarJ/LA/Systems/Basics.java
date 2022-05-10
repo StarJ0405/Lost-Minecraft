@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.StarJ.LA.Items.DiggingItems;
+import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Systems.Fishes.Rarity;
 import com.StarJ.LA.Systems.Comparables.ItemComparator;
 
@@ -47,7 +48,7 @@ public enum Basics {
 			}
 			lore.add(ChatColor.GREEN + "범위 수확" + ChatColor.AQUA + " (우클릭 / 확정)");
 			lore.add(ChatColor.WHITE + " - 괭이로 " + ((level / 10) * 2 + 3) + "칸을 수확합니다. "
-					+ ((int) getChance(level).doubleValue() * 100) + "%로 내구도 소모");
+					+ (getChance(level).doubleValue() * 100) + "%로 내구도 소모");
 			return lore;
 		}
 	},
@@ -214,7 +215,7 @@ public enum Basics {
 	Cooking("요리", Material.CAMPFIRE) {
 		@Override
 		public int getNeedEXP(int level) {
-			return level * level * 5;
+			return level * level * 50;
 		}
 
 		@Override
@@ -231,12 +232,13 @@ public enum Basics {
 			}
 			if (level >= 20) {
 				lore.add(ChatColor.GREEN + "특별 요리" + ChatColor.AQUA + " (패시브 / 확률)");
-				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 3 + "%로 추가효과가 붙습니다.");
+				lore.add(ChatColor.WHITE + " - " + ((int) (getChance(level).doubleValue() * 10000 / 3)) / 100.0
+						+ "%로 추가효과가 붙습니다.");
 			}
 			if (level >= 10) {
 				lore.add(ChatColor.GREEN + "고급 요리사" + ChatColor.AQUA + " (패시브 / 확률)");
 				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 2 + "%로 요리 효과가 " + level * 2
-						+ "% 증가합니다.");
+						+ "% 강화됩니다.");
 			}
 			lore.add(ChatColor.GREEN + "조리 도구" + ChatColor.AQUA + " (패시브 / 확률)");
 			lore.add(ChatColor.WHITE + " - 요리시 " + (level / 10 + 4) + "개의 재료를 넣을 수 있습니다.");
@@ -246,7 +248,7 @@ public enum Basics {
 	Potioning("양조", Material.BREWING_STAND) {
 		@Override
 		public int getNeedEXP(int level) {
-			return level * level * 5;
+			return level * level * 50;
 		}
 
 		@Override
@@ -264,7 +266,8 @@ public enum Basics {
 			}
 			if (level >= 20) {
 				lore.add(ChatColor.GREEN + "의도치않은 성공" + ChatColor.AQUA + " (패시브 / 확률)");
-				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 3 + "%로 포션에 추가효과가 붙습니다.");
+				lore.add(ChatColor.WHITE + " - " + ((int) (getChance(level).doubleValue() * 10000 / 3)) / 100.0
+						+ "%로 포션에 추가효과가 붙습니다.");
 			}
 			if (level >= 10) {
 				lore.add(ChatColor.GREEN + "강력한 포션" + ChatColor.AQUA + " (패시브 / 확률)");
@@ -459,21 +462,21 @@ public enum Basics {
 	@SuppressWarnings("deprecation")
 	public static void initial() {
 		// 농사
-		farming.put(Material.WHEAT, new ItemStack[] { new ItemStack(Material.WHEAT, 1 + 1, (byte) 0),
+		farming.put(Material.WHEAT, new ItemStack[] { new ItemStack(Material.WHEAT, 1 + 0, (byte) 1),
 				new ItemStack(Material.WHEAT_SEEDS, 1 + 3, (short) 0) });
 		farming_exp.put(Material.WHEAT, 3);
 		farming_data.put(Material.WHEAT, (byte) 7);
 
-		farming.put(Material.POTATOES, new ItemStack[] { new ItemStack(Material.POTATO, 1 + 4, (short) 1),
-				new ItemStack(Material.POISONOUS_POTATO, 1 + 1, (short) 0) });
+		farming.put(Material.POTATOES,
+				new ItemStack[] { Items.potato.getRandomItemStack(), Items.poisonous_potato.getRandomItemStack() });
 		farming_exp.put(Material.POTATOES, 3);
 		farming_data.put(Material.POTATOES, (byte) 7);
 
-		farming.put(Material.CARROTS, new ItemStack[] { new ItemStack(Material.CARROT, 1 + 3, (short) 2) });
+		farming.put(Material.CARROTS, new ItemStack[] { Items.carrot.getRandomItemStack() });
 		farming_exp.put(Material.CARROTS, 3);
 		farming_data.put(Material.CARROTS, (byte) 7);
 
-		farming.put(Material.BEETROOTS, new ItemStack[] { new ItemStack(Material.BEETROOT, 1 + 0, (short) 1),
+		farming.put(Material.BEETROOTS, new ItemStack[] { Items.beetroot.getRandomItemStack(),
 				new ItemStack(Material.BEETROOT_SEEDS, 1 + 3, (short) 1) });
 		farming_exp.put(Material.BEETROOTS, 2);
 		farming_data.put(Material.BEETROOTS, (byte) 3);
@@ -481,15 +484,14 @@ public enum Basics {
 		farming.put(Material.PUMPKIN, new ItemStack[] { new ItemStack(Material.PUMPKIN, 1 + 0, (short) 1) });
 		farming_exp.put(Material.PUMPKIN, 4);
 
-		farming.put(Material.MELON, new ItemStack[] { new ItemStack(Material.MELON_SLICE, 1 + 4, (short) 3) });
+		farming.put(Material.MELON, new ItemStack[] { Items.melon_slice.getRandomItemStack() });
 		farming_exp.put(Material.MELON, 4);
 
 		farming.put(Material.COCOA, new ItemStack[] { new ItemStack(Material.COCOA_BEANS, 1 + 1, (short) 2) });
 		farming_exp.put(Material.COCOA, 1);
 		farming_data.put(Material.COCOA, (byte) 2);
 
-		farming.put(Material.SWEET_BERRY_BUSH,
-				new ItemStack[] { new ItemStack(Material.SWEET_BERRIES, 1 + 1, (short) 2) });
+		farming.put(Material.SWEET_BERRY_BUSH, new ItemStack[] { Items.sweet_berries.getRandomItemStack() });
 		farming_exp.put(Material.SWEET_BERRY_BUSH, 1);
 		farming_data.put(Material.SWEET_BERRY_BUSH, (byte) 2);
 
@@ -498,6 +500,7 @@ public enum Basics {
 
 		farming.put(Material.KELP, new ItemStack[] { new ItemStack(Material.KELP, 1 + 0, (short) 1) });
 		farming.put(Material.KELP_PLANT, new ItemStack[] { new ItemStack(Material.KELP, 1 + 0, (short) 1) });
+		farming_exp.put(Material.KELP, 1);
 		farming_exp.put(Material.KELP_PLANT, 1);
 
 		// 낚시
@@ -883,7 +886,7 @@ public enum Basics {
 		chopping.put(Material.ACACIA_LOG, new ItemStack[] { new ItemStack(Material.ACACIA_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.ACACIA_LOG, 2);
 		chopping.put(Material.ACACIA_LEAVES, new ItemStack[] { new ItemStack(Material.ACACIA_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), new ItemStack(Material.APPLE, 1 + 1, (byte) 0) });
+				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.ACACIA_LEAVES, 1);
 		chopping_treetype.put(Material.ACACIA_SAPLING, TreeType.ACACIA);
 		chopping_sapling.put(Material.ACACIA_LOG, Material.ACACIA_SAPLING);
@@ -891,7 +894,7 @@ public enum Basics {
 		chopping.put(Material.BIRCH_LOG, new ItemStack[] { new ItemStack(Material.BIRCH_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.BIRCH_LOG, 2);
 		chopping.put(Material.BIRCH_LEAVES, new ItemStack[] { new ItemStack(Material.BIRCH_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), new ItemStack(Material.APPLE, 1 + 1, (byte) 0) });
+				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.BIRCH_LEAVES, 1);
 		chopping_treetype.put(Material.BIRCH_SAPLING, TreeType.BIRCH);
 		chopping_sapling.put(Material.BIRCH_LOG, Material.BIRCH_SAPLING);
@@ -900,8 +903,7 @@ public enum Basics {
 		chopping_exp.put(Material.DARK_OAK_LOG, 2);
 		chopping.put(Material.DARK_OAK_LEAVES,
 				new ItemStack[] { new ItemStack(Material.DARK_OAK_SAPLING, 1 + 1, (byte) 0),
-						new ItemStack(Material.STICK, 1 + 2, (byte) 0),
-						new ItemStack(Material.APPLE, 1 + 1, (byte) 0) });
+						new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.DARK_OAK_LEAVES, 1);
 		chopping_treetype.put(Material.DARK_OAK_SAPLING, TreeType.DARK_OAK);
 		chopping_sapling.put(Material.DARK_OAK_LOG, Material.DARK_OAK_SAPLING);
@@ -909,7 +911,7 @@ public enum Basics {
 		chopping.put(Material.JUNGLE_LOG, new ItemStack[] { new ItemStack(Material.JUNGLE_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.JUNGLE_LOG, 2);
 		chopping.put(Material.JUNGLE_LEAVES, new ItemStack[] { new ItemStack(Material.JUNGLE_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), new ItemStack(Material.APPLE, 1 + 1, (byte) 0) });
+				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.JUNGLE_LEAVES, 1);
 		chopping_treetype.put(Material.JUNGLE_SAPLING, TreeType.JUNGLE);
 		chopping_sapling.put(Material.JUNGLE_LOG, Material.JUNGLE_SAPLING);
@@ -917,7 +919,7 @@ public enum Basics {
 		chopping.put(Material.OAK_LOG, new ItemStack[] { new ItemStack(Material.OAK_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.OAK_LOG, 2);
 		chopping.put(Material.OAK_LEAVES, new ItemStack[] { new ItemStack(Material.OAK_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), new ItemStack(Material.APPLE, 1 + 1, (byte) 0) });
+				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.OAK_LEAVES, 1);
 		chopping_treetype.put(Material.OAK_SAPLING, TreeType.TREE);
 		chopping_sapling.put(Material.OAK_LOG, Material.OAK_SAPLING);
@@ -925,7 +927,7 @@ public enum Basics {
 		chopping.put(Material.SPRUCE_LOG, new ItemStack[] { new ItemStack(Material.SPRUCE_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.SPRUCE_LOG, 2);
 		chopping.put(Material.SPRUCE_LEAVES, new ItemStack[] { new ItemStack(Material.SPRUCE_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), new ItemStack(Material.APPLE, 1 + 1, (byte) 0) });
+				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.SPRUCE_LEAVES, 1);
 		chopping_treetype.put(Material.SPRUCE_SAPLING, TreeType.REDWOOD);
 		chopping_sapling.put(Material.SPRUCE_LOG, Material.SPRUCE_SAPLING);

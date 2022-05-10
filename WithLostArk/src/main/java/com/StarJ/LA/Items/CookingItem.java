@@ -7,11 +7,11 @@ import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.StarJ.LA.Systems.Basics;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
@@ -31,18 +31,47 @@ public class CookingItem extends Items {
 
 	@Override
 	public ItemStack getItemStack(int count) {
+		return getItemStack(count, 1);
+	}
+
+	public ItemStack getItemStack(int health, int level) {
+		Random r = new Random();
 		ItemStack item = super.getItemStack(1);
 		ItemMeta meta = item.getItemMeta();
 		Rank rank = Rank.getRandomRank();
+		double chance = Basics.Cooking.getChance(level).doubleValue();
+		String suffix = "";
+		if (level > 40 && r.nextDouble() < chance / 5) {
+			int ord = rank.ordinal();
+			if (ord < Rank.values().length - 1)
+				rank = Rank.values()[ord + 1];
+			suffix += "등급 상슴";
+		}
+
+		if (level > 10 && r.nextDouble() < chance / 2) {
+			health *= 1 + level * 0.02;
+			if (!suffix.equals(""))
+				suffix += ", ";
+			suffix += "효과 강화";
+		}
 		meta.setDisplayName(rank.getPrefix() + " 요리");
-		lore.add(ChatColor.GREEN + "회복량 : " + count * rank.getHealth());
-		lore.add("RANK : " + rank.getPrefix() + rank.name());
+		List<String> lore = new ArrayList<String>();
+		lore.add(ChatColor.GREEN + "회복량 : " + health * rank.getHealth());
+		lore.add(rank.getColor() + "RANK : " + rank.name());
+		if (level > 20 && r.nextDouble() < chance / 3) {
+			lore.add(ChatColor.DARK_PURPLE + "추가 효과 : " + Extra.getRandomExtra().getName());
+			if (!suffix.equals(""))
+				suffix += ", ";
+			suffix += "추가 효과";
+		}
+		if (!suffix.equals(""))
+			lore.add(ChatColor.GRAY + suffix);
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;
 	}
 
-	public boolean use(Player player, ItemStack item) {
+	public static boolean use(Player player, ItemStack item) {
 		Jobs job = ConfigStore.getJob(player);
 		if (job != null) {
 			double max = job.getMaxHealth(player);
@@ -54,14 +83,44 @@ public class CookingItem extends Items {
 							health += Integer.valueOf(lore.split("회복량 : ")[1]);
 							break;
 						}
-				player.playSound(player, Sound.ITEM_TOTEM_USE, 2f, 0.5f);
 				HashMapStore.setHealth(player, health);
+				return true;
 			} else {
 				player.sendMessage(ChatColor.RED + "체력이 이미 최대치입니다.");
 				player.closeInventory();
 			}
 		}
-		return true;
+		return false;
+	}
+
+	public static int getHealth(ItemStack item) {
+		if (item.hasItemMeta() && item.getItemMeta().hasLore())
+			for (String lore : item.getItemMeta().getLore())
+				if (lore.contains("회복량 : ")) {
+					return Integer.valueOf(lore.split("회복량 : ")[1]);
+				}
+		return 0;
+	}
+
+	public enum Extra {
+		Test("테스트용")
+		//
+		;
+
+		private final String name;
+
+		private Extra(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public static Extra getRandomExtra() {
+			Extra[] extras = Extra.values();
+			return extras[new Random().nextInt(extras.length)];
+		}
 	}
 
 	public enum Rank {

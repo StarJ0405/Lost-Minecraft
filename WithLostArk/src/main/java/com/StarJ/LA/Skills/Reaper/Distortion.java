@@ -30,7 +30,7 @@ public class Distortion extends Skills {
 	}
 
 	private double getDamage(Player player) {
-		return 10.0d * (1 + ConfigStore.getWeaponLevel(player) * 0.1);
+		return 10.0d * getWeaponPercent(player);
 	}
 
 	@Override

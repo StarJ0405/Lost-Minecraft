@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -304,7 +305,7 @@ public class ConfigStore {
 	}
 	//
 
-	public static double getSkillCooldown(Player player, Skills skill) {
+	public static double getSkillCooldown(Player player, Jobs job, Skills skill) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -314,10 +315,13 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (skill != null && fc.isConfigurationSection("skills")) {
-				ConfigurationSection cs = fc.getConfigurationSection("skills");
-				if (cs.isLong(skill.getKey()))
-					return (cs.getLong(skill.getKey()) - System.currentTimeMillis()) / 1000.0d;
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (skill != null && cs.isConfigurationSection("skill_cools")) {
+					ConfigurationSection ccs = cs.getConfigurationSection("skill_cools");
+					if (ccs.isLong(skill.getKey()))
+						return (ccs.getLong(skill.getKey()) - System.currentTimeMillis()) / 1000.0d;
+				}
 			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -325,7 +329,7 @@ public class ConfigStore {
 		return 0;
 	}
 
-	public static void setSkillCooldown(Player player, Skills skill, int cool) {
+	public static void setSkillCooldown(Player player, Jobs job, Skills skill, int cool) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -335,12 +339,62 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (skill != null) {
-				ConfigurationSection cs = fc.isConfigurationSection("skills") ? fc.getConfigurationSection("skills")
-						: fc.createSection("skills");
-				cs.set(skill.getKey(), System.currentTimeMillis() + cool);
-				fc.set("skills", cs);
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				if (skill != null) {
+					ConfigurationSection ccs = cs.isConfigurationSection("skill_cools")
+							? cs.getConfigurationSection("skill_cools")
+							: cs.createSection("skill_cools");
+					ccs.set(skill.getKey(), System.currentTimeMillis() + cool);
+					cs.set("skill_cools", ccs);
+				}
 			}
+			fc.save(file);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static ItemStack[] getConsumeItems(Player player) {
+		final ItemStack[] list = new ItemStack[4];
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (fc.isConfigurationSection("consumes")) {
+				ConfigurationSection cs = fc.getConfigurationSection("consumes");
+				for (int slot = 0; slot <= 3; slot++)
+					if (cs.isItemStack(slot + ""))
+						list[slot] = cs.getItemStack(slot + "");
+			}
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public static void setConsumeItems(Player player, ItemStack[] list) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			ConfigurationSection cs = fc.isConfigurationSection("consumes") ? fc.getConfigurationSection("consumes")
+					: fc.createSection("consumes");
+			for (int slot = 0; slot <= 3; slot++)
+				if (slot < list.length)
+					cs.set(slot + "", list[slot]);
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -362,16 +416,17 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (job != null) {
-				if (fc.isList(job.getKey()))
-					for (String key : fc.getStringList(job.getKey())) {
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isList("보석"))
+					for (String key : cs.getStringList("보석")) {
 						JewerlyItems jewerly = JewerlyItems.valueOf(key);
 						if (jewerly != null)
 							list.add(jewerly);
 					}
 			}
 			for (int c = list.size(); c < 24; c++)
-				list.add(Items.zero);
+				list.add(Items.jewerly_zero);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
@@ -393,11 +448,14 @@ public class ConfigStore {
 			}
 			fc.load(file);
 			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
 				final List<String> list = new ArrayList<String>();
 				for (JewerlyItems jewerly : jewerlys) {
-					list.add(jewerly != null ? jewerly.getKey() : Items.zero.getKey());
+					list.add(jewerly != null ? jewerly.getKey() : Items.jewerly_zero.getKey());
 				}
-				fc.set(job.getKey(), list);
+				cs.set("보석", list);
 			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
@@ -405,7 +463,7 @@ public class ConfigStore {
 		}
 	}
 
-	public static int getWeaponLevel(Player player) {
+	public static int getWeaponLevel(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -415,15 +473,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (fc.isInt("WeaponLevel"))
-				return fc.getInt("WeaponLevel");
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isInt("WeaponLevel"))
+					return cs.getInt("WeaponLevel");
+			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
+		setWeaponLevel(player, job, 0);
 		return 0;
 	}
 
-	public static void setWeaponLevel(Player player, int level) {
+	public static void setWeaponLevel(Player player, Jobs job, int level) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -433,14 +495,17 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			fc.set("WeaponLevel", level);
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				cs.set("WeaponLevel", level);
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static double getArmorHealth(Player player) {
+	public static double getArmorHealth(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -451,22 +516,25 @@ public class ConfigStore {
 			}
 			fc.load(file);
 			double amount = 1;
-			if (fc.isInt("HelmetLevel"))
-				amount += fc.getInt("HelmetLevel") * Items.helmet.getPercent();
-			if (fc.isInt("ChestplateLevel"))
-				amount += fc.getInt("ChestplateLevel") * Items.chestplate.getPercent();
-			if (fc.isInt("LeggingsLevel"))
-				amount += fc.getInt("LeggingsLevel") * Items.leggings.getPercent();
-			if (fc.isInt("BootsLevel"))
-				amount += fc.getInt("BootsLevel") * Items.boots.getPercent();
-			return amount;
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isInt("HelmetLevel"))
+					amount += cs.getInt("HelmetLevel") * Items.helmet.getPercent();
+				if (cs.isInt("ChestplateLevel"))
+					amount += cs.getInt("ChestplateLevel") * Items.chestplate.getPercent();
+				if (cs.isInt("LeggingsLevel"))
+					amount += cs.getInt("LeggingsLevel") * Items.leggings.getPercent();
+				if (cs.isInt("BootsLevel"))
+					amount += cs.getInt("BootsLevel") * Items.boots.getPercent();
+				return amount;
+			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 		return 1;
 	}
 
-	public static int getHelmetLevel(Player player) {
+	public static int getHelmetLevel(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -476,15 +544,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (fc.isInt("HelmetLevel"))
-				return fc.getInt("HelmetLevel");
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isInt("HelmetLevel"))
+					return cs.getInt("HelmetLevel");
+			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
+		setHelmetLevel(player, job, 0);
 		return 0;
 	}
 
-	public static void setHelmetLevel(Player player, int level) {
+	public static void setHelmetLevel(Player player, Jobs job, int level) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -494,14 +566,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			fc.set("HelmetLevel", level);
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				cs.set("HelmetLevel", level);
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static int getChestplateLevel(Player player) {
+	public static int getChestplateLevel(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -511,15 +588,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (fc.isInt("ChestplateLevel"))
-				return fc.getInt("ChestplateLevel");
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isInt("ChestplateLevel"))
+					return cs.getInt("ChestplateLevel");
+			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
+		setChestplateLevel(player, job, 0);
 		return 0;
 	}
 
-	public static void setChestplateLevel(Player player, int level) {
+	public static void setChestplateLevel(Player player, Jobs job, int level) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -529,14 +610,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			fc.set("ChestplateLevel", level);
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				cs.set("ChestplateLevel", level);
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static int getLeggingsLevel(Player player) {
+	public static int getLeggingsLevel(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -546,15 +632,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (fc.isInt("LeggingsLevel"))
-				return fc.getInt("LeggingsLevel");
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isInt("LeggingsLevel"))
+					return cs.getInt("LeggingsLevel");
+			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
+		setLeggingsLevel(player, job, 0);
 		return 0;
 	}
 
-	public static void setLeggingsLevel(Player player, int level) {
+	public static void setLeggingsLevel(Player player, Jobs job, int level) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -564,14 +654,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			fc.set("LeggingsLevel", level);
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				cs.set("LeggingsLevel", level);
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static int getBootsLevel(Player player) {
+	public static int getBootsLevel(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -581,15 +676,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (fc.isInt("BootsLevel"))
-				return fc.getInt("BootsLevel");
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isInt("BootsLevel"))
+					return cs.getInt("BootsLevel");
+			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
+		setBootsLevel(player, job, 0);
 		return 0;
 	}
 
-	public static void setBootsLevel(Player player, int level) {
+	public static void setBootsLevel(Player player, Jobs job, int level) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -599,7 +698,12 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			fc.set("BootsLevel", level);
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				cs.set("BootsLevel", level);
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -642,6 +746,54 @@ public class ConfigStore {
 				player.sendMessage(ChatColor.RED + "PVP 모드를 활성화 합니다.");
 			} else
 				player.sendMessage(ChatColor.GREEN + "PVP 모드를 해제합니다.");
+			fc.save(file);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static LinkedHashSet<Integer> getSkillSlots(Player player, Jobs job) {
+		final LinkedHashSet<Integer> list = new LinkedHashSet<Integer>();
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				for (int num = 1; num <= 8; num++)
+					if (cs.isInt("skill_slot" + num)) {
+						list.add(cs.getInt("skill_slot" + num));
+					} else
+						list.add(-1);
+			}
+
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public static void setSkillSlot(Player player, Jobs job, int num, int slot) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				cs.set("skill_slot" + num, slot);
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -703,7 +855,7 @@ public class ConfigStore {
 		return false; // 생활
 	}
 
-	public static void confirmIdentity(Player player) {
+	public static void loadIdentity(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -713,15 +865,18 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (fc.isDouble("identity"))
-				HashMapStore.setIdentity(player, fc.getDouble("identity"));
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isDouble("identity"))
+					HashMapStore.setIdentity(player, cs.getDouble("identity"));
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void setIdentity(Player player) {
+	public static void saveIdentity(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -731,14 +886,19 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			fc.set("identity", HashMapStore.getIdentity(player));
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				cs.set("identity", HashMapStore.getIdentity(player));
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void confirmHealth(Player player) {
+	public static void loadJobHealth(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -748,15 +908,18 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			if (fc.isDouble("health"))
-				HashMapStore.setHealth(player, fc.getDouble("health"));
+			if (job != null && fc.isConfigurationSection(job.getKey())) {
+				ConfigurationSection cs = fc.getConfigurationSection(job.getKey());
+				if (cs.isDouble("health"))
+					HashMapStore.setHealth(player, cs.getDouble("health"));
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void setHealth(Player player) {
+	public static void saveJobHealth(Player player, Jobs job) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
 			File loc = new File("plugins/COIN/Players");
@@ -766,7 +929,12 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
-			fc.set("health", HashMapStore.getHealth(player));
+			if (job != null) {
+				ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+						? fc.getConfigurationSection(job.getKey())
+						: fc.createSection(job.getKey());
+				cs.set("health", HashMapStore.getHealth(player));
+			}
 			fc.save(file);
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -807,6 +975,41 @@ public class ConfigStore {
 		}
 	}
 
+	public static double getHealth(Player player) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (fc.isDouble("health"))
+				return fc.getDouble("health");
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return 20.0d;
+	}
+
+	public static void setHealth(Player player) {
+		try {
+			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
+			File loc = new File("plugins/COIN/Players");
+			FileConfiguration fc = new YamlConfiguration();
+			if (!file.exists()) {
+				loc.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			fc.set("health", player.getHealth());
+			fc.save(file);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void changePlayerStatus(Player player) {
 		try {
 			File file = new File("plugins/COIN/Players/" + player.getUniqueId().toString() + ".yml");
@@ -838,13 +1041,18 @@ public class ConfigStore {
 						if (c < items.size())
 							inv.setItem(c, items.get(c));
 					}
-					ItemStack empty = getEmpty();
 					for (int c = 9; c < 36; c++)
-						inv.setItem(c, empty);
+						inv.setItem(c, getEmpty());
 					inv.setHelmet(air);
 					inv.setChestplate(air);
 					inv.setLeggings(air);
 					inv.setBoots(air);
+					if (fc.isConfigurationSection("consumes")) {
+						ConfigurationSection cs = fc.getConfigurationSection("consumes");
+						for (int slot = 0; slot <= 3; slot++)
+							if (cs.isItemStack(slot + ""))
+								inv.setItem(13 + slot, cs.getItemStack(slot + ""));
+					}
 					fc.set("change_save", saves);
 					//
 					player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(100D);
@@ -855,7 +1063,11 @@ public class ConfigStore {
 
 					inv.setHeldItemSlot(8);
 					double max = job != null ? job.getMaxHealth(player) : 20;
-					double health = fc.isDouble("health") ? fc.getDouble("health") : max;
+					double health = fc.isConfigurationSection(job.getKey())
+							? (fc.getConfigurationSection(job.getKey()).isDouble("health")
+									? fc.getConfigurationSection(job.getKey()).getDouble("health")
+									: max)
+							: max;
 
 					double per = health / max * 100;
 					if (per <= 1 && per > 0) {
@@ -872,6 +1084,7 @@ public class ConfigStore {
 						} else
 							per = 0;
 					HashMapStore.setHealth(player, health);
+					fc.set("health", player.getHealth());
 					player.setHealthScale(100);
 					player.setHealth(per);
 					fc.set("food", player.getFoodLevel());
@@ -881,27 +1094,25 @@ public class ConfigStore {
 					ActionBarRunnable.run(player);
 				} else {
 					if (fc.isList("change_save")) {
-//						ConfigurationSection cs = fc.getConfigurationSection("hotbar");
-//						for (int c = 0; c < 9; c++)
-//							inv.setItem(c, cs.isItemStack(c + "") ? cs.getItemStack(c + "") : air);
-//						//
-//						inv.setItemInOffHand(cs.isItemStack("offhand") ? cs.getItemStack("offhand") : air);
-//						//
-//						inv.setHelmet(cs.isItemStack("helmet") ? cs.getItemStack("helmet") : air);
-//						inv.setChestplate(cs.isItemStack("chestplate") ? cs.getItemStack("chestplate") : air);
-//						inv.setLeggings(cs.isItemStack("leggings") ? cs.getItemStack("leggings") : air);
-//						inv.setBoots(cs.isItemStack("boots") ? cs.getItemStack("boots") : air);
 						@SuppressWarnings("unchecked")
 						List<ItemStack> saves = (List<ItemStack>) fc.getList("change_save");
 						inv.setContents(saves.toArray(ItemStack[]::new));
 						fc.set("change_save", null);
 					}
-					fc.set("health", HashMapStore.getHealth(player));
+					if (job != null) {
+						ConfigurationSection cs = fc.isConfigurationSection(job.getKey())
+								? fc.getConfigurationSection(job.getKey())
+								: fc.createSection(job.getKey());
+						cs.set("health", HashMapStore.getHealth(player));
+					}
 					player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20D);
 					player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(4.0D);
 					player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((double) 0.1f);
 					player.setHealthScale(20D);
-					player.setHealth(20D);
+					if (fc.isDouble("health")) {
+						player.setHealth(fc.getDouble("health"));
+					} else
+						player.setHealth(20.0D);
 					if (fc.isInt("food"))
 						player.setFoodLevel(fc.getInt("food"));
 					Effects.sendActionBar(player, "");
@@ -917,7 +1128,7 @@ public class ConfigStore {
 		}
 	}
 
-	private static ItemStack getEmpty() {
+	public static ItemStack getEmpty() {
 		ItemStack i = new ItemStack(Material.BROWN_STAINED_GLASS_PANE);
 		ItemMeta meta = i.getItemMeta();
 		meta.setDisplayName(ChatColor.GRAY + "");

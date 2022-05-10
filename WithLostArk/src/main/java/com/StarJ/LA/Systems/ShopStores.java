@@ -17,6 +17,7 @@ import com.StarJ.LA.Core;
 public enum ShopStores {
 	Trash(ChatColor.GRAY + "잡템 상인", GUIStores.trash), Seller(ChatColor.GREEN + "잡화 상인", GUIStores.seller),
 	Warp(ChatColor.AQUA + "워프", GUIStores.warp), Coin(ChatColor.GOLD + "코인", GUIStores.coin),
+	FixError(ChatColor.GREEN + "요리&물약 교환", GUIStores.fix_error)
 	//
 	;
 

@@ -2,6 +2,7 @@ package com.StarJ.LA.Systems;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -27,10 +28,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.StarJ.LA.Core;
 import com.StarJ.LA.Items.Buyable;
+import com.StarJ.LA.Items.CookingItem;
+import com.StarJ.LA.Items.FishItem;
 import com.StarJ.LA.Items.InventoryItem;
 import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.JewerlyItems;
+import com.StarJ.LA.Items.PotionItems;
+import com.StarJ.LA.Items.Cooking.CookingIngredient;
+import com.StarJ.LA.Items.Cooking.CookingIngredient.IngredientType;
 import com.StarJ.LA.Skills.Skills;
+import com.StarJ.LA.Systems.Comparables.ItemComparator;
 
 public enum GUIStores {
 	Exit(ChatColor.GREEN + "탈출의노래", 6 * 9) {
@@ -442,7 +449,7 @@ public enum GUIStores {
 						if (!player.getGameMode().equals(GameMode.CREATIVE))
 							ConfigStore.setPlayerMoney(player, has.subtract(buy.getMoney(player)));
 						if (buy instanceof InventoryItem) {
-							((InventoryItem) buy).RightClick(player, new ItemStack(Material.AIR), null, null);
+							((InventoryItem) buy).Use(player, new ItemStack(Material.AIR), null, null);
 							openGUI(player, 0);
 						} else
 							player.getInventory().addItem(i.getItemStack(buy.getCount()));
@@ -625,24 +632,45 @@ public enum GUIStores {
 			ItemStack none = getEmpty();
 			for (int c = 0; c < inv.getSize(); c++)
 				inv.setItem(c, none);
-			//
-			inv.setItem(10, Items.helmet.getItemStack(ConfigStore.getHelmetLevel(player)));
-			inv.setItem(19, Items.chestplate.getItemStack(ConfigStore.getChestplateLevel(player)));
-			inv.setItem(28, Items.leggings.getItemStack(ConfigStore.getLeggingsLevel(player)));
-			inv.setItem(37, Items.boots.getItemStack(ConfigStore.getBootsLevel(player)));
-			//
 			Jobs job = ConfigStore.getJob(player);
+			ItemStack[] items = ConfigStore.getConsumeItems(player);
+			if (items.length >= 1 && items[0] != null) {
+				inv.setItem(21, items[0]);
+			} else
+				inv.setItem(21, getGREENEmpty("소모템 칸", "소모템을 올려주세요"));
+
+			if (items.length >= 2 && items[1] != null) {
+				inv.setItem(22, items[1]);
+			} else
+				inv.setItem(22, getGREENEmpty("소모템 칸", "소모템을 올려주세요"));
+
+			if (items.length >= 3 && items[2] != null) {
+				inv.setItem(23, items[2]);
+			} else
+				inv.setItem(23, getGREENEmpty("소모템 칸", "소모템을 올려주세요"));
+
+			if (items.length >= 4 && items[3] != null) {
+				inv.setItem(24, items[3]);
+			} else
+				inv.setItem(24, getGREENEmpty("소모템 칸", "소모템을 올려주세요"));
+			//
+			inv.setItem(10, Items.helmet.getItemStack(ConfigStore.getHelmetLevel(player, job)));
+			inv.setItem(19, Items.chestplate.getItemStack(ConfigStore.getChestplateLevel(player, job)));
+			inv.setItem(28, Items.leggings.getItemStack(ConfigStore.getLeggingsLevel(player, job)));
+			inv.setItem(37, Items.boots.getItemStack(ConfigStore.getBootsLevel(player, job)));
+			//
 			inv.setItem(12, getJobInfo(player, job));
 			if (job != null) {
-				List<Skills> skills = job.getSkills();
-				inv.setItem(30, skills.get(0).getItemStack());
-				inv.setItem(31, skills.get(1).getItemStack());
-				inv.setItem(32, skills.get(2).getItemStack());
-				inv.setItem(33, skills.get(3).getItemStack());
-				inv.setItem(39, skills.get(4).getItemStack());
-				inv.setItem(40, skills.get(5).getItemStack());
-				inv.setItem(41, skills.get(6).getItemStack());
-				inv.setItem(42, skills.get(7).getItemStack());
+				Skills[] skills = job.getSkills(player);
+				int change_slot = HashMapStore.getSkillChangeSlot(player);
+				inv.setItem(30, change_slot == 1 ? getChangeItemStack() : skills[0].getInfoItemStack());
+				inv.setItem(31, change_slot == 2 ? getChangeItemStack() : skills[1].getInfoItemStack());
+				inv.setItem(32, change_slot == 3 ? getChangeItemStack() : skills[2].getInfoItemStack());
+				inv.setItem(33, change_slot == 4 ? getChangeItemStack() : skills[3].getInfoItemStack());
+				inv.setItem(39, change_slot == 5 ? getChangeItemStack() : skills[4].getInfoItemStack());
+				inv.setItem(40, change_slot == 6 ? getChangeItemStack() : skills[5].getInfoItemStack());
+				inv.setItem(41, change_slot == 7 ? getChangeItemStack() : skills[6].getInfoItemStack());
+				inv.setItem(42, change_slot == 8 ? getChangeItemStack() : skills[7].getInfoItemStack());
 
 				inv.setItem(35, job.getSpecialArts().getItemStack());
 				inv.setItem(44, job.getIdentity().getItemStack());
@@ -655,21 +683,107 @@ public enum GUIStores {
 			player.openInventory(inv);
 		}
 
+		private ItemStack getChangeItemStack() {
+			ItemStack item = new ItemStack(Material.BEDROCK);
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(ChatColor.RED + "슬롯 변경중");
+			List<String> lore = new ArrayList<String>();
+			lore.add(ChatColor.WHITE + "클릭시 변경 취소");
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+			return item;
+		}
+
 		@Override
 		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
-			if (slot == 10 || slot == 19 || slot == 28 || slot == 37) {
+			if (raw_slot == 10 || raw_slot == 19 || raw_slot == 28 || raw_slot == 37) {
 				jewerly.openGUI(player, 0);
-			} else if (slot == 12) {
+			} else if (raw_slot == 12) {
 				job.openGUI(player, 0);
-			} else if (slot == 17)
+			} else if (raw_slot == 17) {
 				basics.openGUI(player, 0);
-			;
+			} else if (raw_slot >= 21 && raw_slot <= 24) {
+				ItemStack cursor = player.getItemOnCursor();
+				int now = raw_slot - 21;
+				ItemStack[] items = ConfigStore.getConsumeItems(player);
+				if (cursor != null && !cursor.getType().equals(Material.AIR)) {
+					Items i = Items.valueOf(cursor);
+					if (i != null && (i instanceof CookingItem || i instanceof PotionItems)) {
+						ItemStack pre = items[now];
+						items[now] = cursor;
+						ConfigStore.setConsumeItems(player, items);
+						Items pre_i = Items.valueOf(pre);
+						player.setItemOnCursor(pre_i != null ? pre : new ItemStack(Material.AIR));
+						openGUI(player, 0);
+					}
+				} else if (clicked != null) {
+					Items i = Items.valueOf(clicked);
+					if (i != null) {
+						ItemStack pre = items[now];
+						items[now] = null;
+						ConfigStore.setConsumeItems(player, items);
+						Items pre_i = Items.valueOf(pre);
+						player.setItemOnCursor(pre_i != null ? pre : new ItemStack(Material.AIR));
+						openGUI(player, 0);
+					}
+				}
+			} else if (raw_slot == 30 || raw_slot == 31 || raw_slot == 32 || raw_slot == 33 || raw_slot == 39
+					|| raw_slot == 40 || raw_slot == 41 || raw_slot == 42) {
+				Jobs job = ConfigStore.getJob(player);
+				if (type.equals(ClickType.RIGHT)) {
+					for (int num = 1; num <= 8; num++)
+						ConfigStore.setSkillSlot(player, job, num, num);
+					HashMapStore.setSkillChangeSlot(player, -1);
+				} else {
+					if (job != null) {
+						int skill_slot = (raw_slot % 9 - 2 + (raw_slot / 9 - 3) * 4);
+						int pre_slot = HashMapStore.getSkillChangeSlot(player);
+						if (pre_slot == -1) {
+							player.closeInventory();
+							HashMapStore.setSkillChangeSlot(player, skill_slot);
+						} else if (pre_slot == skill_slot) {
+							HashMapStore.setSkillChangeSlot(player, -1);
+						} else {
+							HashSet<Integer> slots = ConfigStore.getSkillSlots(player, job);
+							if (slots.size() < 8 || slots.contains(-1)) {
+								for (int num = 1; num <= 8; num++)
+									ConfigStore.setSkillSlot(player, job, num, num);
+								slots = ConfigStore.getSkillSlots(player, job);
+							}
+							Integer[] slot_array = slots.toArray(Integer[]::new);
+							ConfigStore.setSkillSlot(player, job, pre_slot, slot_array[skill_slot - 1]);
+							ConfigStore.setSkillSlot(player, job, skill_slot, slot_array[pre_slot - 1]);
+
+							HashMapStore.setSkillChangeSlot(player, -1);
+						}
+					}
+					openGUI(player, 0);
+				}
+			} else {
+				ItemStack cursor = player.getItemOnCursor();
+				if (cursor == null || cursor.getType().equals(Material.AIR)) {
+					if (clicked != null && !clicked.getType().equals(Material.AIR)) {
+						Items i = Items.valueOf(clicked);
+						if (i != null && (i instanceof CookingItem || i instanceof PotionItems))
+							return false;
+					}
+				} else {
+					if (clicked != null && !clicked.getType().equals(Material.AIR)) {
+						Items i = Items.valueOf(clicked);
+						if (i != null && (i instanceof CookingItem || i instanceof PotionItems))
+							return false;
+					} else
+						return false;
+
+				}
+			}
 
 			return true;
 		}
 
 		@Override
 		public boolean Close(Player player, Inventory inv) {
+			HashMapStore.setSkillChangeSlot(player, -1);
 			return false;
 		}
 
@@ -822,8 +936,8 @@ public enum GUIStores {
 			if (clicked != null && !type.equals(ClickType.DOUBLE_CLICK))
 				// HELMET
 				if (raw_slot == 10) {
-					list.set(0, cursor != null ? cursor : Items.zero);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					list.set(0, cursor != null ? cursor : Items.jewerly_zero);
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -831,7 +945,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 1) {
 					list.set(1, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -839,7 +953,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 2) {
 					list.set(2, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -847,7 +961,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 3) {
 					list.set(3, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -855,7 +969,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 12) {
 					list.set(4, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -864,7 +978,7 @@ public enum GUIStores {
 					// CHESTPLATE
 				} else if (raw_slot == 28) {
 					list.set(5, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -872,7 +986,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 30) {
 					list.set(6, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -880,7 +994,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 37) {
 					list.set(7, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -888,7 +1002,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 38) {
 					list.set(8, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -896,7 +1010,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 39) {
 					list.set(9, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -904,7 +1018,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 46) {
 					list.set(10, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -912,7 +1026,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 47) {
 					list.set(11, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -920,7 +1034,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 48) {
 					list.set(12, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -929,7 +1043,7 @@ public enum GUIStores {
 					// LEGGINGS
 				} else if (raw_slot == 23) {
 					list.set(13, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -937,7 +1051,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 14) {
 					list.set(14, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -945,7 +1059,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 5) {
 					list.set(15, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -953,7 +1067,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 6) {
 					list.set(16, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -961,7 +1075,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 7) {
 					list.set(17, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -969,7 +1083,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 16) {
 					list.set(18, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -977,7 +1091,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 25) {
 					list.set(19, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -986,7 +1100,7 @@ public enum GUIStores {
 					// BOOTS
 				} else if (raw_slot == 41) {
 					list.set(20, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -994,7 +1108,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 50) {
 					list.set(21, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -1002,7 +1116,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 43) {
 					list.set(22, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -1010,7 +1124,7 @@ public enum GUIStores {
 					openGUI(player, 0);
 				} else if (raw_slot == 52) {
 					list.set(23, cursor);
-					if (!click.getKey().equals(Items.zero.getKey())) {
+					if (!click.getKey().equals(Items.jewerly_zero.getKey())) {
 						player.setItemOnCursor(clicked);
 					} else
 						player.setItemOnCursor(new ItemStack(Material.AIR));
@@ -1091,19 +1205,49 @@ public enum GUIStores {
 		@Override
 		public void openGUI(Player player, int page) {
 			Inventory inv = Bukkit.createInventory(null, 1 * 9, ChatColor.GOLD + "요리");
-
+			int level = Basics.Cooking.getLevel(player);
+			for (int c = (level / 10) + 4; c < 9; c++)
+				inv.setItem(c, getBROWNEmpty());
 			player.openInventory(inv);
 		}
 
 		@Override
 		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
-			return false;
+			return new ItemComparator().compare(clicked, getBROWNEmpty()) >= 3;
 		}
 
 		@Override
 		public boolean Close(Player player, Inventory inv) {
+			int amount = 0;
+			HashSet<String> list = new HashSet<String>();
+			HashSet<IngredientType> type = new HashSet<IngredientType>();
+			for (ItemStack item : inv.getContents())
+				if (new ItemComparator().compare(item, getBROWNEmpty()) < 3)
+					if (item != null) {
+						Items i = Items.valueOf(item);
+						if (i != null && i instanceof CookingIngredient) {
+							CookingIngredient co_i = (CookingIngredient) i;
+							amount += co_i.getHelath() * item.getAmount();
+							list.add(co_i.getKey());
+							type.add(co_i.getIngredienttype());
+						} else {
+							if (player.getInventory().firstEmpty() != -1) {
+								player.getInventory().addItem(item);
+							} else
+								player.getWorld().dropItem(player.getEyeLocation(), item);
+						}
+					}
+			amount *= (1 + list.size() * 0.1) * (1 + type.size() * 0.5);
+			if (amount > 0) {
+				ItemStack item = Items.cooking.getItemStack(amount, Basics.Cooking.getLevel(player));
+				if (player.getInventory().firstEmpty() != -1) {
+					player.getInventory().addItem(item);
+				} else
+					player.getWorld().dropItem(player.getEyeLocation(), item);
+				if (!player.getGameMode().equals(GameMode.CREATIVE))
+					Basics.Cooking.addEXP(player, CookingItem.getHealth(item) / 100);
+			}
 			return false;
-
 		}
 
 		@Override
@@ -1117,20 +1261,30 @@ public enum GUIStores {
 		@Override
 		public void openGUI(Player player, int page) {
 			Inventory inv = Bukkit.createInventory(null, 1 * 9, ChatColor.GOLD + "양조");
-
+			int level = Basics.Potioning.getLevel(player);
+			for (int c = (level / 10) + 4; c < 9; c++)
+				inv.setItem(c, getBROWNEmpty());
 			player.openInventory(inv);
 		}
 
 		@Override
 		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
-			return false;
-
+			return new ItemComparator().compare(clicked, getBROWNEmpty()) >= 3;
 		}
 
 		@Override
 		public boolean Close(Player player, Inventory inv) {
+			for (ItemStack item : inv.getContents())
+				if (new ItemComparator().compare(item, getBROWNEmpty()) < 3)
+					if (item != null) {
+						Items i = Items.valueOf(item);
+						if (i == null)
+							if (player.getInventory().firstEmpty() != -1) {
+								player.getInventory().addItem(item);
+							} else
+								player.getWorld().dropItem(player.getEyeLocation(), item);
+					}
 			return false;
-
 		}
 
 		@Override
@@ -1141,7 +1295,6 @@ public enum GUIStores {
 
 	},
 	enchant(ChatColor.DARK_PURPLE + "인챈트", 6 * 9) {
-
 		@Override
 		public void openGUI(Player player, int page) {
 			String key = player.getUniqueId().toString();
@@ -1781,6 +1934,51 @@ public enum GUIStores {
 			return true;
 		}
 
+	},
+	fix_error(ChatColor.GREEN + "오류 교환", 1 * 9) {
+
+		@Override
+		public void openGUI(Player player, int page) {
+			Inventory inv = Bukkit.createInventory(null, 1 * 9, ChatColor.GREEN + "오류 교환");
+			player.openInventory(inv);
+		}
+
+		@Override
+		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
+			return false;
+		}
+
+		@Override
+		public boolean Close(Player player, Inventory inv) {
+			for (ItemStack item : inv.getContents())
+				if (item != null) {
+					Items i = Items.valueOf(item);
+					if (i == null)
+						for (CookingIngredient ing : CookingIngredient.getList())
+							if (ing.getItemStack().getType().equals(item.getType())) {
+								int amount = item.getAmount();
+								if (ing instanceof FishItem) {
+									item = ((FishItem) ing).getItemStack();
+									item.setAmount(amount);
+									break;
+								} else {
+									item = ing.getItemStack(amount);
+									break;
+								}
+							}
+					if (player.getInventory().firstEmpty() != -1) {
+						player.getInventory().addItem(item);
+					} else
+						player.getWorld().dropItem(player.getEyeLocation(), item);
+				}
+			return false;
+		}
+
+		@Override
+		public boolean Drag(Player player, Set<Integer> slots, Set<Integer> raw_slots) {
+			return false;
+		}
+
 	}
 
 	//
@@ -1827,30 +2025,72 @@ public enum GUIStores {
 	}
 
 	private static ItemStack getBROWNEmpty() {
+		return getBROWNEmpty("");
+	}
+
+	private static ItemStack getBROWNEmpty(String display, String... lores) {
 		ItemStack i = new ItemStack(Material.BROWN_STAINED_GLASS_PANE);
 		ItemMeta meta = i.getItemMeta();
-		meta.setDisplayName(ChatColor.GRAY + "");
+		meta.setDisplayName(ChatColor.GRAY + display);
 		meta.addItemFlags(ItemFlag.values());
+		List<String> lore = new ArrayList<String>();
+		for (String l : lores)
+			lore.add(ChatColor.WHITE + l);
+		meta.setLore(lore);
+		meta.setLocalizedName(new Random().nextDouble() + "");
+		i.setItemMeta(meta);
+		return i;
+	}
+
+	private static ItemStack getGREENEmpty() {
+		return getGREENEmpty("");
+	}
+
+	private static ItemStack getGREENEmpty(String display, String... lores) {
+		ItemStack i = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+		ItemMeta meta = i.getItemMeta();
+		meta.setDisplayName(ChatColor.GRAY + display);
+		meta.addItemFlags(ItemFlag.values());
+		List<String> lore = new ArrayList<String>();
+		for (String l : lores)
+			lore.add(ChatColor.WHITE + l);
+		meta.setLore(lore);
 		meta.setLocalizedName(new Random().nextDouble() + "");
 		i.setItemMeta(meta);
 		return i;
 	}
 
 	private static ItemStack getREDEmpty() {
+		return getREDEmpty("");
+	}
+
+	private static ItemStack getREDEmpty(String display, String... lores) {
 		ItemStack i = new ItemStack(Material.RED_STAINED_GLASS_PANE);
 		ItemMeta meta = i.getItemMeta();
-		meta.setDisplayName(ChatColor.GRAY + "");
+		meta.setDisplayName(ChatColor.GRAY + display);
 		meta.addItemFlags(ItemFlag.values());
+		List<String> lore = new ArrayList<String>();
+		for (String l : lores)
+			lore.add(ChatColor.WHITE + l);
+		meta.setLore(lore);
 		meta.setLocalizedName(new Random().nextDouble() + "");
 		i.setItemMeta(meta);
 		return i;
 	}
 
 	private static ItemStack getEmpty() {
+		return getEmpty("");
+	}
+
+	private static ItemStack getEmpty(String display, String... lores) {
 		ItemStack i = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
 		ItemMeta meta = i.getItemMeta();
-		meta.setDisplayName(ChatColor.GRAY + "");
+		meta.setDisplayName(ChatColor.GRAY + display);
 		meta.addItemFlags(ItemFlag.values());
+		List<String> lore = new ArrayList<String>();
+		for (String l : lores)
+			lore.add(ChatColor.WHITE + l);
+		meta.setLore(lore);
 		meta.setLocalizedName(new Random().nextDouble() + "");
 		i.setItemMeta(meta);
 		return i;

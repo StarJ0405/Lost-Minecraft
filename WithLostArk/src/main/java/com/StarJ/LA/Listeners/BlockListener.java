@@ -106,7 +106,7 @@ public class BlockListener implements Listener {
 											ItemStack clone = i.clone();
 											clone.setAmount(amount);
 											clone.setDurability((short) 0);
-											b.getWorld().dropItem(b.getLocation(), clone);
+											b.getWorld().dropItem(loc, clone);
 										}
 									}
 									Material b_type = b.getType();

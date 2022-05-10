@@ -24,13 +24,14 @@ import com.StarJ.LA.Commands.StatusCommand;
 import com.StarJ.LA.Commands.degopCommand;
 import com.StarJ.LA.Commands.fixexitCommand;
 import com.StarJ.LA.Commands.gopCommand;
+import com.StarJ.LA.Commands.sudoCommand;
 import com.StarJ.LA.Listeners.BlockListener;
+import com.StarJ.LA.Listeners.CraftListener;
 import com.StarJ.LA.Listeners.EntityDamageListener;
 import com.StarJ.LA.Listeners.EntityShootListener;
 import com.StarJ.LA.Listeners.EntitySpawnListener;
 import com.StarJ.LA.Listeners.ExplodeListener;
 import com.StarJ.LA.Listeners.FishListener;
-import com.StarJ.LA.Listeners.FurnaceListener;
 import com.StarJ.LA.Listeners.InventoryListener;
 import com.StarJ.LA.Listeners.PlayerDeathListener;
 import com.StarJ.LA.Listeners.PlayerInteractListener;
@@ -65,12 +66,12 @@ public class Core extends JavaPlugin {
 		this.pm.registerEvents(new EntitySpawnListener(), this);
 		this.pm.registerEvents(new ExplodeListener(), this);
 		this.pm.registerEvents(new FishListener(), this);
-		this.pm.registerEvents(new FurnaceListener(), this);
 		this.pm.registerEvents(new InventoryListener(), this);
 		this.pm.registerEvents(new PlayerDeathListener(), this);
 		this.pm.registerEvents(new PlayerInteractListener(), this);
 		this.pm.registerEvents(new PlayerLogListener(), this);
 		this.pm.registerEvents(new ProjectListener(), this);
+		this.pm.registerEvents(new CraftListener(), this);
 		//
 		getCommand("home").setExecutor(new HomeCommand());
 		getCommand("exit").setExecutor(new ExitCommand());
@@ -87,6 +88,7 @@ public class Core extends JavaPlugin {
 		getCommand("status").setExecutor(new StatusCommand());
 		getCommand("pvp").setExecutor(new PVPCommand());
 		getCommand("multiworld").setExecutor(new MultiWorldCommand());
+		getCommand("sudo").setExecutor(new sudoCommand());
 		for (World world : Bukkit.getWorlds()) {
 			world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
 			world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 15);
@@ -98,10 +100,10 @@ public class Core extends JavaPlugin {
 			ConfigStore.LoadPlayerAdvancement(player);
 			ScoreboarStore.join(player);
 			ScoreboarStore.confirmTeam(player);
-			ConfigStore.confirmHealth(player);
-			ConfigStore.confirmIdentity(player);
+			Jobs job = ConfigStore.getJob(player);
+			ConfigStore.loadJobHealth(player, job);
+			ConfigStore.loadIdentity(player, job);
 			if (ConfigStore.getPlayerStatus(player)) {
-				Jobs job = ConfigStore.getJob(player);
 				double max = job != null ? job.getMaxHealth(player) : 20;
 				double health = HashMapStore.getHealth(player);
 
@@ -143,8 +145,9 @@ public class Core extends JavaPlugin {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			ConfigStore.SavePlayerAllData(player);
 			ConfigStore.SavePlayerAdvancement(player);
-			ConfigStore.setHealth(player);
-			ConfigStore.setIdentity(player);
+			Jobs job = ConfigStore.getJob(player);
+			ConfigStore.saveJobHealth(player, job);
+			ConfigStore.saveIdentity(player, job);
 			String key = player.getUniqueId().toString();
 			ItemStack tool = HashMapStore.getEnchantItemStack(key);
 			if (tool != null)

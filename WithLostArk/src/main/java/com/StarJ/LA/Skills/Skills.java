@@ -73,6 +73,19 @@ public abstract class Skills {
 		return item;
 	}
 
+	public ItemStack getInfoItemStack() {
+		ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(color + getDisplayname());
+		List<String> lore = new ArrayList<String>();
+		lore.addAll(this.lore);
+		lore.add(ChatColor.WHITE + "클릭시 슬롯 변경");
+		lore.add(ChatColor.WHITE + "우클릭시 전체 스킬 슬롯 초기화");
+		meta.setLore(lore);
+		item.setItemMeta(meta);
+		return item;
+	}
+
 	public ItemStack getComboItemStack() {
 		ItemStack item = new ItemStack(Material.WRITABLE_BOOK);
 		ItemMeta meta = item.getItemMeta();
@@ -108,7 +121,7 @@ public abstract class Skills {
 	public boolean Use(Player player, int slot) {
 		if (HashMapStore.isSkillStop(player))
 			return true;// 종료
-		double cool = ConfigStore.getSkillCooldown(player, this);
+		double cool = ConfigStore.getSkillCooldown(player, ConfigStore.getJob(player), this);
 		if (cool > 0) {
 			player.sendMessage(this.getDisplayname() + ChatColor.AQUA + " : " + cool);
 			return true; // 종료
@@ -117,6 +130,10 @@ public abstract class Skills {
 		ActionBarRunnable.run(player);
 		return false; // 진행
 
+	}
+
+	public double getWeaponPercent(Player player) {
+		return (1 + ConfigStore.getWeaponLevel(player, ConfigStore.getJob(player)) * 0.1);
 	}
 
 	public boolean Hit(Player player, LivingEntity entity, int slot) {

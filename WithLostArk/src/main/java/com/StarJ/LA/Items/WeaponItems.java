@@ -62,6 +62,10 @@ public class WeaponItems extends Items {
 				"GENERIC_ATTACK_DAMAGE", count * getPercent(), Operation.ADD_SCALAR, EquipmentSlot.HAND));
 		meta.setUnbreakable(true);
 		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+		List<String> lore = new ArrayList<String>();
+		lore.add(ChatColor.GREEN + "강화 레벨 : " + count);
+		lore.addAll(this.lore);
+		meta.setLore(lore);
 		i.setItemMeta(meta);
 		return i;
 	}

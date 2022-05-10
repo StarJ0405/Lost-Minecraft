@@ -68,6 +68,11 @@ commands:
     usage : "§3/mw goto [world]\n§3/mw goto [world] <player>\n§3/mw load [world]\n§3/mw unload [world]\n§3/mw create [world]\n§3/mw delete [world]"
     aliases: [mw]
     permission: operator
+  sudo:
+    description: "sudo"
+    usage : "§3/sudo [player] command..."
+    aliases: [su]
+    permission: operator
 permission:
     gambler:
         description: 도박장 관리를 위한 권한

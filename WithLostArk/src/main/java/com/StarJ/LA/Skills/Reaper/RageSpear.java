@@ -28,13 +28,13 @@ public class RageSpear extends Skills {
 	}
 
 	public double getDrainDamage(Player player, boolean persona) {
-		return 2 * (1 + ConfigStore.getWeaponLevel(player) * 0.1)
-				* (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1);
+		return 02 * (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1)
+				* getWeaponPercent(player);
 	}
 
 	public double getAttackDamage(Player player, boolean persona) {
-		return 32 * (1 + ConfigStore.getWeaponLevel(player) * 0.1)
-				* (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1);
+		return 32 * (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1)
+				* getWeaponPercent(player);
 	}
 
 	@Override
