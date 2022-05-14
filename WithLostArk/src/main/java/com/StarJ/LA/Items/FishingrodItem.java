@@ -30,11 +30,12 @@ public class FishingrodItem extends Items implements Buyable {
 		ItemMeta meta = i.getItemMeta();
 		List<String> lore = new ArrayList<String>();
 		Size[] sizes = Size.values();
-		Size size = sizes[new Random().nextInt(sizes.length)];
-		if (size.equals(Size.None)) {
+		int num = new Random().nextInt(sizes.length+1);
+		if (num >= sizes.length) {
 			meta.setDisplayName(ChatColor.GREEN + "일반 낚시대");
 			lore.add(ChatColor.WHITE + "어떤 물고기든 잘 잡힌다.");
 		} else {
+			Size size = sizes[num];
 			meta.setDisplayName(ChatColor.GREEN + size.getName() + " 낚시대");
 			lore.add(ChatColor.WHITE + "잡히는 크기 : " + size.name());
 		}

@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.Jobs;
 
 public class Distortion extends Skills {
 
@@ -30,7 +31,8 @@ public class Distortion extends Skills {
 	}
 
 	private double getDamage(Player player) {
-		return 10.0d * getWeaponPercent(player);
+		Jobs job = ConfigStore.getJob(player);
+		return 10.0d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	@Override

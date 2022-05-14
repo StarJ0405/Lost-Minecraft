@@ -47,6 +47,8 @@ public class PlayerLogListener implements Listener {
 			ActionBarRunnable.run(player);
 			HashMapStore.setSkillStop(player.getUniqueId().toString(), false);
 		}
+		if (player.getPlayerTime() == -1)
+			player.teleport(player.getWorld().getSpawnLocation());
 	}
 
 	@EventHandler

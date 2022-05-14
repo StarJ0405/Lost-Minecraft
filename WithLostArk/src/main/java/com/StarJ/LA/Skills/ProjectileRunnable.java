@@ -6,11 +6,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.StarJ.LA.Core;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.ShopStores;
 
 public class ProjectileRunnable extends BukkitRunnable {
 	private final OfflinePlayer caster;
@@ -61,8 +64,13 @@ public class ProjectileRunnable extends BukkitRunnable {
 				if (!et.getUniqueId().equals(caster.getUniqueId()))
 					if (et instanceof LivingEntity
 							&& (!(et instanceof Player) || (ConfigStore.getPlayerStatus((Player) et)
-									&& ConfigStore.getPVP((Player) et) && ConfigStore.getPVP(caster.getPlayer())))
-							&& !et.hasMetadata("key")) {
+									&& ConfigStore.getPVP((Player) et) && ConfigStore.getPVP(caster.getPlayer())))) {
+						if(et.hasMetadata("key"))
+							for(MetadataValue v: et.getMetadata("key"))
+								if(v.getOwningPlugin().equals(Core.getCore())) 
+									if(!v.asString().equals(ShopStores.Training.name())) 
+										continue;
+								
 						if (this.skill.Hit(caster.getPlayer(), (LivingEntity) et, slot)) {
 							this.cancel();
 							return;

@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
+import org.bukkit.block.data.type.Beehive;
 import org.bukkit.block.data.type.Cocoa;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
@@ -74,7 +75,7 @@ public class PlayerInteractListener implements Listener {
 				item = player.getInventory().getItemInOffHand();
 			if (item != null) {
 				EnchantsType tool = EnchantsType.getEnchantType(item.getType());
-				if (tool != null) {
+				if (tool != null && !ConfigStore.getPlayerStatus(player)) {
 					if (tool.equals(EnchantsType.Hoe)) {
 						int level = Basics.Farming.getLevel(player);
 						int range = level / 10 * 5 + 5;
@@ -278,21 +279,61 @@ public class PlayerInteractListener implements Listener {
 		} else {
 			Block block = e.getClickedBlock();
 			if (block != null) {
-				if (block.getType().equals(Material.ENCHANTING_TABLE)
-						&& e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+				Material type = block.getType();
+				if (type.equals(Material.ENCHANTING_TABLE) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					GUIStores.enchant.openGUI(player, 0);
 					e.setCancelled(true);
 					return;
-				} else if ((block.getType().equals(Material.CAMPFIRE) || block.getType().equals(Material.SOUL_CAMPFIRE))
+				} else if ((type.equals(Material.CAMPFIRE) || type.equals(Material.SOUL_CAMPFIRE))
 						&& e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					GUIStores.cooking.openGUI(player, 0);
 					e.setCancelled(true);
 					return;
-				} else if (block.getType().equals(Material.BREWING_STAND)
-						&& e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+				} else if (type.equals(Material.BREWING_STAND) && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					GUIStores.potioning.openGUI(player, 0);
 					e.setCancelled(true);
 					return;
+				} else if (type.equals(Material.BEEHIVE) || type.equals(Material.BEE_NEST)) {
+					Beehive hive = (Beehive) block.getState().getBlockData();
+					if (hive.getHoneyLevel() == 5) {
+						ItemStack main = player.getInventory().getItemInMainHand();
+						Items main_i = Items.valueOf(main);
+						ItemStack off = player.getInventory().getItemInOffHand();
+						Items off_i = Items.valueOf(off);
+						if (main != null && main_i == null && main.getType().equals(Material.GLASS_BOTTLE)) {
+							if (main.getAmount() == 1) {
+								player.getInventory().setItemInMainHand(Items.honey_bottle.getItemStack());
+							} else {
+								main.setAmount(main.getAmount() - 1);
+								player.updateInventory();
+								if (player.getInventory().firstEmpty() != -1) {
+									player.getInventory().addItem(Items.honey_bottle.getItemStack());
+								} else
+									player.getWorld().dropItemNaturally(player.getEyeLocation(),
+											Items.honey_bottle.getItemStack());
+							}
+							hive.setHoneyLevel(0);
+							block.setBlockData(hive);
+							e.setCancelled(true);
+							return;
+						} else if (off != null && off_i == null && off.getType().equals(Material.GLASS_BOTTLE)) {
+							if (off.getAmount() == 1) {
+								player.getInventory().setItemInOffHand(Items.honey_bottle.getItemStack());
+							} else {
+								off.setAmount(off.getAmount() - 1);
+								player.updateInventory();
+								if (player.getInventory().firstEmpty() != -1) {
+									player.getInventory().addItem(Items.honey_bottle.getItemStack());
+								} else
+									player.getWorld().dropItemNaturally(player.getEyeLocation(),
+											Items.honey_bottle.getItemStack());
+							}
+							hive.setHoneyLevel(0);
+							block.setBlockData(hive);
+							e.setCancelled(true);
+							return;
+						}
+					}
 				}
 			}
 			Items now = Items.valueOf(player.getInventory().getItemInMainHand());
@@ -340,7 +381,7 @@ public class PlayerInteractListener implements Listener {
 						open.setContents(box.getInventory().getContents());
 						player.openInventory(open);
 						e.setCancelled(true);
-					} else if (tool != null) {
+					} else if (tool != null && !ConfigStore.getPlayerStatus(player)) {
 						if (tool.equals(EnchantsType.Hoe)) {
 							int level = Basics.Farming.getLevel(player);
 							int range = level / 10 + 1;
@@ -493,7 +534,7 @@ public class PlayerInteractListener implements Listener {
 																	if (!item
 																			.containsEnchantment(Enchantment.DURABILITY)
 																			|| r.nextDouble() < (1
-																					/ (1 + item.getEnchantmentLevel(
+																					/ (1.0 + item.getEnchantmentLevel(
 																							Enchantment.DURABILITY))))
 																		item.setDurability(
 																				(short) (item.getDurability() + 1));
@@ -525,7 +566,7 @@ public class PlayerInteractListener implements Listener {
 																	if (!item
 																			.containsEnchantment(Enchantment.DURABILITY)
 																			|| r.nextDouble() < (1
-																					/ (1 + item.getEnchantmentLevel(
+																					/ (1.0 + item.getEnchantmentLevel(
 																							Enchantment.DURABILITY))))
 																		item.setDurability(
 																				(short) (item.getDurability() + 1));
@@ -548,7 +589,7 @@ public class PlayerInteractListener implements Listener {
 															if (Basics.Farming.isActive(level))
 																if (!item.containsEnchantment(Enchantment.DURABILITY)
 																		|| r.nextDouble() < (1
-																				/ (1 + item.getEnchantmentLevel(
+																				/ (1.0 + item.getEnchantmentLevel(
 																						Enchantment.DURABILITY))))
 																	item.setDurability(
 																			(short) (item.getDurability() + 1));
@@ -565,7 +606,7 @@ public class PlayerInteractListener implements Listener {
 															if (Basics.Farming.isActive(level))
 																if (!item.containsEnchantment(Enchantment.DURABILITY)
 																		|| r.nextDouble() < (1
-																				/ (1 + item.getEnchantmentLevel(
+																				/ (1.0 + item.getEnchantmentLevel(
 																						Enchantment.DURABILITY))))
 																	item.setDurability(
 																			(short) (item.getDurability() + 1));
@@ -577,9 +618,10 @@ public class PlayerInteractListener implements Listener {
 													if (!player.getGameMode().equals(GameMode.CREATIVE)) {
 														exp += Basics.getFarmingExp(b_type);
 														if (Basics.Farming.isActive(level))
-															if (!item.containsEnchantment(Enchantment.DURABILITY) || r
-																	.nextDouble() < (1 / (1 + item.getEnchantmentLevel(
-																			Enchantment.DURABILITY))))
+															if (!item.containsEnchantment(Enchantment.DURABILITY)
+																	|| r.nextDouble() < (1
+																			/ (1.0 + item.getEnchantmentLevel(
+																					Enchantment.DURABILITY))))
 																item.setDurability((short) (item.getDurability() + 1));
 													}
 												}
@@ -722,14 +764,18 @@ public class PlayerInteractListener implements Listener {
 													+ "초");
 							} else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 								if (level >= 10)
-									if (player.getGameMode().equals(GameMode.CREATIVE)
+									if (player.getWorld().getName().equals("world")) {
+										player.sendMessage(ChatColor.RED + "현재 월드에서는 사용 불가능 스킬입니다.");
+									} else if (player.getGameMode().equals(GameMode.CREATIVE)
 											|| !ConfigStore.isBasicsCool(player, Basics.Chopping, 1)) {
 										for (int y = -range; y <= range; y++)
 											for (int x = -range; x <= range; x++)
 												for (int z = -range; z <= range; z++) {
 													Block b = loc.clone().add(x, y, z).getBlock();
 													if (Basics.isChopping(b.getType())) {
-														for (ItemStack i : Basics.getChopping(b.getType())) {
+														if (b.getType().name().contains("LEAVES")) {
+															ItemStack[] is = Basics.getChopping(b.getType());
+															ItemStack i = is[r.nextInt(is.length)];
 															int amount = i.getDurability() + r.nextInt(i.getAmount());
 															if (amount > 0) {
 																if (ConfigStore.isBasicsDuration(player,
@@ -745,9 +791,29 @@ public class PlayerInteractListener implements Listener {
 																ItemStack clone = i.clone();
 																clone.setAmount(amount);
 																clone.setDurability((short) 0);
-																b.getWorld().dropItem(b.getLocation(), clone);
+																b.getWorld().dropItem(loc, clone);
 															}
-														}
+														} else
+															for (ItemStack i : Basics.getChopping(b.getType())) {
+																int amount = i.getDurability()
+																		+ r.nextInt(i.getAmount());
+																if (amount > 0) {
+																	if (ConfigStore.isBasicsDuration(player,
+																			Basics.Chopping, 3))
+																		amount += 1;
+																	if (item.containsEnchantment(
+																			Enchantment.LOOT_BONUS_BLOCKS)) {
+																		int ench_level = item.getEnchantmentLevel(
+																				Enchantment.LOOT_BONUS_BLOCKS);
+																		if (r.nextDouble() < (1.0 / 5 * ench_level))
+																			amount += (int) (ench_level / 3 + 1);
+																	}
+																	ItemStack clone = i.clone();
+																	clone.setAmount(amount);
+																	clone.setDurability((short) 0);
+																	b.getWorld().dropItem(b.getLocation(), clone);
+																}
+															}
 														Material b_type = b.getType();
 														b.setType(Material.AIR);
 														Material confirm = b.getLocation().add(0, -1, 0).getBlock()
@@ -787,13 +853,14 @@ public class PlayerInteractListener implements Listener {
 												ConfigStore.setBasicsDuration(player, Basics.Digging, 2, (level * 2));
 												player.playSound(player, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 2f, 1f);
 												if (!player.getGameMode().equals(GameMode.CREATIVE))
-													ConfigStore.setBasicsCool(player, Basics.Digging, 2, 300 - level);
+													ConfigStore.setBasicsCool(player, Basics.Digging, 2,
+															300 - level * 2);
 											} else
-												player.sendMessage(ChatColor.RED + "과감한 발굴 쿨타임 : "
+												player.sendMessage(ChatColor.RED + "노련한 탐색 쿨타임 : "
 														+ ConfigStore.getBasicsCool(player, Basics.Digging, 2) / 1000
 														+ "초");
 										} else
-											player.sendMessage(ChatColor.GREEN + "과감한 발굴 지속시간 : "
+											player.sendMessage(ChatColor.GREEN + "노련한 탐색 지속시간 : "
 													+ ConfigStore.getBasicsDuration(player, Basics.Digging, 2) / 1000
 													+ "초");
 							} else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -806,11 +873,11 @@ public class PlayerInteractListener implements Listener {
 											if (!player.getGameMode().equals(GameMode.CREATIVE))
 												ConfigStore.setBasicsCool(player, Basics.Digging, 2, 300 - level);
 										} else
-											player.sendMessage(ChatColor.RED + "노련한 탐색 쿨타임 : "
+											player.sendMessage(ChatColor.RED + "과감한 발굴 쿨타임 : "
 													+ ConfigStore.getBasicsCool(player, Basics.Digging, 1) / 1000
 													+ "초");
 									} else
-										player.sendMessage(ChatColor.GREEN + "노련한 탐색 지속시간 : "
+										player.sendMessage(ChatColor.GREEN + "과감한 발굴 지속시간 : "
 												+ ConfigStore.getBasicsDuration(player, Basics.Digging, 1) / 1000
 												+ "초");
 							}
@@ -872,8 +939,8 @@ public class PlayerInteractListener implements Listener {
 						item = player.getInventory().getItemInOffHand();
 				if (item != null) {
 					EnchantsType tool = EnchantsType.getEnchantType(item.getType());
-					if (tool != null && tool.equals(EnchantsType.Sword) && player.isSneaking()
-							&& Basics.isHunting(et.getType())) {
+					if (tool != null && !ConfigStore.getPlayerStatus(player) && tool.equals(EnchantsType.Sword)
+							&& player.isSneaking() && Basics.isHunting(et.getType())) {
 						int level = Basics.Hunting.getLevel(player);
 						if (level >= 20)
 							if (player.getGameMode().equals(GameMode.CREATIVE)
@@ -889,6 +956,15 @@ public class PlayerInteractListener implements Listener {
 							} else
 								player.sendMessage(ChatColor.RED + "번식 쿨타임 : "
 										+ ConfigStore.getBasicsCool(player, Basics.Hunting, 2) / 1000 + "초");
+					} else if (et.getType().equals(EntityType.MUSHROOM_COW) && Items.valueOf(item) == null
+							&& item.getType().equals(Material.BOWL)) {
+						item.setAmount(item.getAmount() - 1);
+						if (player.getInventory().firstEmpty() != -1) {
+							player.getInventory().addItem(Items.mushroom_stew.getItemStack());
+						} else
+							player.getWorld().dropItemNaturally(player.getEyeLocation(),
+									Items.mushroom_stew.getItemStack());
+						e.setCancelled(true);
 					}
 				}
 			}

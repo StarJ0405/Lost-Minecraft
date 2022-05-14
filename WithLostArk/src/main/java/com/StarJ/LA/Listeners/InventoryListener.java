@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -26,8 +25,8 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import com.StarJ.LA.Items.CookingItem;
 import com.StarJ.LA.Items.FishBoxItem;
 import com.StarJ.LA.Items.Items;
+import com.StarJ.LA.Items.PotionItems;
 import com.StarJ.LA.Systems.ConfigStore;
-import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.GUIStores;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
@@ -61,8 +60,6 @@ public class InventoryListener implements Listener {
 									inv.setItem(slot, item);
 								} else
 									inv.setItem(slot, ConfigStore.getEmpty());
-								player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
-								Effects.Directional.HEART.spawnDirectional(player.getEyeLocation(), 5, 0.1, 0.1, 0.1, 1);
 								Jobs job = ConfigStore.getJob(player);
 								double max = job != null ? job.getMaxHealth(player) : 20;
 								double health = HashMapStore.getHealth(player);
@@ -84,6 +81,24 @@ public class InventoryListener implements Listener {
 								player.setHealth(per);
 								ActionBarRunnable.run(player);
 								player.closeInventory();
+							}
+						} else if (i instanceof PotionItems) {
+							PotionItems pi = (PotionItems) i;
+							if (pi != null) {
+								if (pi.Use(player, item)) {
+									item.setAmount(item.getAmount() - 1);
+									if (item.getAmount() <= 0) {
+										item = null;
+									}
+									items[num] = item;
+									ConfigStore.setConsumeItems(player, items);
+									if (item != null) {
+										inv.setItem(slot, item);
+									} else
+										inv.setItem(slot, ConfigStore.getEmpty());
+									ActionBarRunnable.run(player);
+									player.closeInventory();
+								}
 							}
 						}
 				}

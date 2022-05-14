@@ -11,7 +11,7 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,241 +20,277 @@ import com.StarJ.LA.Items.FishingrodItem;
 
 public class Fishes {
 	private final static List<Fishes> list = new ArrayList<Fishes>();
-	// SNOWY
-	public static Fishes formosa = new Fishes("formosa", "꽃우산해파리", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.258, new Length(2.58, 9.59), 163);
-	public static Fishes neritodies = new Fishes("neritodies", "각시고동", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Small, 0.676, new Length(12.03, 15.59), 175);
-	public static Fishes morsei = new Fishes("morsei", "귀오징어", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Small, 0.541, new Length(10.25, 18.55), 164);
-	public static Fishes jeoni = new Fishes("jeoni", "됭경모치", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.814, new Length(3.76, 9.27), 453);
-	public static Fishes stellaris = new Fishes("stellaris", "가는꼬리쥐치", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Small, 0.100, new Length(11.87, 18.82), 201);
-	public static Fishes pelamis = new Fishes("pelamis", "가다랑어", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.042, new Length(22.76, 45.44), 348);
-	public static Fishes maruadsi = new Fishes("maruadsi", "가라지", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Big, 0.611, new Length(66.50, 91.00), 423);
-	public static Fishes schlegelli = new Fishes("schlegelli", "가래상어", new Biomes[] { Biomes.Snowy }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.296, new Length(154.73, 429.59), 489);
-	/*
-	 * 
-	 */
-	// COLD
-	public static Fishes tetraphylla = new Fishes("tetraphylla", "네잎백합해파리", new Biomes[] { Biomes.Cold },
-			Cycle.values(), Weather.Always, Size.Small, 0.495, new Length(13.12, 16.26), 114);
-	public static Fishes echo = new Fishes("echo", "각시수염고둥", new Biomes[] { Biomes.Cold }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.057, new Length(2.1, 3.43), 152);
-	public static Fishes rhombus = new Fishes("rhombus", "날개오징어", new Biomes[] { Biomes.Cold }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.782, new Length(28.82, 47.50), 110);
-	public static Fishes digrammus = new Fishes("digrammus", "가면놀래기", new Biomes[] { Biomes.Cold }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.793, new Length(3.23, 7.46), 290);
-	public static Fishes haematocheilus = new Fishes("haematocheilus", "가숭어", new Biomes[] { Biomes.Cold },
-			Cycle.values(), Weather.Always, Size.Small, 0.161, new Length(10.90, 17.78), 226);
-	public static Fishes nadeshnyi = new Fishes("nadeshnyi", "가시가자미", new Biomes[] { Biomes.Cold }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.201, new Length(20.39, 47.07), 489);
-	public static Fishes auriga = new Fishes("auriga", "가시나비고기", new Biomes[] { Biomes.Cold }, Cycle.values(),
-			Weather.Always, Size.Big, 0.449, new Length(55.40, 88.05), 468);
-	public static Fishes gracills = new Fishes("gracills", "가시납지리", new Biomes[] { Biomes.Cold }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.850, new Length(438.65, 482.06), 428);
-	/*
-	 * 
-	 */
-	// Temperate
-	public static Fishes rastoni = new Fishes("rastoni", "라스톤입방해파리", new Biomes[] { Biomes.Temperate }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.726, new Length(22.93, 30.45), 182);
-	public static Fishes cuminigi = new Fishes("cuminigi", "갈색띠매물고동", new Biomes[] { Biomes.Temperate }, Cycle.values(),
-			Weather.Always, Size.Big, 0.876, new Length(51.30, 94.84), 197);
-	public static Fishes lucidas = new Fishes("lucidas", "입술무늬갑오징어", new Biomes[] { Biomes.Temperate }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.612, new Length(135.91, 216.90), 126);
-	public static Fishes japonica = new Fishes("japonica", "가시달강어", new Biomes[] { Biomes.Temperate }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.334, new Length(5.37, 8.72), 210);
-
-	public static Fishes thomsoni = new Fishes("thomsoni", "가시발새우", new Biomes[] { Biomes.Temperate }, Cycle.values(),
-			Weather.Always, Size.Small, 0.113, new Length(10.29, 14.92), 340);
-	public static Fishes holocanthus = new Fishes("holocanthus", "가시복", new Biomes[] { Biomes.Temperate },
-			Cycle.values(), Weather.Always, Size.Middle, 0.228, new Length(39.72, 47.59), 229);
-	public static Fishes spinifer = new Fishes("spinifer", "가시실붉돔", new Biomes[] { Biomes.Temperate }, Cycle.values(),
-			Weather.Always, Size.Big, 0.795, new Length(52.76, 56.11), 464);
-	public static Fishes langsdorfii = new Fishes("langsdorfii", "가시양태", new Biomes[] { Biomes.Temperate },
-			Cycle.values(), Weather.Always, Size.Biggst, 0.268, new Length(225.34, 446.99), 423);
-	/*
-	 * 
-	 */
-	// WARM 20
-	public static Fishes aurita = new Fishes("aurita", "보름달물해파리", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Big, 0.136, new Length(77.29, 88.75), 134);
-	public static Fishes chinensis = new Fishes("chinensis", "개량조개", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.998, new Length(29.48, 31.43), 193);
-	public static Fishes esculenta = new Fishes("esculenta", "철갑오징어", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.815, new Length(26.29, 37.77), 112);
-	public static Fishes lucifer = new Fishes("lucifer", "가시줄상어", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.830, new Length(6.92, 969), 418);
-	public static Fishes gayigayi = new Fishes("gayigayi", "가이민대구", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Small, 0.658, new Length(16.03, 17.23), 371);
-	public static Fishes californicus = new Fishes("californicus", "가주넙치", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.852, new Length(41.03, 42.39), 301);
-	public static Fishes aspera = new Fishes("aspera", "각시가자미", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Big, 0.579, new Length(84.12, 89.15), 210);
-	public static Fishes hirundinacea = new Fishes("hirundinacea", "각시돔", new Biomes[] { Biomes.Warm }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.244, new Length(385.76, 420.26), 204);
-	/*
-	 * 
-	 */
-	// AQUASTIC
-	public static Fishes nozakii = new Fishes("nozakii", "유령해파리", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.575, new Length(118.07, 307.60), 141);
-	public static Fishes perplexus = new Fishes("perplexus", "긴고둥", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.941, new Length(23.08, 31.08), 178);
-	public static Fishes fangsiao = new Fishes("fangsiao", "쭈꾸미", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.749, new Length(5.49, 7.70), 193);
-	public static Fishes uyekii = new Fishes("uyekii", "각시붕어", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.749, new Length(5.49, 7.70), 193);
-	public static Fishes zebrias = new Fishes("zebrias", "각시서대속", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Small, 0.749, new Length(5.49, 7.70), 193);
-	public static Fishes kitaharai = new Fishes("kitaharai", "갈가자미", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.749, new Length(5.49, 7.70), 193);
-	public static Fishes muroadsi = new Fishes("muroadsi", "갈고등어", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Big, 0.749, new Length(5.49, 7.70), 193);
-	public static Fishes tile = new Fishes("tile", "갈래세줄가는돔", new Biomes[] { Biomes.Aquastic }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.749, new Length(5.49, 7.70), 193);
-	/*
-	 * 
-	 */
-	// CAVE
-	public static Fishes sp = new Fishes("sp", "푸른우산관해파리", new Biomes[] { Biomes.Cave }, Cycle.values(), Weather.Always,
-			Size.Middle, 0.020, new Length(27.85, 36.17), 117);
-	public static Fishes granosa = new Fishes("granosa", "꼬막", new Biomes[] { Biomes.Cave }, Cycle.values(),
-			Weather.Always, Size.Small, 0.373, new Length(13.79, 15.80), 101);
-	public static Fishes bleekeri = new Fishes("bleekeri", "화살꼴뚜기", new Biomes[] { Biomes.Cave }, Cycle.values(),
-			Weather.Always, Size.Small, 0.621, new Length(11.30, 19.77), 109);
-	public static Fishes coioides = new Fishes("coioides", "갈색둥근바리", new Biomes[] { Biomes.Cave }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.571, new Length(3.59, 6.93), 443);
-	public static Fishes equula = new Fishes("equula", "갈전갱이", new Biomes[] { Biomes.Cave }, Cycle.values(),
-			Weather.Always, Size.Small, 0.718, new Length(11.18, 11.81), 210);
-	public static Fishes merra = new Fishes("merra", "갈점바리", new Biomes[] { Biomes.Cave }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.665, new Length(21.91, 41.99), 494);
-	public static Fishes lepturus = new Fishes("lepturus", "갈치", new Biomes[] { Biomes.Cave }, Cycle.values(),
-			Weather.Always, Size.Big, 0.134, new Length(57.96, 85.52), 225);
-	public static Fishes nigra = new Fishes("nigra", "감돌고기", new Biomes[] { Biomes.Cave }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.491, new Length(385.59, 487.19), 109);
-	/*
-	 * 
-	 */
-	// NEUTRAL
-	public static Fishes quinquecirrha = new Fishes("quinquecirrha", "커튼원양해파리", new Biomes[] { Biomes.Neutral },
-			Cycle.values(), Weather.Always, Size.Small, 0.281, new Length(11.65, 14.49), 146);
-	public static Fishes aduncus = new Fishes("aduncus", "날개뿔고둥", new Biomes[] { Biomes.Neutral }, Cycle.values(),
-			Weather.Always, Size.Big, 0.079, new Length(84.10, 87.16), 195);
-	public static Fishes lessonjana = new Fishes("lessonjana", "흰꼴뚜기", new Biomes[] { Biomes.Neutral }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.741, new Length(2.74, 6.23), 128);
-	public static Fishes schleglii = new Fishes("schleglii", "감성돔", new Biomes[] { Biomes.Neutral }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.121, new Length(5.66, 6.33), 385);
-	public static Fishes kamoharai = new Fishes("kamoharai", "강남상어", new Biomes[] { Biomes.Neutral }, Cycle.values(),
-			Weather.Always, Size.Small, 0.763, new Length(12.11, 19.06), 260);
-	public static Fishes punctatus = new Fishes("punctatus", "강담돔", new Biomes[] { Biomes.Neutral }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.261, new Length(33.92, 46.05), 410);
-	public static Fishes sp__ = new Fishes("sp__", "강담복속", new Biomes[] { Biomes.Neutral }, Cycle.values(),
-			Weather.Always, Size.Big, 0.672, new Length(61.68, 86.07), 271);
-	public static Fishes stellatus = new Fishes("stellatus", "강도다리", new Biomes[] { Biomes.Neutral }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.498, new Length(331.99, 461.08), 241);
-	/*
-	 * 
-	 */
-	// NETHER
-	public static Fishes saltator = new Fishes("saltator", "무희나선꼬리해파리", new Biomes[] { Biomes.Nether }, Cycle.values(),
-			Weather.Always, Size.Big, 0.281, new Length(51.48, 94.76), 182);
-	public static Fishes japonicus = new Fishes("japonicus", "납작소라", new Biomes[] { Biomes.Nether }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.913, new Length(41.73, 48.66), 161);
-	public static Fishes chinesis = new Fishes("chinesis", "한치꼴뚜기", new Biomes[] { Biomes.Nether }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.808, new Length(22.14, 38.24), 182);
-	public static Fishes sculpin = new Fishes("sculpin", "개구리꺽정이", new Biomes[] { Biomes.Nether }, Cycle.values(),
-			Weather.Always, Size.Small, 0.833, new Length(3.56, 8.38), 251);
-	public static Fishes mola = new Fishes("mola", "개복치", new Biomes[] { Biomes.Nether }, Cycle.values(),
-			Weather.Always, Size.Small, 0.826, new Length(15.20, 18.57), 298);
-	public static Fishes pachycephalus = new Fishes("pachycephalus", "개볼락", new Biomes[] { Biomes.Nether },
-			Cycle.values(), Weather.Always, Size.Middle, 0.421, new Length(34.58, 49.11), 379);
-	public static Fishes robustus = new Fishes("robustus", "개서대", new Biomes[] { Biomes.Nether }, Cycle.values(),
-			Weather.Always, Size.Big, 0.354, new Length(50.12, 68.72), 278);
-	public static Fishes sole = new Fishes("sole", "개서대속", new Biomes[] { Biomes.Nether }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.808, new Length(), 182);
-	/*
-	 * 
-	 */
-	// END
-	public static Fishes coerulsecens = new Fishes("coerulsecens", "평면해파리", new Biomes[] { Biomes.End }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.281, new Length(255.88, 431.77), 138);
-	public static Fishes striatus = new Fishes("striatus", "노란줄가리비", new Biomes[] { Biomes.End }, Cycle.values(),
-			Weather.Always, Size.Small, 0.196, new Length(10.29, 14.16), 142);
-	public static Fishes pacificus = new Fishes("pacificus", "살오징어", new Biomes[] { Biomes.End }, Cycle.values(),
-			Weather.Always, Size.Big, 0.376, new Length(71.05, 88.09), 160);
-	public static Fishes goby = new Fishes("goby", "개소갱속", new Biomes[] { Biomes.End }, Cycle.values(), Weather.Always,
-			Size.Small, 0.916, new Length(5.85, 7.09), 367);
-	public static Fishes monoceros = new Fishes("monoceros", "객주리", new Biomes[] { Biomes.End }, Cycle.values(),
-			Weather.Always, Size.Smallest, 0.209, new Length(10.56, 11.41), 452);
-	public static Fishes cavasius = new Fishes("cavasius", "갠지스동자개", new Biomes[] { Biomes.End }, Cycle.values(),
-			Weather.Always, Size.Middle, 0.990, new Length(36.86, 39.27), 250);
-	public static Fishes cinereus = new Fishes("cinereus", "갯장어", new Biomes[] { Biomes.End }, Cycle.values(),
-			Weather.Always, Size.Big, 0.667, new Length(69.11, 71.11), 404);
-	public static Fishes scapha = new Fishes("scapha", "거룻배가자미", new Biomes[] { Biomes.End }, Cycle.values(),
-			Weather.Always, Size.Biggst, 0.149, new Length(427.52, 472.56), 381);
 	// All
-	public static Fishes vertens = new Fishes("vertens", "꽃모자갈퀴손해파리", Biomes.values(), Cycle.values(), Weather.Always,
-			Size.Smallest, 0.281, new Length(3.76, 6.98), 112);
-	public static Fishes constricta = new Fishes("constricta", "가리맛조개", Biomes.values(), Cycle.values(), Weather.Always,
-			Size.Small, 0.471, new Length(15.46, 16.04), 189);
-	public static Fishes berryi = new Fishes("berryi", "귀오징어불이", Biomes.values(), Cycle.values(), Weather.Always,
-			Size.Biggst, 0.900, new Length(318.82, 390.87), 164);
-	public static Fishes immaculatus = new Fishes("immaculatus", "거북복", Biomes.values(), Cycle.values(), Weather.Always,
-			Size.Smallest, 0.032, new Length(4.04, 6.06), 277);
-	public static Fishes miraletus = new Fishes("miraletus", "거울가오리", Biomes.values(), Cycle.values(), Weather.Always,
-			Size.Small, 0.875, new Length(14.24, 15.80), 455);
-	public static Fishes porphyeus = new Fishes("porphyeus", "검복", Biomes.values(), Cycle.values(), Weather.Always,
-			Size.Middle, 0.306, new Length(22.83, 38.50), 414);
-	public static Fishes rubescens = new Fishes("rubescens", "검은새다래", Biomes.values(), Cycle.values(), Weather.Always,
-			Size.Big, 0.758, new Length(53.77, 73.05), 484);
-	public static Fishes crassilabris = new Fishes("crassilabris", "검은점촉수", Biomes.values(), Cycle.values(),
-			Weather.Always, Size.Biggst, 0.790, new Length(215.58, 295.70), 366);
-	/*
-	 * 
-	 */
+	public static Fishes kingsalmon = new Fishes("kingsalmon", "왕연어", Biomes.values(), Size.Biggest, 0.5, 0.5);
+	public static Fishes morhua = new Fishes(" morhua", "대서양대구", Biomes.values(), Size.Biggest, 0.5, 0.5);
+	public static Fishes miraletus = new Fishes("miraletus", "거울가오리", Biomes.values(), Size.Middle, 0.5, 0.5);
+	public static Fishes porphyeus = new Fishes("porphyeus", "검복", Biomes.values(), Size.Middle, 0.5, 0.5);
+	public static Fishes berryi = new Fishes("berryi", "귀오징어불이", Biomes.values(), Size.Small, 0.5, 0.5);
+	public static Fishes immaculatus = new Fishes("immaculatus", "거북복", Biomes.values(), Size.Small, 0.5, 0.5);
+	public static Fishes vertens = new Fishes("vertens", "꽃모자갈퀴손해파리", Biomes.values(), Size.Smallest, 0.5, 0.5);
+	public static Fishes constricta = new Fishes("constricta", "가리맛조개", Biomes.values(), Size.Smallest, 0.5, 0.5);
+	public static Fishes saltator = new Fishes("saltator", "무희나선꼬리해파리", Biomes.values(), Size.Biggest, 0.5, 0.5);
+	public static Fishes japonicus = new Fishes("japonicus", "납작소라", Biomes.values(), Size.Biggest, 0.5, 0.5);
+	public static Fishes chinesis = new Fishes("chinesis", "한치꼴뚜기", Biomes.values(), Size.Biggest, 0.5, 0.5);
+	public static Fishes sculpin = new Fishes("sculpin", "개구리꺽정이", Biomes.values(), Size.Big, 0.5, 0.5);
+	public static Fishes pachycephalus = new Fishes("pachycephalus", "개볼락", Biomes.values(), Size.Big, 0.5, 0.5);
+	public static Fishes robustus = new Fishes("robustus", "개서대", Biomes.values(), Size.Big, 0.5, 0.5);
+	public static Fishes sole = new Fishes("sole", "개서대속", Biomes.values(), Size.Middle, 0.5, 0.5);
+	public static Fishes coerulsecens = new Fishes("coerulsecens", "평면해파리", Biomes.values(), Size.Middle, 0.5, 0.5);
+	public static Fishes striatus = new Fishes("striatus", "노란줄가리비", Biomes.values(), Size.Middle, 0.5, 0.5);
+	public static Fishes pacificus = new Fishes("pacificus", "살오징어", Biomes.values(), Size.Small, 0.5, 0.5);
+	public static Fishes goby = new Fishes("goby", "개소갱속", Biomes.values(), Size.Small, 0.5, 0.5);
+	public static Fishes monoceros = new Fishes("monoceros", "객주리", Biomes.values(), Size.Small, 0.5, 0.5);
+	public static Fishes cavasius = new Fishes("cavasius", "갠지스동자개", Biomes.values(), Size.Smallest, 0.5, 0.5);
+	public static Fishes cinereus = new Fishes("cinereus", "갯장어", Biomes.values(), Size.Smallest, 0.5, 0.5);
+	public static Fishes scapha = new Fishes("scapha", "거룻배가자미", Biomes.values(), Size.Smallest, 0.5, 0.5);
+	// SNOWY - Biggest
+	public static Fishes formosa = new Fishes("formosa", "꽃우산해파리", new Biomes[] { Biomes.Snowy }, Size.Biggest, 0.1, 1);
+	public static Fishes neritodies = new Fishes("neritodies", "각시고동", new Biomes[] { Biomes.Snowy }, Size.Biggest, 0.1,
+			0.75);
+	public static Fishes morsei = new Fishes("morsei", "귀오징어", new Biomes[] { Biomes.Snowy }, Size.Biggest, 0.2, 1);
+	public static Fishes jeoni = new Fishes("jeoni", "됭경모치", new Biomes[] { Biomes.Snowy }, Size.Biggest, 0.2, 0.75);
+	public static Fishes stellaris = new Fishes("stellaris", "가는꼬리쥐치", new Biomes[] { Biomes.Snowy }, Size.Biggest, 0.3,
+			0.75);
+	public static Fishes pelamis = new Fishes("pelamis", "가다랑어", new Biomes[] { Biomes.Snowy }, Size.Biggest, 0.4,
+			0.75);
+	public static Fishes maruadsi = new Fishes("maruadsi", "가라지", new Biomes[] { Biomes.Snowy }, Size.Big, 0.5, 0.5);
+	public static Fishes sp = new Fishes("sp", "푸른우산관해파리", new Biomes[] { Biomes.Snowy }, Size.Big, 0.5, 0.5);
+	public static Fishes schlegelli = new Fishes("schlegelli", "가래상어", new Biomes[] { Biomes.Snowy }, Size.Middle, 0.5,
+			0.5);
+	public static Fishes granosa = new Fishes("granosa", "꼬막", new Biomes[] { Biomes.Snowy }, Size.Middle, 0.5, 0.5);
+	public static Fishes sockeyesalmon = new Fishes("sockeyesalmon", "홍연어", new Biomes[] { Biomes.Snowy }, Size.Small,
+			0.5, 0.5);
+	public static Fishes bleekeri = new Fishes("bleekeri", "화살꼴뚜기", new Biomes[] { Biomes.Snowy }, Size.Small, 0.5,
+			0.5);
+	public static Fishes aquaman = new Fishes("aquaman", "아쿠아맨", new Biomes[] { Biomes.Snowy }, Size.Smallest, 0.5, 0);
+	public static Fishes coioides = new Fishes("coioides", "갈색둥근바리", new Biomes[] { Biomes.Snowy }, Size.Smallest, 0.5,
+			0.5);
+	// COLD - BIG
+	public static Fishes tetraphylla = new Fishes("tetraphylla", "네잎백합해파리", new Biomes[] { Biomes.Cold }, Size.Biggest,
+			0.5, 0.5);
+	public static Fishes equula = new Fishes("equula", "갈전갱이", new Biomes[] { Biomes.Cold }, Size.Biggest, 0.5, 0.5);
+	public static Fishes echo = new Fishes("echo", "각시수염고둥", new Biomes[] { Biomes.Cold }, Size.Big, 0.1, 1);
+	public static Fishes rhombus = new Fishes("rhombus", "날개오징어", new Biomes[] { Biomes.Cold }, Size.Big, 0.1, 0.75);
+	public static Fishes digrammus = new Fishes("digrammus", "가면놀래기", new Biomes[] { Biomes.Cold }, Size.Big, 0.1,
+			0.75);
+	public static Fishes haematocheilus = new Fishes("haematocheilus", "가숭어", new Biomes[] { Biomes.Cold }, Size.Big,
+			0.2, 1);
+	public static Fishes nadeshnyi = new Fishes("nadeshnyi", "가시가자미", new Biomes[] { Biomes.Cold }, Size.Big, 0.2,
+			0.75);
+	public static Fishes auriga = new Fishes("auriga", "가시나비고기", new Biomes[] { Biomes.Cold }, Size.Big, 0.3, 0.75);
+	public static Fishes gracills = new Fishes("gracills", "가시납지리", new Biomes[] { Biomes.Cold }, Size.Middle, 0.4,
+			0.75);
+	public static Fishes merra = new Fishes("merra", "갈점바리", new Biomes[] { Biomes.Cold }, Size.Middle, 0.5, 0.5);
+	public static Fishes saury = new Fishes("saury", "꽁치", new Biomes[] { Biomes.Cold }, Size.Small, 0.5, 0.5);
+	public static Fishes anchovy = new Fishes("lepturus", "멸치", new Biomes[] { Biomes.Cold }, Size.Small, 0.5, 0.5);
+	public static Fishes lepturus = new Fishes("lepturus", "갈치", new Biomes[] { Biomes.Cold }, Size.Smallest, 0.5, 0.5);
+
+	public static Fishes nigra = new Fishes("nigra", "감돌고기", new Biomes[] { Biomes.Cold }, Size.Smallest, 0.5, 0.5);
+	// Temperate - MIDDLE
+	public static Fishes rastoni = new Fishes("rastoni", "라스톤입방해파리", new Biomes[] { Biomes.Temperate }, Size.Biggest,
+			0.5, 0.5);
+	public static Fishes cuminigi = new Fishes("cuminigi", "갈색띠매물고동", new Biomes[] { Biomes.Temperate }, Size.Big, 0.5,
+			0.5);
+	public static Fishes lucidas = new Fishes("lucidas", "입술무늬갑오징어", new Biomes[] { Biomes.Temperate }, Size.Middle,
+			0.1, 1);
+	public static Fishes japonica = new Fishes("japonica", "가시달강어", new Biomes[] { Biomes.Temperate }, Size.Middle, 0.1,
+			0.75);
+	public static Fishes thomsoni = new Fishes("thomsoni", "가시발새우", new Biomes[] { Biomes.Temperate }, Size.Middle, 0.2,
+			1);
+	public static Fishes holocanthus = new Fishes("holocanthus", "가시복", new Biomes[] { Biomes.Temperate }, Size.Middle,
+			0.2, 0.75);
+	public static Fishes spinifer = new Fishes("spinifer", "가시실붉돔", new Biomes[] { Biomes.Temperate }, Size.Middle, 0.3,
+			0.75);
+	public static Fishes langsdorfii = new Fishes("langsdorfii", "가시양태", new Biomes[] { Biomes.Temperate }, Size.Middle,
+			04, 0.75);
+	public static Fishes scomber = new Fishes("scomber", "고등어", new Biomes[] { Biomes.Temperate }, Size.Small, 0.5,
+			0.5);
+	public static Fishes sinensis = new Fishes("sinensis", "철갑상어", new Biomes[] { Biomes.Temperate }, Size.Smallest,
+			0.5, 0.5);
+	// WARM - SMALL
+	public static Fishes aurita = new Fishes("aurita", "보름달물해파리", new Biomes[] { Biomes.Warm }, Size.Biggest, 0.5, 0.5);
+	public static Fishes quinquecirrha = new Fishes("quinquecirrha", "커튼원양해파리", new Biomes[] { Biomes.Warm },
+			Size.Biggest, 0.5, 0.5);
+	public static Fishes chinensis = new Fishes("chinensis", "개량조개", new Biomes[] { Biomes.Warm }, Size.Big, 0.5, 0.5);
+	public static Fishes aduncus = new Fishes("aduncus", "날개뿔고둥", new Biomes[] { Biomes.Warm }, Size.Big, 0.5, 0.5);
+	public static Fishes esculenta = new Fishes("esculenta", "철갑오징어", new Biomes[] { Biomes.Warm }, Size.Middle, 0.5,
+			0.5);
+	public static Fishes lessonjana = new Fishes("lessonjana", "흰꼴뚜기", new Biomes[] { Biomes.Warm }, Size.Middle, 0.5,
+			0.5);
+	public static Fishes lucifer = new Fishes("lucifer", "가시줄상어", new Biomes[] { Biomes.Warm }, Size.Small, 0.1, 1);
+	public static Fishes gayigayi = new Fishes("gayigayi", "가이민대구", new Biomes[] { Biomes.Warm }, Size.Small, 0.1,
+			0.75);
+	public static Fishes californicus = new Fishes("californicus", "가주넙치", new Biomes[] { Biomes.Warm }, Size.Small,
+			0.2, 1);
+	public static Fishes aspera = new Fishes("aspera", "각시가자미", new Biomes[] { Biomes.Warm }, Size.Small, 0.2, 0.75);
+	public static Fishes hirundinacea = new Fishes("hirundinacea", "각시돔", new Biomes[] { Biomes.Warm }, Size.Small, 0.3,
+			0.75);
+	public static Fishes mola = new Fishes("mola", "개복치", new Biomes[] { Biomes.Warm }, Size.Small, 0.4, 0.75);
+	public static Fishes doctor = new Fishes("doctor", "닥터피쉬", new Biomes[] { Biomes.Warm }, Size.Smallest, 0.5, 0.5);
+	public static Fishes schleglii = new Fishes("schleglii", "감성돔", new Biomes[] { Biomes.Warm }, Size.Smallest, 0.5,
+			0.5);
+	// AQUASTIC - SMALLEST
+	public static Fishes nozakii = new Fishes("nozakii", "유령해파리", new Biomes[] { Biomes.Aquastic }, Size.Biggest, 0.5,
+			0.5);
+	public static Fishes perplexus = new Fishes("perplexus", "긴고둥", new Biomes[] { Biomes.Aquastic }, Size.Big, 0.5,
+			0.5);
+	public static Fishes fangsiao = new Fishes("fangsiao", "쭈꾸미", new Biomes[] { Biomes.Aquastic }, Size.Middle, 0.5,
+			0.5);
+	public static Fishes uyekii = new Fishes("uyekii", "각시붕어", new Biomes[] { Biomes.Aquastic }, Size.Small, 0.5, 0.5);
+	public static Fishes zebrias = new Fishes("zebrias", "각시서대속", new Biomes[] { Biomes.Aquastic }, Size.Smallest, 0.1,
+			1);
+	public static Fishes kitaharai = new Fishes("kitaharai", "갈가자미", new Biomes[] { Biomes.Aquastic }, Size.Smallest,
+			0.1, 0.75);
+	public static Fishes muroadsi = new Fishes("muroadsi", "갈고등어", new Biomes[] { Biomes.Aquastic }, Size.Smallest, 0.2,
+			1);
+	public static Fishes tile = new Fishes("tile", "갈래세줄가는돔", new Biomes[] { Biomes.Aquastic }, Size.Smallest, 0.2,
+			0.75);
+	public static Fishes cheilopogon = new Fishes("cheilopogon", "날치", new Biomes[] { Biomes.Aquastic }, Size.Smallest,
+			0.3, 0.75);
+	public static Fishes paralichthys = new Fishes("paralichthys", "광어", new Biomes[] { Biomes.Aquastic },
+			Size.Smallest, 0.4, 0.75);
+	public static Fishes kamoharai = new Fishes("kamoharai", "강남상어", new Biomes[] { Biomes.Neutral }, Size.Small, 0.5,
+			0.5);
+	public static Fishes punctatus = new Fishes("punctatus", "강담돔", new Biomes[] { Biomes.Neutral }, Size.Middle, 0.5,
+			0.5);
+	public static Fishes sp__ = new Fishes("sp__a", "강담복속", new Biomes[] { Biomes.Neutral }, Size.Big, 0.5, 0.5);
+	public static Fishes stellatus = new Fishes("stellatus", "강도다리", new Biomes[] { Biomes.Neutral }, Size.Biggest, 0.5,
+			0.5);
+
 	private final String key;
 	private final String name;
 	private final Biomes[] biomes;
-	private final Cycle[] cycles;
-	private final Weather weather;
 	private final Size size;
 	private final double man_chance;
 	private final Length length;
 	private final long price;
 	private final CustomAdvancements advancement;
-	private final HashMap<Rarity, FishItem> items;
+	private final HashMap<Rarity, HashMap<NormalType, FishItem>> items;
+	private final HashMap<Rarity, HashMap<FIshCookedType, FishItem>> cooks;
 
-	public Fishes(String key, String name, Biomes[] biomes, Cycle[] cycles, Weather weather, Size size,
-			double man_chance, Length length, long price) {
-		this(key, name, biomes, cycles, weather, size, man_chance, length, price, null);
+	public Fishes(String key, String name, Biomes[] biomes, Size size, double man_chance, double length_percent) {
+		this(key, name, biomes, size, man_chance, length_percent, null);
 	}
 
-	public Fishes(String key, String name, Biomes[] biomes, Cycle[] cycles, Weather weather, Size size,
-			double man_chance, Length length, long price, CustomAdvancements advancement) {
+	public Fishes(String key, String name, Biomes[] biomes, Size size, double man_chance, double length_percent,
+			CustomAdvancements advancement) {
 		this.key = key;
 		this.name = name;
 		this.biomes = biomes;
-		this.cycles = cycles;
-		this.weather = weather;
 		this.size = size;
 		this.man_chance = man_chance;
-		this.length = length;
-		this.price = price;
+		this.length = new Length(size, length_percent);
+		this.price = 250;
 		this.advancement = advancement;
 		list.add(this);
 		for (Biomes biome : biomes)
 			biome.addFishes(this);
-		this.items = new HashMap<Rarity, FishItem>();
-		for (Rarity r : Rarity.values())
-			items.put(r, new FishItem(ChatColor.stripColor(r.prefix + "_" + name).replace(' ', '_'), r.getColor(), name,
-					size, man_chance, length, price, r));
+		this.items = new HashMap<Rarity, HashMap<NormalType, FishItem>>();
+		this.cooks = new HashMap<Rarity, HashMap<FIshCookedType, FishItem>>();
+		for (Rarity r : Rarity.values()) {
+			HashMap<NormalType, FishItem> r_items = new HashMap<NormalType, FishItem>();
+			HashMap<FIshCookedType, FishItem> r_cooks = new HashMap<FIshCookedType, FishItem>();
+			for (NormalType type : NormalType.values())
+				r_items.put(type, new FishItem(this.key, ChatColor.stripColor(r.prefix + "_" + name).replace(' ', '_'),
+						r.getColor(), name, size, man_chance, length, price, r, type));
+			for (FIshCookedType type : FIshCookedType.values())
+				r_cooks.put(type, new FishItem(this.key, ChatColor.stripColor(r.prefix + "_" + name).replace(' ', '_'),
+						r.getColor(), name, size, man_chance, length, price, r, type));
+			items.put(r, r_items);
+			cooks.put(r, r_cooks);
+		}
 	}
+
+	public enum NormalType {
+		COD("대구형", Material.COD, 1, 0.4), SALMON("연어형", Material.SALMON, 1.2, 0.35),
+		PUFFERFISH("복어형", Material.PUFFERFISH, 2, 0.15), TROPICAL_FISH("열대어형", Material.TROPICAL_FISH, 2.5, 0.1)
+		//
+		;
+
+		private final String prefix;
+		private final Material type;
+		private final double base;
+		private final double chance;
+
+		private NormalType(String prefix, Material type, double base, double chance) {
+			this.prefix = prefix;
+			this.type = type;
+			this.base = base;
+			this.chance = chance;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+		public Material getType() {
+			return type;
+		}
+
+		public double getBase() {
+			return base;
+		}
+
+		public double getChance() {
+			return chance;
+		}
+
+		public static NormalType getRandomNormalType() {
+			double now = new Random().nextDouble();
+			double chance = 0.0d;
+			for (NormalType type : values()) {
+				chance += type.getChance();
+				if (now < chance)
+					return type;
+			}
+			return NormalType.COD;
+		}
+	}
+
+	public enum FIshCookedType {
+		COOKED_COD(NormalType.COD.getPrefix(), Material.COOKED_COD, Material.COD, 1.5),
+		COOKED_SALMON(NormalType.SALMON.getPrefix(), Material.COOKED_SALMON, Material.SALMON, 1.8)
+		//
+		;
+
+		private final String prefix;
+		private final Material type;
+		private final Material raw;
+		private final double base;
+
+		private FIshCookedType(String prefix, Material type, Material raw, double base) {
+			this.prefix = prefix;
+			this.type = type;
+			this.raw = raw;
+			this.base = base;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+		public Material getType() {
+			return type;
+		}
+
+		public double getBase() {
+			return base;
+		}
+
+		public static FIshCookedType getCookedType(NormalType type) {
+			return getCookedType(type.getType());
+		}
+
+		public static FIshCookedType getCookedType(Material raw) {
+			for (FIshCookedType type : values())
+				if (type.raw.equals(raw))
+					return type;
+			return FIshCookedType.COOKED_COD;
+		}
+	}
+
+	protected Material[] cook_type = new Material[] { Material.COOKED_COD, Material.COOKED_SALMON };
 
 	public String getKey() {
 		return key;
@@ -266,14 +302,6 @@ public class Fishes {
 
 	public Biomes[] getBiomes() {
 		return biomes;
-	}
-
-	public Cycle[] getCycles() {
-		return cycles;
-	}
-
-	public Weather getWeather() {
-		return weather;
 	}
 
 	public Size getSize() {
@@ -298,7 +326,7 @@ public class Fishes {
 
 	public ItemStack getItemStack(double money_multi, HashMap<Rarity, BigDecimal> ench,
 			HashMap<Rarity, BigDecimal> abil, List<Rarity> remove, HashMap<Rarity, BigDecimal> remove_multi) {
-		return items.get(Rarity.getRandomRarity(ench, abil, remove, remove_multi))
+		return items.get(Rarity.getRandomRarity(ench, abil, remove, remove_multi)).get(NormalType.getRandomNormalType())
 				.getItemStack(Double.valueOf(money_multi));
 	}
 
@@ -315,20 +343,14 @@ public class Fishes {
 	}
 
 	public static Fishes getCaugthFish(Location loc, ItemStack rod) {
-		World world = loc.getWorld();
-		Weather now = Weather.getWeather(world.isClearWeather(), world.hasStorm(), world.isThundering());
 		List<Fishes> canCaught = new ArrayList<Fishes>();
 		Size size = FishingrodItem.getSize(rod);
-		for (Fishes fish : values())
-			if (fish.weather.canCaught(now)) {
-				boolean canCycle = false;
-				for (Cycle cycle : fish.cycles)
-					if (cycle.canCaught(world.getTime()))
-						canCycle = true;
-				if (canCycle && Biomes.canCaught(fish.biomes, loc.getBlock().getBiome())
-						&& (size == null || size.equals(Size.None) || fish.size.equals(size)))
-					canCaught.add(fish);
-			}
+		for (Fishes fish : values()) {
+			boolean canCycle = false;
+			if (canCycle && Biomes.canCaught(fish.biomes, loc.getBlock().getBiome())
+					&& (size == null || fish.size.equals(size)))
+				canCaught.add(fish);
+		}
 		if (canCaught.size() > 0) {
 			Collections.shuffle(canCaught);
 			return canCaught.get(0);
@@ -336,48 +358,15 @@ public class Fishes {
 		return null;
 	}
 
-	private static enum Cycle {
-		Dawn(22500, 300), Morning(0, 0), Day(0, 0), Midday(0, 0), Afternoon(0, 0), Dusk(0, 0), Night(0, 0),
-		Midnight(0, 0)
-		//
-		;
-
-		//
-		private final long min;
-		private final long max;
-
-		private Cycle(long min, long max) {
-			this.min = min;
-			this.max = max;
-		}
-
-		public boolean canCaught(long now) {
-			if (min == max) {
-				return now == max;
-			} else if (min < max) {
-				return now >= min && now <= max;
-			} else
-				return now <= min || now >= max;
-		}
-	}
-
 	public static class Length {
 		private final double min;
 		private final double max;
 
-		public Length() {
-			this.min = 0;
-			this.max = 0;
-		}
-
-		public Length(double num) {
-			this.min = num;
-			this.max = num;
-		}
-
-		public Length(double min, double max) {
-			this.min = min;
-			this.max = max;
+		public Length(Size size, double percent) {
+			if (percent >= 3)
+				percent = 3;
+			this.min = size.getMainLength() * (1 - 0.3 * percent);
+			this.max = size.getMainLength() * (1 + 0.3 * percent);
 		}
 
 		public double getMax() {
@@ -472,7 +461,8 @@ public class Fishes {
 	}
 
 	public static enum Size {
-		None("없음"), Smallest("초소형"), Small("소형"), Middle("중형"), Big("대형"), Biggst("초대형"),
+//		None("없음",1),
+		Smallest("초소형", 10), Small("소형", 30), Middle("중형", 60), Big("대형", 100), Biggest("초대형", 200),
 		//
 		;
 
@@ -483,73 +473,20 @@ public class Fishes {
 		// 50~100
 		// 100~500
 		private final String name;
+		private final double main_length;
 
-		private Size(String name) {
+		private Size(String name, double main_length) {
 			this.name = name;
+			this.main_length = main_length;
 		}
 
 		public String getName() {
 			return name;
 		}
-	}
 
-	private enum Weather {
-		Clear {
-			@Override
-			public boolean canCaught(Weather other) {
-				return other.equals(Clear);
-			}
-		},
-		Storm {
-			@Override
-			public boolean canCaught(Weather other) {
-				return other.equals(Storm);
-			}
-		},
-		Thunder {
-			@Override
-			public boolean canCaught(Weather other) {
-				return other.equals(Thunder);
-			}
-		},
-		Clear_Storm {
-			@Override
-			public boolean canCaught(Weather other) {
-				return other.equals(Clear) || other.equals(Storm);
-			}
-		},
-		Clear_Thunder {
-			@Override
-			public boolean canCaught(Weather other) {
-				return other.equals(Clear) || other.equals(Thunder);
-			}
-		},
-		Storm_Thunder {
-			@Override
-			public boolean canCaught(Weather other) {
-				return other.equals(Storm) || other.equals(Thunder);
-			}
-		},
-		Always {
-			@Override
-			public boolean canCaught(Weather other) {
-				return other.equals(Clear) || other.equals(Storm) || other.equals(Thunder);
-			}
+		public double getMainLength() {
+			return main_length;
 		}
-		//
-		;
-
-		public static Weather getWeather(boolean clear, boolean storm, boolean thunder) {
-			if (clear) {
-				return Clear;
-			} else if (thunder) {
-				return Thunder;
-			} else
-				return Storm;
-		}
-
-		public abstract boolean canCaught(Weather other);
-
 	}
 
 	public static List<Fishes> values() {

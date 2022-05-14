@@ -2,6 +2,7 @@ package com.StarJ.LA.Systems;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -28,19 +29,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.StarJ.LA.Core;
 import com.StarJ.LA.Items.Buyable;
+import com.StarJ.LA.Items.CookingIngredient;
+import com.StarJ.LA.Items.CookingIngredient.IngredientType;
 import com.StarJ.LA.Items.CookingItem;
 import com.StarJ.LA.Items.FishItem;
 import com.StarJ.LA.Items.InventoryItem;
 import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.JewerlyItems;
 import com.StarJ.LA.Items.PotionItems;
-import com.StarJ.LA.Items.Cooking.CookingIngredient;
-import com.StarJ.LA.Items.Cooking.CookingIngredient.IngredientType;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.Comparables.ItemComparator;
 
 public enum GUIStores {
-	Exit(ChatColor.GREEN + "탈출의노래", 6 * 9) {
+	exit(ChatColor.GREEN + "탈출의노래", 6 * 9) {
 		@Override
 		public void openGUI(Player player, int page) {
 			List<Villages> list = HashMapStore.getVillages();
@@ -68,10 +69,10 @@ public enum GUIStores {
 			Location loc = village.getLocation();
 			List<String> lore = new ArrayList<String>();
 			lore.add(ChatColor.WHITE + "좌표 : " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
-			lore.add(ChatColor.RED + "재사용대기시간 : 30분");
+			lore.add(ChatColor.RED + "재사용대기시간 : 5분");
 			BigInteger time = BigInteger.valueOf(System.currentTimeMillis())
 					.subtract(HashMapStore.getExitCool(player.getUniqueId().toString()));
-			BigInteger last = BigInteger.valueOf(1000 * 60 * 30);
+			BigInteger last = BigInteger.valueOf(1000 * 60 * 5);
 			lore.add(ChatColor.AQUA + (time.compareTo(last) > 0 ? "사용 가능"
 					: "남은 시간 : " + (last.subtract(time)).divide(BigInteger.valueOf(1000)).toString() + "s"));
 			meta.setLore(lore);
@@ -87,14 +88,13 @@ public enum GUIStores {
 				if (list.size() > page * 5 * 9 + slot) {
 					BigInteger time = BigInteger.valueOf(System.currentTimeMillis())
 							.subtract(HashMapStore.getExitCool(player.getUniqueId().toString()));
-					BigInteger last = BigInteger.valueOf(1000 * 60 * 30);
+					BigInteger last = BigInteger.valueOf(1000 * 60 * 5);
 					if (time.compareTo(last) > 0 || player.getGameMode().equals(GameMode.CREATIVE)) {
 						player.teleport(list.get(page * 5 * 9 + slot).getLocation());
 						if (!player.getGameMode().equals(GameMode.CREATIVE))
 							HashMapStore.setExitCool(player.getUniqueId().toString(),
 									new Random().nextDouble() < 0.15 ? BigInteger.ZERO
 											: BigInteger.valueOf(System.currentTimeMillis()));
-						ConfigStore.Confirm();
 					} else
 						player.sendMessage(ChatColor.RED + "아직 사용할 수 없습니다. - "
 								+ (last.subtract(time)).divide(BigInteger.valueOf(1000)).toString() + "s");
@@ -139,7 +139,6 @@ public enum GUIStores {
 									HashMapStore.setBifrostCool(player.getUniqueId().toString(),
 											new Random().nextDouble() < 0.15 ? BigInteger.ZERO
 													: BigInteger.valueOf(System.currentTimeMillis()));
-								ConfigStore.Confirm();
 							} else
 								player.sendMessage(ChatColor.RED + "비프로스트가 등록되어 있지않습니다.");
 						} else
@@ -158,7 +157,6 @@ public enum GUIStores {
 									HashMapStore.setBifrost2Cool(player.getUniqueId().toString(),
 											new Random().nextDouble() < 0.15 ? BigInteger.ZERO
 													: BigInteger.valueOf(System.currentTimeMillis()));
-								ConfigStore.Confirm();
 							} else
 								player.sendMessage(ChatColor.RED + "비프로스트가 등록되어 있지않습니다.");
 						} else
@@ -278,7 +276,7 @@ public enum GUIStores {
 		}
 
 	},
-	Home(ChatColor.GREEN + "귀환의 노래", 1 * 9) {
+	home(ChatColor.GREEN + "귀환의 노래", 1 * 9) {
 		@Override
 		public void openGUI(Player player, int page) {
 			inv.setItem(4, getHomeItemStack(player, player.getBedSpawnLocation()));
@@ -321,7 +319,6 @@ public enum GUIStores {
 							HashMapStore.setHomeCool(player.getUniqueId().toString(),
 									new Random().nextDouble() < 0.15 ? BigInteger.ZERO
 											: BigInteger.valueOf(System.currentTimeMillis()));
-						ConfigStore.Confirm();
 					} else
 						player.sendMessage(ChatColor.RED + "아직 사용할 수 없습니다. - "
 								+ (last.subtract(time)).divide(BigInteger.valueOf(1000)).toString() + "s");
@@ -434,6 +431,11 @@ public enum GUIStores {
 				Buyable buy = (Buyable) i;
 				inv.setItem(48, buy.getInfoItemStack(player, i.getItemStack()));
 			}
+			{
+				Items i = Items.fishbox;
+				Buyable buy = (Buyable) i;
+				inv.setItem(50, buy.getInfoItemStack(player, i.getItemStack()));
+			}
 			//
 			player.openInventory(inv);
 		}
@@ -514,7 +516,6 @@ public enum GUIStores {
 				if (list.size() > page * 5 * 9 + slot) {
 					player.teleport(list.get(page * 5 * 9 + slot).getLocation());
 					player.closeInventory();
-					ConfigStore.Confirm();
 				}
 			}
 			return true;
@@ -808,8 +809,26 @@ public enum GUIStores {
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(ChatColor.GREEN + "스탯");
 			List<String> lore = new ArrayList<String>();
-			for (Stats stat : Stats.values())
+			for (Stats stat : Stats.values()) {
 				lore.add(ChatColor.GREEN + stat.getDisplayname() + " : " + (int) stat.getStat(player));
+				if (stat.equals(Stats.Speed)) {
+					lore.add(ChatColor.WHITE + " - 쿨타임 "
+							+ Math.round((1 - Stats.Speed.getStatPercent(player)) * 10000.d) / 100.0d + "% 감소");
+				} else if (stat.equals(Stats.Specialization)) {
+					Jobs job = ConfigStore.getJob(player);
+					if (job != null)
+						for (String l : job.getSpecialinfo())
+							lore.add(ChatColor.WHITE + l + " : "
+									+ Math.round((Stats.Specialization.getStatPercent(player) - 1) * 10000.0d) / 100.0d
+									+ "%");
+				} else if (stat.equals(Stats.Critical)) {
+					lore.add(ChatColor.WHITE + " - 치명타 확률 "
+							+ Math.round((0.01 + Stats.Critical.getStatPercent(player)) * 10000.0d) / 100.0 + "%");
+				} else if (stat.equals(Stats.Enduration)) {
+					lore.add(ChatColor.WHITE + " - 피해량 "
+							+ Math.round((1 - Stats.Enduration.getStatPercent(player)) * 10000.d) / 100.0d + "% 감소");
+				}
+			}
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			return item;
@@ -1278,11 +1297,10 @@ public enum GUIStores {
 				if (new ItemComparator().compare(item, getBROWNEmpty()) < 3)
 					if (item != null) {
 						Items i = Items.valueOf(item);
-						if (i == null)
-							if (player.getInventory().firstEmpty() != -1) {
-								player.getInventory().addItem(item);
-							} else
-								player.getWorld().dropItem(player.getEyeLocation(), item);
+						if (player.getInventory().firstEmpty() != -1) {
+							player.getInventory().addItem(item);
+						} else
+							player.getWorld().dropItem(player.getEyeLocation(), item);
 					}
 			return false;
 		}
@@ -1290,7 +1308,6 @@ public enum GUIStores {
 		@Override
 		public boolean Drag(Player player, Set<Integer> slots, Set<Integer> raw_slots) {
 			return false;
-
 		}
 
 	},
@@ -1714,7 +1731,7 @@ public enum GUIStores {
 				inv.setItem(slot, EnchantsType.getEnchantItem(ench, 1 + tool.getEnchantmentLevel(ench), book));
 				// 가시
 				ench = Enchantment.THORNS;
-				slot += 6;
+				slot += 9;
 				inv.setItem(slot, EnchantsType.getEnchantItem(ench, 1 + tool.getEnchantmentLevel(ench), book));
 
 				player.openInventory(inv);
@@ -1953,8 +1970,10 @@ public enum GUIStores {
 			for (ItemStack item : inv.getContents())
 				if (item != null) {
 					Items i = Items.valueOf(item);
+					List<CookingIngredient> list = CookingIngredient.getList();
+					Collections.shuffle(list);
 					if (i == null)
-						for (CookingIngredient ing : CookingIngredient.getList())
+						for (CookingIngredient ing : list)
 							if (ing.getItemStack().getType().equals(item.getType())) {
 								int amount = item.getAmount();
 								if (ing instanceof FishItem) {
@@ -1979,6 +1998,69 @@ public enum GUIStores {
 			return false;
 		}
 
+	},
+	training(ChatColor.DARK_PURPLE + "허수아비", 1 * 9) {
+
+		@Override
+		public void openGUI(Player player, int page) {
+			Inventory inv = Bukkit.createInventory(null, 1 * 9, ChatColor.DARK_PURPLE + "허수아비");
+			inv.setItem(3, getInfoItemStack(player));
+			inv.setItem(5, getResetItemStack(player));
+			player.openInventory(inv);
+		}
+
+		private ItemStack getInfoItemStack(Player player) {
+			ItemStack item = new ItemStack(Material.COMPASS);
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(ChatColor.GREEN + "데미지 측정");
+			List<String> lore = new ArrayList<String>();
+			long duration = ((HashMapStore.getMeasureEndTime(player) - HashMapStore.getMeasureStartTime(player))
+					/ 1000);
+			double damage = HashMapStore.getMeasureDamage(player);
+			lore.add(ChatColor.WHITE + "지속시간 : " + duration);
+			lore.add(ChatColor.WHITE + "총 피해량 : " + Math.round(damage * 10) / 10.0);
+			lore.add(ChatColor.WHITE + "치명타율 : " + Math.round(10000.0d * HashMapStore.getMeasureCriticalCount(player)
+					/ HashMapStore.getMeasureDamageCount(player)) / 100.0d + "%");
+			lore.add(ChatColor.GREEN + "DPS : " + (duration > 0 ? Math.round(damage * 10.0 / duration) / 10.0 : 0));
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		private ItemStack getResetItemStack(Player player) {
+			ItemStack item = new ItemStack(Material.BARRIER);
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(ChatColor.GREEN + "초기화");
+			List<String> lore = new ArrayList<String>();
+			lore.add(ChatColor.WHITE + "클릭시 초기화");
+			lore.add(ChatColor.WHITE + "측정은 공격 시작 및 종료 시간으로 자동 측정");
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+			return item;
+		}
+
+		@Override
+		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
+			if (raw_slot == 5) {
+				HashMapStore.setMeasureDamage(player, 0);
+				HashMapStore.setMeasureDamageCount(player, 0);
+				HashMapStore.setMeasureCriticalCount(player, 0);
+				HashMapStore.setMeasureStartTime(player);
+				HashMapStore.setMeasureEndTime(player);
+				player.closeInventory();
+			}
+			return true;
+		}
+
+		@Override
+		public boolean Close(Player player, Inventory inv) {
+			return false;
+		}
+
+		@Override
+		public boolean Drag(Player player, Set<Integer> slots, Set<Integer> raw_slots) {
+			return true;
+		}
 	}
 
 	//

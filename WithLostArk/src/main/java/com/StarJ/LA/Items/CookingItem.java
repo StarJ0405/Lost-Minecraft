@@ -7,12 +7,14 @@ import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.StarJ.LA.Systems.Basics;
 import com.StarJ.LA.Systems.ConfigStore;
+import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
 
@@ -40,32 +42,19 @@ public class CookingItem extends Items {
 		ItemMeta meta = item.getItemMeta();
 		Rank rank = Rank.getRandomRank();
 		double chance = Basics.Cooking.getChance(level).doubleValue();
-		String suffix = "";
 		if (level > 40 && r.nextDouble() < chance / 5) {
 			int ord = rank.ordinal();
 			if (ord < Rank.values().length - 1)
 				rank = Rank.values()[ord + 1];
-			suffix += "등급 상슴";
 		}
-
-		if (level > 10 && r.nextDouble() < chance / 2) {
+		if (level > 10 && r.nextDouble() < chance / 2)
 			health *= 1 + level * 0.02;
-			if (!suffix.equals(""))
-				suffix += ", ";
-			suffix += "효과 강화";
-		}
-		meta.setDisplayName(rank.getPrefix() + " 요리");
+		meta.setDisplayName(rank.getPrefix() + " " + this.key);
 		List<String> lore = new ArrayList<String>();
-		lore.add(ChatColor.GREEN + "회복량 : " + health * rank.getHealth());
+		lore.add(ChatColor.GREEN + "회복량 : " + health * rank.getMulti());
 		lore.add(rank.getColor() + "RANK : " + rank.name());
-		if (level > 20 && r.nextDouble() < chance / 3) {
-			lore.add(ChatColor.DARK_PURPLE + "추가 효과 : " + Extra.getRandomExtra().getName());
-			if (!suffix.equals(""))
-				suffix += ", ";
-			suffix += "추가 효과";
-		}
-		if (!suffix.equals(""))
-			lore.add(ChatColor.GRAY + suffix);
+		if (level > 20 && r.nextDouble() < chance / 3)
+			item.setAmount(1 + (level / 16));
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;
@@ -73,22 +62,30 @@ public class CookingItem extends Items {
 
 	public static boolean use(Player player, ItemStack item) {
 		Jobs job = ConfigStore.getJob(player);
-		if (job != null) {
-			double max = job.getMaxHealth(player);
-			double health = HashMapStore.getHealth(player);
-			if (health < max) {
-				if (item.hasItemMeta() && item.getItemMeta().hasLore())
-					for (String lore : item.getItemMeta().getLore())
-						if (lore.contains("회복량 : ")) {
-							health += Integer.valueOf(lore.split("회복량 : ")[1]);
-							break;
-						}
-				HashMapStore.setHealth(player, health);
-				return true;
-			} else {
-				player.sendMessage(ChatColor.RED + "체력이 이미 최대치입니다.");
-				player.closeInventory();
+		if (!player.hasCooldown(Material.HONEY_BOTTLE)) {
+			if (job != null) {
+				double max = job.getMaxHealth(player);
+				double health = HashMapStore.getHealth(player);
+				if (health < max) {
+					if (item.hasItemMeta() && item.getItemMeta().hasLore())
+						for (String lore : item.getItemMeta().getLore())
+							if (lore.contains("회복량 : ")) {
+								health += Integer.valueOf(lore.split("회복량 : ")[1]);
+								break;
+							}
+					HashMapStore.setHealth(player, health);
+					player.setCooldown(Material.HONEY_BOTTLE, 20 * 10);
+					player.closeInventory();
+					player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
+					Effects.Directional.HEART.spawnDirectional(player, player.getEyeLocation(), 5, 0.1, 0.1, 0.1, 1);
+					return true;
+				} else {
+					player.sendMessage(ChatColor.RED + "체력이 이미 최대치입니다.");
+					player.closeInventory();
+				}
 			}
+		} else {
+			player.sendMessage(ChatColor.RED + "회복 쿨타임 : " + player.getCooldown(Material.HONEY_BOTTLE) / 20.0d + "초");
 		}
 		return false;
 	}
@@ -102,27 +99,6 @@ public class CookingItem extends Items {
 		return 0;
 	}
 
-	public enum Extra {
-		Test("테스트용")
-		//
-		;
-
-		private final String name;
-
-		private Extra(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public static Extra getRandomExtra() {
-			Extra[] extras = Extra.values();
-			return extras[new Random().nextInt(extras.length)];
-		}
-	}
-
 	public enum Rank {
 		Trash(ChatColor.GRAY, "형편없는", 9600, 1), Common(ChatColor.WHITE, "평범한", 4800, 2),
 		Special(ChatColor.YELLOW, "특별한", 2400, 5), Rare(ChatColor.AQUA, "희귀한", 1200, 10),
@@ -134,13 +110,13 @@ public class CookingItem extends Items {
 		private final int chance;
 		private final ChatColor color;
 		private final String prefix;
-		private final int health;
+		private final int multi;
 
-		private Rank(ChatColor color, String prefix, int chance, int health) {
+		private Rank(ChatColor color, String prefix, int chance, int multi) {
 			this.color = color;
 			this.prefix = prefix;
 			this.chance = chance;
-			this.health = health;
+			this.multi = multi;
 		}
 
 		public String getPrefix() {
@@ -151,8 +127,8 @@ public class CookingItem extends Items {
 			return BigDecimal.valueOf(chance);
 		}
 
-		public int getHealth() {
-			return health;
+		public int getMulti() {
+			return multi;
 		}
 
 		public ChatColor getColor() {

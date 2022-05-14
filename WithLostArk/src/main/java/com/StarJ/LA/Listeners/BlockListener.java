@@ -1,5 +1,7 @@
 package com.StarJ.LA.Listeners;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Location;
@@ -88,77 +90,102 @@ public class BlockListener implements Listener {
 					Location confirm_loc = loc.clone();
 					int exp = 0;
 					while (Basics.isChopping(confirm_loc.getBlock().getType())) {
-						for (int x = -3; x <= 3; x++)
-							for (int z = -3; z <= 3; z++) {
-								Block b = confirm_loc.clone().add(x, 0, z).getBlock();
-								if (Basics.isChopping(b.getType())) {
-									for (ItemStack i : Basics.getChopping(b.getType())) {
-										int amount = i.getDurability() + r.nextInt(i.getAmount());
-										if (amount > 0) {
-											if (ConfigStore.isBasicsDuration(player, Basics.Chopping, 3))
-												amount += 1;
-											if (item.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
-												int ench_level = item
-														.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
-												if (r.nextDouble() < (1.0 / 5 * ench_level))
-													amount += (int) (ench_level / 3 + 1);
+						while (Basics.isChopping(confirm_loc.getBlock().getType())) {
+							for (int x = -3; x <= 3; x++)
+								for (int z = -3; z <= 3; z++) {
+									Block b = confirm_loc.clone().add(x, 0, z).getBlock();
+									if (Basics.isChopping(b.getType())) {
+										if (b.getType().name().contains("LEAVES")) {
+											if (r.nextDouble() < 0.25d) {
+												ItemStack[] is = Basics.getChopping(b.getType());
+												ItemStack i = is[r.nextInt(is.length)];
+												int amount = i.getDurability() + r.nextInt(i.getAmount());
+												if (amount > 0) {
+													if (ConfigStore.isBasicsDuration(player, Basics.Chopping, 3))
+														amount += 1;
+													if (item.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
+														int ench_level = item
+																.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+														if (r.nextDouble() < (1.0 / 5 * ench_level))
+															amount += (int) (ench_level / 3 + 1);
+													}
+													ItemStack clone = i.clone();
+													clone.setAmount(amount);
+													clone.setDurability((short) 0);
+													b.getWorld().dropItem(loc, clone);
+												}
 											}
-											ItemStack clone = i.clone();
-											clone.setAmount(amount);
-											clone.setDurability((short) 0);
-											b.getWorld().dropItem(loc, clone);
-										}
+										} else
+											for (ItemStack i : Basics.getChopping(b.getType())) {
+												int amount = i.getDurability() + r.nextInt(i.getAmount());
+												if (amount > 0) {
+													if (ConfigStore.isBasicsDuration(player, Basics.Chopping, 3))
+														amount += 1;
+													if (item.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
+														int ench_level = item
+																.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+														if (r.nextDouble() < (1.0 / 5 * ench_level))
+															amount += (int) (ench_level / 3 + 1);
+													}
+													ItemStack clone = i.clone();
+													clone.setAmount(amount);
+													clone.setDurability((short) 0);
+													b.getWorld().dropItem(loc, clone);
+												}
+											}
+										Material b_type = b.getType();
+										b.setType(Material.AIR);
+										Material confirm = b.getLocation().add(0, -1, 0).getBlock().getType();
+										if (confirm.equals(Material.GRASS_BLOCK) || confirm.equals(Material.DIRT)
+												|| confirm.equals(Material.COARSE_DIRT)
+												|| confirm.equals(Material.PODZOL)
+												|| confirm.equals(Material.ROOTED_DIRT))
+											if (Basics.Chopping.isActive(level))
+												if (Basics.isChoppingSappling(b_type)) {
+													b.setType(Basics.getChoppingSappling(b_type));
+												} else if (b_type.equals(Material.MUSHROOM_STEM))
+													if (r.nextBoolean()) {
+														b.setType(Material.RED_MUSHROOM);
+													} else
+														b.setType(Material.BROWN_MUSHROOM);
+										exp += Basics.getChoppingExp(b_type);
+										if (!item.containsEnchantment(Enchantment.DURABILITY) || r.nextDouble() < (1
+												/ (1.0 + item.getEnchantmentLevel(Enchantment.DURABILITY))))
+											item.setDurability((short) (item.getDurability() + 1));
 									}
-									Material b_type = b.getType();
-									b.setType(Material.AIR);
-									Material confirm = b.getLocation().add(0, -1, 0).getBlock().getType();
-									if (confirm.equals(Material.GRASS_BLOCK) || confirm.equals(Material.DIRT)
-											|| confirm.equals(Material.COARSE_DIRT) || confirm.equals(Material.PODZOL)
-											|| confirm.equals(Material.ROOTED_DIRT))
-										if (Basics.Chopping.isActive(level))
-											if (Basics.isChoppingSappling(b_type)) {
-												b.setType(Basics.getChoppingSappling(b_type));
-											} else if (b_type.equals(Material.MUSHROOM_STEM))
-												if (r.nextBoolean()) {
-													b.setType(Material.RED_MUSHROOM);
-												} else
-													b.setType(Material.BROWN_MUSHROOM);
-									exp += Basics.getChoppingExp(b_type);
 								}
-							}
+							if (item.getDurability() > item.getType().getMaxDurability())
+								item.setAmount(0);
+							confirm_loc.add(0, 1, 0);
+						}
+						player.playSound(player, Sound.BLOCK_WOOD_BREAK, 2f, 1f);
 						confirm_loc.add(0, 1, 0);
 					}
-					player.playSound(player, Sound.BLOCK_WOOD_BREAK, 2f, 1f);
 					if (exp > 0) {
 						Basics.Chopping.addEXP(player, exp);
 					}
+					player.playSound(player, Sound.BLOCK_WOOD_BREAK, 2f, 1f);
+
 				}
 			} else if (tool.equals(EnchantsType.Shovel)) {
 				if (Basics.isDigging(block_type)) {
 					int level = Basics.Digging.getLevel(player);
-					double add = 0;
-					if (ConfigStore.isBasicsDuration(player, Basics.Digging, 2))
-						add += Basics.Digging.getChance(level).doubleValue();
+					double chance = Basics.Digging.getChance(level).doubleValue();
+					if (ConfigStore.isBasicsDuration(player, Basics.Digging, 1))
+						chance += Basics.Digging.getChance(level).doubleValue();
 					int count = ConfigStore.getBasicsNumber(player, Basics.Digging, 3);
-					if (ConfigStore.isBasicsDuration(player, Basics.Digging, 1)) {
-						int range = level / 10 + 1;
-						for (int x = -range; x <= range; x++)
-							for (int z = -range; z <= range; z++) {
-								Block b = loc.clone().add(x, 0, z).getBlock();
-								if (Basics.isDigging(b.getType()))
-									if (count > 0 || Basics.Digging.isActive(level)) {
-										for (DiggingItems diggs : Basics.getDigging(b.getType())) {
-											if (diggs.canGet(add))
-												b.getWorld().dropItem(b.getLocation(), diggs.getItemStack());
-										}
-										if (count > 0)
-											ConfigStore.setBasicsNumber(player, Basics.Digging, 3, count - 1);
-									}
-							}
-					} else if (count > 0 || Basics.Digging.isActive(level)) {
-						for (DiggingItems diggs : Basics.getDigging(block_type)) {
-							if (diggs.canGet(add))
+					if (count > 0 || r.nextDouble() < chance) {
+						int amount = 1;
+						List<DiggingItems> list = DiggingItems.getDiggingItems();
+						Collections.shuffle(list);
+						if (ConfigStore.isBasicsDuration(player, Basics.Digging, 2))
+							amount += level / 10;
+						for (DiggingItems diggs : list) {
+							if (amount > 0) {
 								block.getWorld().dropItem(block.getLocation(), diggs.getItemStack());
+								amount--;
+							} else
+								break;
 						}
 						if (count > 0)
 							ConfigStore.setBasicsNumber(player, Basics.Digging, 3, count - 1);
@@ -170,6 +197,5 @@ public class BlockListener implements Listener {
 					}
 				}
 			}
-
 	}
 }

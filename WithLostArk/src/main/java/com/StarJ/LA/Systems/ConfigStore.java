@@ -1026,13 +1026,6 @@ public class ConfigStore {
 			ItemStack air = new ItemStack(Material.AIR);
 			if (job != null)
 				if (status) {
-//					ConfigurationSection cs = fc.isConfigurationSection("hotbar") ? fc.getConfigurationSection("hotbar")
-//							: fc.createSection("hotbar");
-//					cs.set("offhand", inv.getItemInOffHand());
-//					cs.set("helmet", inv.getHelmet());
-//					cs.set("chestplate", inv.getChestplate());
-//					cs.set("leggings", inv.getLeggings());
-//					cs.set("boots", inv.getBoots());
 					List<ItemStack> saves = new ArrayList<ItemStack>();
 					saves.addAll(Arrays.asList(player.getInventory().getContents()));
 
@@ -1468,21 +1461,22 @@ public class ConfigStore {
 				if (fc.isConfigurationSection("shops"))
 					fc.set("shops", null);
 				ConfigurationSection cs = fc.createSection("shops");
-				for (LivingEntity le : Bukkit.getWorlds().get(0).getLivingEntities())
-					if (le instanceof Villager) {
-						if (le.hasMetadata("key")) {
-							for (MetadataValue v : le.getMetadata("key"))
-								if (v.getOwningPlugin().equals(Core.getCore())) {
-									le.remove();
-									break;
-								}
+				for (World world : Bukkit.getWorlds())
+					for (LivingEntity le : world.getLivingEntities())
+						if (le instanceof Villager) {
+							if (le.hasMetadata("key")) {
+								for (MetadataValue v : le.getMetadata("key"))
+									if (v.getOwningPlugin().equals(Core.getCore())) {
+										le.remove();
+										break;
+									}
+							}
+							if (!le.hasAI()) {
+								le.remove();
+							}
+							if (le.getCustomName() != null || le.isCustomNameVisible())
+								le.remove();
 						}
-						if (!le.hasAI()) {
-							le.remove();
-						}
-						if (le.getCustomName() != null || le.isCustomNameVisible())
-							le.remove();
-					}
 				HashMap<Location, ShopStores> hs = HashMapStore.getStores();
 				for (Location l : hs.keySet()) {
 					String key = l.getWorld().getName() + ", " + l.getX() + ", " + l.getY() + ", " + l.getZ() + ", "
@@ -1531,7 +1525,6 @@ public class ConfigStore {
 
 	public static void Confirm() {
 		new BukkitRunnable() {
-
 			@Override
 			public void run() {
 				try {
@@ -1544,34 +1537,35 @@ public class ConfigStore {
 					}
 					fc.load(file);
 					{
-						for (LivingEntity le : Bukkit.getWorlds().get(0).getLivingEntities())
-							if (le instanceof Villager) {
-								if (le.hasMetadata("key")) {
-									for (MetadataValue v : le.getMetadata("key"))
-										if (v.getOwningPlugin().equals(Core.getCore())) {
-											le.remove();
-											break;
-										}
+						for (World world : Bukkit.getWorlds())
+							for (LivingEntity le : world.getLivingEntities())
+								if (le instanceof Villager) {
+									if (le.hasMetadata("key")) {
+										for (MetadataValue v : le.getMetadata("key"))
+											if (v.getOwningPlugin().equals(Core.getCore())) {
+												le.remove();
+												break;
+											}
+									}
+									if (!le.hasAI()) {
+										le.remove();
+									}
+									if (le.getCustomName() != null || le.isCustomNameVisible())
+										le.remove();
+								} else if (le instanceof ArmorStand) {
+									if (le.hasMetadata("key")) {
+										for (MetadataValue v : le.getMetadata("key"))
+											if (v.getOwningPlugin().equals(Core.getCore())) {
+												le.remove();
+												break;
+											}
+									}
+									if (!le.hasAI()) {
+										le.remove();
+									}
+									if (le.getCustomName() != null || le.isCustomNameVisible())
+										le.remove();
 								}
-								if (!le.hasAI()) {
-									le.remove();
-								}
-								if (le.getCustomName() != null || le.isCustomNameVisible())
-									le.remove();
-							} else if (le instanceof ArmorStand) {
-								if (le.hasMetadata("key")) {
-									for (MetadataValue v : le.getMetadata("key"))
-										if (v.getOwningPlugin().equals(Core.getCore())) {
-											le.remove();
-											break;
-										}
-								}
-								if (!le.hasAI()) {
-									le.remove();
-								}
-								if (le.getCustomName() != null || le.isCustomNameVisible())
-									le.remove();
-							}
 					}
 					if (fc.isConfigurationSection("shops")) {
 						ConfigurationSection cs = fc.getConfigurationSection("shops");
@@ -1615,7 +1609,7 @@ public class ConfigStore {
 					e.printStackTrace();
 				}
 			}
-		}.runTaskLater(Core.getCore(), 20 * 5);
+		}.runTaskLater(Core.getCore(), 1);
 	}
 
 	public static void Load() {
@@ -1628,6 +1622,20 @@ public class ConfigStore {
 				file.createNewFile();
 			}
 			fc.load(file);
+			if (fc.isList("worlds")) {
+				List<String> list = fc.getStringList("worlds");
+				for (String name : list) {
+					World world = Bukkit.getWorld(name);
+					if (world == null) {
+						File f = new File(name);
+						if (f.exists()) {
+							new WorldCreator(name).createWorld();
+							Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + name + "을 LOAD했습니다.");
+						}
+					}
+				}
+
+			}
 			if (fc.isConfigurationSection("homes")) {
 				ConfigurationSection cs = fc.getConfigurationSection("homes");
 				for (String key : cs.getKeys(false)) {
@@ -1672,20 +1680,6 @@ public class ConfigStore {
 							}
 					}
 				}
-			}
-			if (fc.isList("worlds")) {
-				List<String> list = fc.getStringList("worlds");
-				for (String name : list) {
-					World world = Bukkit.getWorld(name);
-					if (world == null) {
-						File f = new File(name);
-						if (f.exists()) {
-							new WorldCreator(name).createWorld();
-							Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + name + "을 LOAD했습니다.");
-						}
-					}
-				}
-
 			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();

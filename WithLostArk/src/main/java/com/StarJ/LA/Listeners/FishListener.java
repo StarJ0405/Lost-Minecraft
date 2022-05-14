@@ -51,7 +51,7 @@ public class FishListener implements Listener {
 					ConfigStore.setBasicsNumber(player, Basics.Fishing, 1, money_chance - 1);
 					player.sendMessage(
 							ChatColor.GREEN + "손맛 남은 횟수 : " + ConfigStore.getBasicsNumber(player, Basics.Fishing, 1));
-				}
+				}			
 				HashMap<Rarity, BigDecimal> abil = new HashMap<Rarity, BigDecimal>();
 				int multi_chance = ConfigStore.getBasicsNumber(player, Basics.Fishing, 2);
 				if (multi_chance > 0) {

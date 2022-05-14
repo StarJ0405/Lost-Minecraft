@@ -2,28 +2,30 @@ package com.StarJ.LA.Items;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class DiggingItems extends Items {
 	private final static List<DiggingItems> list = new ArrayList<DiggingItems>();
 	//
-	private final double chance;
+	private final PotionItems potion;
+	private final ItemStack[] ings;
 
-	public DiggingItems(String key, Material type, ChatColor color, double chance) {
+	public DiggingItems(String key, Material type, ChatColor color, PotionItems potion, ItemStack[] ings) {
 		super("BASICS_DIGGING", key, type, color);
-		this.chance = chance;
+		this.potion = potion;
+		this.ings = ings;
 		list.add(this);
 	}
 
-	public double getChance() {
-		return chance;
+	public PotionItems getPotion() {
+		return potion;
 	}
 
-	public boolean canGet(double add) {
-		return new Random().nextDouble() < (chance + add);
+	public ItemStack[] getIngs() {
+		return ings;
 	}
 
 	public static List<DiggingItems> getDiggingItems() {

@@ -78,6 +78,6 @@ public enum Stats {
 	}
 
 	public static boolean isCritical(Player player) {
-		return (Stats.Critical.getStat(player) + 0.01) > new Random().nextDouble();
+		return (Stats.Critical.getStatPercent(player) + 0.01) > new Random().nextDouble();
 	}
 }

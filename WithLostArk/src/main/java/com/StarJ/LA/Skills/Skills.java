@@ -132,10 +132,6 @@ public abstract class Skills {
 
 	}
 
-	public double getWeaponPercent(Player player) {
-		return (1 + ConfigStore.getWeaponLevel(player, ConfigStore.getJob(player)) * 0.1);
-	}
-
 	public boolean Hit(Player player, LivingEntity entity, int slot) {
 		return false;// true=end/false=pass
 	}

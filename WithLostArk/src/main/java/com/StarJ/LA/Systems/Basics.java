@@ -14,7 +14,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.StarJ.LA.Items.DiggingItems;
 import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Systems.Fishes.Rarity;
 import com.StarJ.LA.Systems.Comparables.ItemComparator;
@@ -48,7 +47,7 @@ public enum Basics {
 			}
 			lore.add(ChatColor.GREEN + "범위 수확" + ChatColor.AQUA + " (우클릭 / 확정)");
 			lore.add(ChatColor.WHITE + " - 괭이로 " + ((level / 10) * 2 + 3) + "칸을 수확합니다. "
-					+ (getChance(level).doubleValue() * 100) + "%로 내구도 소모");
+					+ Math.round(getChance(level).doubleValue() * 1000) / 10.0d + "%로 내구도 소모");
 			return lore;
 		}
 	},
@@ -111,8 +110,8 @@ public enum Basics {
 				lore.add(ChatColor.WHITE + " - " + (level / 2 + 5) + "칸 내에 동물들을 15초 동안 추적합니다.");
 			}
 			lore.add(ChatColor.GREEN + "훌륭한 사냥감" + ChatColor.AQUA + " (패시브 / 확정)");
-			lore.add(ChatColor.WHITE + " - " + (getChance(level).doubleValue() * 100) + "%로 2-" + (level / 10 + 2)
-					+ "개 추가 획득합니다.");
+			lore.add(ChatColor.WHITE + " - " + Math.round(getChance(level).doubleValue() * 1000) / 10.0d + "%로 2-"
+					+ (level / 10 + 2) + "개 추가 획득합니다.");
 
 			return lore;
 		}
@@ -144,8 +143,8 @@ public enum Basics {
 				lore.add(ChatColor.WHITE + " - 성급함 " + (level / 10) + "를 " + level * 5 + "초 동안 획득합니다.");
 			}
 			lore.add(ChatColor.GREEN + "행운의 사나이" + ChatColor.AQUA + " (패시브 / 확률)");
-			lore.add(ChatColor.WHITE + " - " + (getChance(level).doubleValue() * 100) + "%로 " + (level / 10 + 1)
-					+ "개 추가 획득합니다.");
+			lore.add(ChatColor.WHITE + " - " + Math.round(getChance(level).doubleValue() * 1000) / 10.0d + "%로 "
+					+ (level / 10 + 1) + "개 추가 획득합니다.");
 			return lore;
 		}
 	},
@@ -176,7 +175,8 @@ public enum Basics {
 				lore.add(ChatColor.WHITE + " - 주변 " + (level / 2 + 5) + "범위 나무와 나뭇잎을 베어버립니다.");
 			}
 			lore.add(ChatColor.GREEN + "묘목 심기" + ChatColor.AQUA + " (패시브 / 확률)");
-			lore.add(ChatColor.WHITE + " - " + (getChance(level).doubleValue() * 100) + "%로 해당 자리에 묘목을 심습니다.");
+			lore.add(ChatColor.WHITE + " - " + Math.round(getChance(level).doubleValue() * 1000) / 10.0d
+					+ "%로 해당 자리에 묘목을 심습니다.");
 			return lore;
 		}
 	},
@@ -188,7 +188,7 @@ public enum Basics {
 
 		@Override
 		public BigDecimal getChance(int level) {
-			return new BigDecimal(level).multiply(new BigDecimal(0.001));
+			return new BigDecimal(level).multiply(new BigDecimal(0.002));
 		}
 
 		@Override
@@ -196,19 +196,20 @@ public enum Basics {
 			List<String> lore = new ArrayList<String>();
 			if (level >= 40) {
 				lore.add(ChatColor.GREEN + "완벽한 발굴" + ChatColor.AQUA + " (쉬프트+쉬프트 / " + (450 - level * 3) + "초)");
-				lore.add(ChatColor.WHITE + " - " + (level / 10 + 1) + "회동안 보물을 발굴합니다.");
+				lore.add(ChatColor.WHITE + " - " + (level / 10 + 1) + "회동안 제작도를 발굴합니다.");
 			}
 			if (level >= 20) {
-				lore.add(ChatColor.GREEN + "과감한 발굴" + ChatColor.AQUA + " (쉬프트+우클릭 / " + (300 - level * 2) + "초)");
-				lore.add(ChatColor.WHITE + " - " + (level * 2) + "초동안 보물 확률이 " + getChance(level).doubleValue() * 100
-						+ "% 증가합니다.");
+				lore.add(ChatColor.GREEN + "노련한 탐색" + ChatColor.AQUA + " (우클릭 / " + (300 - level * 2) + "초)");
+				lore.add(ChatColor.WHITE + " - " + (level * 2) + "초동안 제작도의 획득 개수가" + (level / 10) + "개 증가합니다.");
 			}
 			if (level >= 10) {
-				lore.add(ChatColor.GREEN + "노련한 탐색" + ChatColor.AQUA + " (우클릭 / " + (60 - level) * 5 + "초)");
-				lore.add(ChatColor.WHITE + " - " + (level * 2) + "초동안 발굴범위가 " + (level / 10 * 2 + 3) + "칸 증가합니다.");
+				lore.add(ChatColor.GREEN + "과감한 발굴" + ChatColor.AQUA + " (쉬프트+우클릭 / " + (60 - level) * 5 + "초)");
+				lore.add(ChatColor.WHITE + " - " + (level * 2) + "초동안 제작도 확률이 +"
+						+ Math.round(getChance(level).doubleValue() * 1000) / 10.0d + "% 증가합니다.");
 			}
 			lore.add(ChatColor.GREEN + "보물 탐색" + ChatColor.AQUA + " (패시브 / 확률)");
-			lore.add(ChatColor.WHITE + " - " + (getChance(level).doubleValue() * 100) + "%로 보물을 발견합니다.");
+			lore.add(ChatColor.WHITE + " - " + Math.round(getChance(level).doubleValue() * 1000) / 10.0d
+					+ "%로 제작도를 발견합니다.");
 			return lore;
 		}
 	},
@@ -231,9 +232,9 @@ public enum Basics {
 				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 5 + "%로 요리 등급이 상승합니다.");
 			}
 			if (level >= 20) {
-				lore.add(ChatColor.GREEN + "특별 요리" + ChatColor.AQUA + " (패시브 / 확률)");
-				lore.add(ChatColor.WHITE + " - " + ((int) (getChance(level).doubleValue() * 10000 / 3)) / 100.0
-						+ "%로 추가효과가 붙습니다.");
+				lore.add(ChatColor.GREEN + "대량 조리" + ChatColor.AQUA + " (패시브 / 확률)");
+				lore.add(ChatColor.WHITE + " - " + Math.round(getChance(level).doubleValue() * 1000 / 3) / 10.0
+						+ "%로 음식을 " + (level / 16) + "개 추가 획득합니다..");
 			}
 			if (level >= 10) {
 				lore.add(ChatColor.GREEN + "고급 요리사" + ChatColor.AQUA + " (패시브 / 확률)");
@@ -260,22 +261,21 @@ public enum Basics {
 		public List<String> getLore(int level) {
 			List<String> lore = new ArrayList<String>();
 			if (level >= 40) {
-				lore.add(ChatColor.GREEN + "증식" + ChatColor.AQUA + " (패시브 / 확률)");
-				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 5 + "%로 물약을 " + (level / 16)
-						+ "개 추가 획득합니다..");
+				lore.add(ChatColor.GREEN + "장인" + ChatColor.AQUA + " (패시브 / 확률)");
+				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 5 + "%로 결과물의 등급이 상승합니다.");
 			}
 			if (level >= 20) {
-				lore.add(ChatColor.GREEN + "의도치않은 성공" + ChatColor.AQUA + " (패시브 / 확률)");
-				lore.add(ChatColor.WHITE + " - " + ((int) (getChance(level).doubleValue() * 10000 / 3)) / 100.0
-						+ "%로 포션에 추가효과가 붙습니다.");
+				lore.add(ChatColor.GREEN + "증식" + ChatColor.AQUA + " (패시브 / 확률)");
+				lore.add(ChatColor.WHITE + " - " + Math.round(getChance(level).doubleValue() * 1000 / 3) / 10.0
+						+ "%로 결과물을 " + (level / 16) + "개 추가 획득합니다..");
 			}
 			if (level >= 10) {
 				lore.add(ChatColor.GREEN + "강력한 포션" + ChatColor.AQUA + " (패시브 / 확률)");
-				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 2 + "%로 포션효과가 " + level * 2
+				lore.add(ChatColor.WHITE + " - " + getChance(level).doubleValue() * 100 / 2 + "%로 결과물의 효과가 " + level * 2
 						+ "% 강해집니다.");
 			}
 			lore.add(ChatColor.GREEN + "양조 도구" + ChatColor.AQUA + " (패시브 / 확률)");
-			lore.add(ChatColor.WHITE + " - 양조시 " + (level / 10 + 4) + "개의 재료를 넣을 수 있습니다.");
+			lore.add(ChatColor.WHITE + " - 양조시 " + getChance(level).doubleValue() * 100 + "확률로 제작도를 잃어버리지 않습니다.");
 			return lore;
 		}
 	}
@@ -297,7 +297,6 @@ public enum Basics {
 	private static HashMap<Material, Integer> chopping_exp = new HashMap<Material, Integer>();
 	private static HashMap<Material, Material> chopping_sapling = new HashMap<Material, Material>();
 	private static HashMap<Material, TreeType> chopping_treetype = new HashMap<Material, TreeType>();
-	private static HashMap<Material, DiggingItems[]> digging = new HashMap<Material, DiggingItems[]>();
 	private static HashMap<Material, Integer> digging_exp = new HashMap<Material, Integer>();
 	//
 	private final String Displyname;
@@ -448,11 +447,7 @@ public enum Basics {
 
 	// 고고학
 	public static boolean isDigging(Material type) {
-		return digging.containsKey(type);
-	}
-
-	public static DiggingItems[] getDigging(Material type) {
-		return digging.containsKey(type) ? digging.get(type) : new DiggingItems[0];
+		return digging_exp.containsKey(type);
 	}
 
 	public static int getDiggingExp(Material type) {
@@ -505,312 +500,290 @@ public enum Basics {
 
 		// 낚시
 		fishing_exp.put(Rarity.Trash, 1);
-		fishing_exp.put(Rarity.Common, 2);
-		fishing_exp.put(Rarity.Uncommon, 4);
-		fishing_exp.put(Rarity.Rare, 8);
-		fishing_exp.put(Rarity.Epic, 16);
-		fishing_exp.put(Rarity.Treasure, 32);
-		fishing_exp.put(Rarity.God, 64);
+		fishing_exp.put(Rarity.Common, 3);
+		fishing_exp.put(Rarity.Uncommon, 6);
+		fishing_exp.put(Rarity.Rare, 12);
+		fishing_exp.put(Rarity.Epic, 24);
+		fishing_exp.put(Rarity.Treasure, 48);
+		fishing_exp.put(Rarity.God, 96);
 
 		// 사냥 - 수동
-		hunting.put(EntityType.AXOLOTL, new ItemStack[] {});
+		hunting.put(EntityType.AXOLOTL, new ItemStack[] { Items.axolotl_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.AXOLOTL, 1);
 
-		hunting.put(EntityType.BAT, new ItemStack[] {});
+		hunting.put(EntityType.BAT, new ItemStack[] { Items.bat_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.BAT, 1);
 
-		hunting.put(EntityType.CAT, new ItemStack[] { new ItemStack(Material.STRING, 1 + 2, (short) 0) });
+		hunting.put(EntityType.CAT, new ItemStack[] { Items.cat_meat.getRandomItemStack(),
+				new ItemStack(Material.STRING, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.CAT, 1);
 
-		hunting.put(EntityType.CHICKEN, new ItemStack[] { new ItemStack(Material.FEATHER, 1 + 2, (short) 0),
-				new ItemStack(Material.CHICKEN, 1 + 0, (short) 1) });
+		hunting.put(EntityType.CHICKEN, new ItemStack[] { Items.chicken_meat.getRandomItemStack(),
+				new ItemStack(Material.FEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.CHICKEN, 1);
 
-		hunting.put(EntityType.COD, new ItemStack[] { new ItemStack(Material.COD, 1 + 0, (short) 1),
-				new ItemStack(Material.BONE_MEAL, 1 + 1, (short) 0) });
+		hunting.put(EntityType.COD, new ItemStack[0]);
 		hunting_exp.put(EntityType.COD, 1);
 
-		hunting.put(EntityType.COW, new ItemStack[] { new ItemStack(Material.LEATHER, 1 + 2, (short) 0),
-				new ItemStack(Material.BEEF, 1 + 2, (short) 1) });
+		hunting.put(EntityType.COW, new ItemStack[] { Items.cow_meat.getRandomItemStack(),
+				new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.COW, 1);
 
-		hunting.put(EntityType.DONKEY, new ItemStack[] { new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
+		hunting.put(EntityType.DONKEY, new ItemStack[] { Items.donkey_meat.getRandomItemStack(),
+				new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.DONKEY, 1);
 
-		hunting.put(EntityType.FOX, new ItemStack[] { new ItemStack(Material.EMERALD, 1 + 1, (short) 0),
+		hunting.put(EntityType.FOX, new ItemStack[] { Items.fox_meat.getRandomItemStack(),
+				new ItemStack(Material.EMERALD, 1 + 1, (short) 0),
 				new ItemStack(Material.RABBIT_FOOT, 1 + 1, (short) 0),
 				new ItemStack(Material.RABBIT_HIDE, 1 + 1, (short) 0), new ItemStack(Material.EGG, 1 + 1, (short) 0),
 				new ItemStack(Material.WHEAT, 1 + 1, (short) 0), new ItemStack(Material.LEATHER, 1 + 1, (short) 0),
 				new ItemStack(Material.FEATHER, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.FOX, 1);
 
-		hunting.put(EntityType.GLOW_SQUID, new ItemStack[] { new ItemStack(Material.GLOW_INK_SAC, 1 + 2, (short) 1) });
+		hunting.put(EntityType.GLOW_SQUID, new ItemStack[] { Items.glow_squid_meat.getRandomItemStack(),
+				new ItemStack(Material.GLOW_INK_SAC, 1 + 2, (short) 1) });
 		hunting_exp.put(EntityType.GLOW_SQUID, 1);
 
-		hunting.put(EntityType.HORSE, new ItemStack[] { new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
+		hunting.put(EntityType.HORSE, new ItemStack[] { Items.horse_meat.getRandomItemStack(),
+				new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.HORSE, 1);
 
-		hunting.put(EntityType.MUSHROOM_COW, new ItemStack[] { new ItemStack(Material.LEATHER, 1 + 2, (short) 0),
-				new ItemStack(Material.BEEF, 1 + 2, (short) 1) });
+		hunting.put(EntityType.MUSHROOM_COW, new ItemStack[] { Items.mushrom_meat.getRandomItemStack(),
+				new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.MUSHROOM_COW, 1);
 
-		hunting.put(EntityType.MULE, new ItemStack[] { new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
+		hunting.put(EntityType.MULE, new ItemStack[] { Items.mule_meat.getRandomItemStack(),
+				new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.MULE, 1);
 
-		hunting.put(EntityType.OCELOT, new ItemStack[] {});
+		hunting.put(EntityType.OCELOT, new ItemStack[] { Items.ocelot_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.OCELOT, 1);
 
-		hunting.put(EntityType.PARROT, new ItemStack[] { new ItemStack(Material.FEATHER, 1 + 1, (short) 1) });
+		hunting.put(EntityType.PARROT, new ItemStack[] { Items.parrot_meat.getRandomItemStack(),
+				new ItemStack(Material.FEATHER, 1 + 1, (short) 1) });
 		hunting_exp.put(EntityType.PARROT, 1);
 
-		hunting.put(EntityType.PIG, new ItemStack[] { new ItemStack(Material.PORKCHOP, 1 + 2, (short) 1) });
+		hunting.put(EntityType.PIG, new ItemStack[] { Items.pig_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.PIG, 1);
 
-		hunting.put(EntityType.PUFFERFISH, new ItemStack[] { new ItemStack(Material.PUFFERFISH, 1 + 0, (short) 1),
-				new ItemStack(Material.BONE_MEAL, 1 + 1, (short) 0) });
+		hunting.put(EntityType.PUFFERFISH, new ItemStack[] { new ItemStack(Material.BONE_MEAL, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.PUFFERFISH, 1);
 
 		hunting.put(EntityType.RABBIT,
-				new ItemStack[] { new ItemStack(Material.RABBIT_HIDE, 1 + 1, (short) 0),
-						new ItemStack(Material.RABBIT, 1 + 1, (short) 0),
+				new ItemStack[] { Items.rabbit_meat.getRandomItemStack(),
+						new ItemStack(Material.RABBIT_HIDE, 1 + 1, (short) 0),
 						new ItemStack(Material.RABBIT_FOOT, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.RABBIT, 1);
 
-		hunting.put(EntityType.SALMON, new ItemStack[] { new ItemStack(Material.SALMON, 1 + 0, (short) 1),
-				new ItemStack(Material.BONE_MEAL, 1 + 1, (short) 0) });
+		hunting.put(EntityType.SALMON, new ItemStack[] { new ItemStack(Material.BONE_MEAL, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.SALMON, 1);
 
-		hunting.put(EntityType.SHEEP,
-				new ItemStack[] { new ItemStack(Material.BLACK_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.BLUE_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.BROWN_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.CYAN_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.GRAY_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.GREEN_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.LIGHT_BLUE_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.LIGHT_GRAY_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.LIME_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.MAGENTA_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.ORANGE_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.PINK_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.PURPLE_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.RED_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.WHITE_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.YELLOW_WOOL, 1 + 1, (short) 0),
-						new ItemStack(Material.MUTTON, 1 + 1, (short) 1) });
+		hunting.put(EntityType.SHEEP, new ItemStack[] { Items.sheep_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.SHEEP, 1);
 
-		hunting.put(EntityType.SKELETON_HORSE, new ItemStack[] { new ItemStack(Material.BONE, 1 + 2, (short) 0) });
+		hunting.put(EntityType.SKELETON_HORSE, new ItemStack[] { Items.skeleton_horse_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.SKELETON_HORSE, 1);
 
-		hunting.put(EntityType.SNOWMAN, new ItemStack[] { new ItemStack(Material.SNOWBALL, 1 + 15, (short) 0) });
+		hunting.put(EntityType.SNOWMAN, new ItemStack[] { Items.snowman_orb.getRandomItemStack(),
+				new ItemStack(Material.SNOWBALL, 1 + 15, (short) 0) });
 		hunting_exp.put(EntityType.SNOWMAN, 1);
 
-		hunting.put(EntityType.SQUID, new ItemStack[] { new ItemStack(Material.INK_SAC, 1 + 2, (short) 1) });
+		hunting.put(EntityType.SQUID, new ItemStack[] { Items.squid_meat.getRandomItemStack(),
+				new ItemStack(Material.INK_SAC, 1 + 2, (short) 1) });
 		hunting_exp.put(EntityType.SQUID, 1);
 
-		hunting.put(EntityType.STRIDER, new ItemStack[] { new ItemStack(Material.STRING, 1 + 3, (short) 2) });
+		hunting.put(EntityType.STRIDER, new ItemStack[] { Items.strider_meat.getRandomItemStack(),
+				new ItemStack(Material.STRING, 1 + 3, (short) 2) });
 		hunting_exp.put(EntityType.STRIDER, 1);
 
-		hunting.put(EntityType.TROPICAL_FISH, new ItemStack[] { new ItemStack(Material.TROPICAL_FISH, 1 + 0, (short) 1),
-				new ItemStack(Material.BONE_MEAL, 1 + 1, (short) 0) });
+		hunting.put(EntityType.TROPICAL_FISH, new ItemStack[] { new ItemStack(Material.BONE_MEAL, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.TROPICAL_FISH, 1);
 
-		hunting.put(EntityType.TURTLE, new ItemStack[] { new ItemStack(Material.SEAGRASS, 1 + 2, (short) 0) });
+		hunting.put(EntityType.TURTLE, new ItemStack[] { Items.turtle_meat.getRandomItemStack(),
+				new ItemStack(Material.SEAGRASS, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.TURTLE, 1);
 
-		hunting.put(EntityType.VILLAGER, new ItemStack[] {});
-		hunting_exp.put(EntityType.VILLAGER, 1);
-
-		hunting.put(EntityType.WANDERING_TRADER, new ItemStack[] {});
-		hunting_exp.put(EntityType.WANDERING_TRADER, 1);
+//		hunting.put(EntityType.VILLAGER, new ItemStack[] {});
+//		hunting_exp.put(EntityType.VILLAGER, 1);
+//
+//		hunting.put(EntityType.WANDERING_TRADER, new ItemStack[] {});
+//		hunting_exp.put(EntityType.WANDERING_TRADER, 1);
 		// 사냥 - 중립
-		hunting.put(EntityType.BEE, new ItemStack[] {});
+		hunting.put(EntityType.BEE, new ItemStack[] { Items.bee_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.BEE, 1);
 
 		hunting.put(EntityType.CAVE_SPIDER, new ItemStack[] { new ItemStack(Material.STRING, 1 + 2, (short) 0),
-				new ItemStack(Material.SPIDER_EYE, 1 + 1, (short) 0) });
+				Items.cave_spider_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.CAVE_SPIDER, 5);
 
-		hunting.put(EntityType.DOLPHIN, new ItemStack[] { new ItemStack(Material.COD, 1 + 1, (short) 0) });
+		hunting.put(EntityType.DOLPHIN, new ItemStack[] { Items.dolphin_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.DOLPHIN, 1);
 
-		hunting.put(EntityType.ENDERMAN, new ItemStack[] { new ItemStack(Material.ENDER_PEARL, 1 + 1, (short) 0) });
+		hunting.put(EntityType.ENDERMAN, new ItemStack[] { Items.enderman_meat.getRandomItemStack(),
+				new ItemStack(Material.ENDER_PEARL, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.ENDERMAN, 5);
 
-		hunting.put(EntityType.GOAT, new ItemStack[] {});
+		hunting.put(EntityType.GOAT, new ItemStack[] { Items.goat_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.GOAT, 1);
 
-		hunting.put(EntityType.IRON_GOLEM, new ItemStack[] { new ItemStack(Material.IRON_INGOT, 1 + 2, (short) 3),
-				new ItemStack(Material.POPPY, 1 + 2, (short) 0) });
+		hunting.put(EntityType.IRON_GOLEM, new ItemStack[] { Items.irongolem_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.IRON_GOLEM, 3);
 
-		hunting.put(EntityType.LLAMA, new ItemStack[] { new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
+		hunting.put(EntityType.LLAMA, new ItemStack[] { Items.llama_meat.getRandomItemStack(),
+				new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.LLAMA, 1);
 
-		hunting.put(EntityType.PANDA, new ItemStack[] { new ItemStack(Material.BAMBOO, 1 + 0, (short) 1) });
+		hunting.put(EntityType.PANDA, new ItemStack[] { Items.panda_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.PANDA, 1);
 
-		hunting.put(EntityType.PIGLIN, new ItemStack[] { new ItemStack(Material.GOLDEN_SWORD, 1 + 1, (short) 0),
-				new ItemStack(Material.CROSSBOW, 1 + 1, (short) 0) });
+		hunting.put(EntityType.PIGLIN, new ItemStack[] { Items.pig_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.PIGLIN, 1);
 
-		hunting.put(EntityType.POLAR_BEAR, new ItemStack[] { new ItemStack(Material.COD, 1 + 2, (short) 0),
-				new ItemStack(Material.SALMON, 1 + 2, (short) 0) });
+		hunting.put(EntityType.POLAR_BEAR, new ItemStack[] { Items.polar_bear_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.POLAR_BEAR, 1);
 
-		hunting.put(EntityType.SPIDER, new ItemStack[] { new ItemStack(Material.STRING, 1 + 2, (short) 0),
-				new ItemStack(Material.SPIDER_EYE, 1 + 1, (short) 0) });
+		hunting.put(EntityType.SPIDER, new ItemStack[] { Items.spider_meat.getRandomItemStack(),
+				new ItemStack(Material.STRING, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.SPIDER, 1);
 
-		hunting.put(EntityType.TRADER_LLAMA, new ItemStack[] { new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
+		hunting.put(EntityType.TRADER_LLAMA, new ItemStack[] { Items.llama_meat.getRandomItemStack(),
+				new ItemStack(Material.LEATHER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.TRADER_LLAMA, 1);
 
-		hunting.put(EntityType.WOLF, new ItemStack[] {});
+		hunting.put(EntityType.WOLF, new ItemStack[] { Items.wolf_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.WOLF, 1);
 
-		hunting.put(EntityType.ZOMBIFIED_PIGLIN,
-				new ItemStack[] { new ItemStack(Material.ROTTEN_FLESH, 1 + 1, (short) 0),
-						new ItemStack(Material.GOLD_NUGGET, 1 + 1, (short) 0),
-						new ItemStack(Material.GOLD_INGOT, 1 + 1, (short) 0),
-						new ItemStack(Material.GOLDEN_SWORD, 1 + 1, (short) 0),
-						new ItemStack(Material.CROSSBOW, 1 + 1, (short) 0),
-						new ItemStack(Material.GOLDEN_AXE, 1 + 1, (short) 0),
-						new ItemStack(Material.WARPED_FUNGUS_ON_A_STICK, 1 + 1, (short) 0) });
+		hunting.put(EntityType.ZOMBIFIED_PIGLIN, new ItemStack[] { Items.zombified_piglin_meat.getRandomItemStack(),
+				new ItemStack(Material.WARPED_FUNGUS_ON_A_STICK, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.ZOMBIFIED_PIGLIN, 9);
 		// 사냥 - 적대
-		hunting.put(EntityType.BLAZE, new ItemStack[] { new ItemStack(Material.BLAZE_ROD, 1 + 1, (short) 0) });
+		hunting.put(EntityType.BLAZE, new ItemStack[] { Items.blaze_meat.getRandomItemStack(),
+				new ItemStack(Material.BLAZE_ROD, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.BLAZE, 5);
 
-		hunting.put(EntityType.CREEPER, new ItemStack[] { new ItemStack(Material.GUNPOWDER, 1 + 2, (short) 0) });
+		hunting.put(EntityType.CREEPER, new ItemStack[] { Items.creeper_meat.getRandomItemStack(),
+				new ItemStack(Material.GUNPOWDER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.CREEPER, 1);
 
-		hunting.put(EntityType.DROWNED,
-				new ItemStack[] { new ItemStack(Material.ROTTEN_FLESH, 1 + 2, (short) 0),
-						new ItemStack(Material.COPPER_INGOT, 1 + 1, (short) 0),
-						new ItemStack(Material.TRIDENT, 1 + 1, (short) 0),
-						new ItemStack(Material.FISHING_ROD, 1 + 1, (short) 0) });
+		hunting.put(EntityType.DROWNED, new ItemStack[] { Items.drowned_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.DROWNED, 3);
 
 		hunting.put(EntityType.ELDER_GUARDIAN,
-				new ItemStack[] { new ItemStack(Material.PRISMARINE_SHARD, 1 + 2, (short) 0),
+				new ItemStack[] { Items.elder_guardian_meat.getRandomItemStack(),
+						new ItemStack(Material.PRISMARINE_SHARD, 1 + 2, (short) 0),
 						new ItemStack(Material.WET_SPONGE, 1 + 0, (short) 1),
-						new ItemStack(Material.COD, 1 + 1, (short) 0),
 						new ItemStack(Material.PRISMARINE_CRYSTALS, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.ELDER_GUARDIAN, 20);
 
-		hunting.put(EntityType.ENDERMITE, new ItemStack[] {});
+		hunting.put(EntityType.ENDERMITE, new ItemStack[] { Items.endermite_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.ENDERMITE, 7);
 
-		hunting.put(EntityType.EVOKER, new ItemStack[] { new ItemStack(Material.TOTEM_OF_UNDYING, 1 + 0, (short) 1),
-				new ItemStack(Material.EMERALD, 1 + 1, (short) 0) });
+		hunting.put(EntityType.EVOKER,
+				new ItemStack[] { Items.evoker_meat.getRandomItemStack(),
+						new ItemStack(Material.TOTEM_OF_UNDYING, 1 + 0, (short) 1),
+						new ItemStack(Material.EMERALD, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.EVOKER, 20);
 
-		hunting.put(EntityType.GHAST, new ItemStack[] { new ItemStack(Material.GHAST_TEAR, 1 + 1, (short) 0),
-				new ItemStack(Material.GUNPOWDER, 1 + 2, (short) 0) });
+		hunting.put(EntityType.GHAST,
+				new ItemStack[] { Items.ghast_meat.getRandomItemStack(),
+						new ItemStack(Material.GHAST_TEAR, 1 + 1, (short) 0),
+						new ItemStack(Material.GUNPOWDER, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.GHAST, 15);
 
-		hunting.put(EntityType.GUARDIAN, new ItemStack[] { new ItemStack(Material.PRISMARINE_SHARD, 1 + 2, (short) 0),
-				new ItemStack(Material.WET_SPONGE, 1 + 0, (short) 1), new ItemStack(Material.COD, 1 + 1, (short) 0),
-				new ItemStack(Material.PRISMARINE_CRYSTALS, 1 + 1, (short) 0) });
+		hunting.put(EntityType.GUARDIAN,
+				new ItemStack[] { Items.guardian_meat.getRandomItemStack(),
+						new ItemStack(Material.PRISMARINE_SHARD, 1 + 2, (short) 0),
+						new ItemStack(Material.WET_SPONGE, 1 + 0, (short) 1),
+						new ItemStack(Material.PRISMARINE_CRYSTALS, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.GUARDIAN, 10);
 
-		hunting.put(EntityType.HOGLIN, new ItemStack[] { new ItemStack(Material.PORKCHOP, 1 + 2, (short) 2),
+		hunting.put(EntityType.HOGLIN, new ItemStack[] { Items.hoglin_meat.getRandomItemStack(),
 				new ItemStack(Material.LEATHER, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.HOGLIN, 3);
 
-		hunting.put(EntityType.HUSK, new ItemStack[] { new ItemStack(Material.ROTTEN_FLESH, 1 + 2, (short) 0),
-				new ItemStack(Material.IRON_INGOT, 1 + 1, (short) 0), new ItemStack(Material.CARROT, 1 + 1, (short) 0),
-				new ItemStack(Material.POTATO, 1 + 1, (short) 0) });
+		hunting.put(EntityType.HUSK, new ItemStack[] { Items.husk_meat.getRandomItemStack(),
+				new ItemStack(Material.IRON_INGOT, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.HUSK, 6);
 
-		hunting.put(EntityType.MAGMA_CUBE, new ItemStack[] { new ItemStack(Material.MAGMA_CREAM, 1 + 1, (short) 0) });
+		hunting.put(EntityType.MAGMA_CUBE, new ItemStack[] { Items.magmacube_meat.getRandomItemStack(),
+				new ItemStack(Material.MAGMA_CREAM, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.MAGMA_CUBE, 2);
 
-		hunting.put(EntityType.PHANTOM, new ItemStack[] { new ItemStack(Material.PHANTOM_MEMBRANE, 1 + 1, (short) 0) });
+		hunting.put(EntityType.PHANTOM, new ItemStack[] { Items.phantom_meat.getRandomItemStack(),
+				new ItemStack(Material.PHANTOM_MEMBRANE, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.PHANTOM, 5);
 
-		hunting.put(EntityType.PIGLIN_BRUTE, new ItemStack[] { new ItemStack(Material.GOLDEN_AXE, 1 + 1, (short) 0) });
+		hunting.put(EntityType.PIGLIN_BRUTE, new ItemStack[] { Items.piglin_meat.getRandomItemStack(),
+				new ItemStack(Material.GOLDEN_AXE, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.PIGLIN_BRUTE, 10);
 
-		hunting.put(EntityType.PILLAGER, new ItemStack[] { new ItemStack(Material.CROSSBOW, 1 + 1, (short) 0) });
+		hunting.put(EntityType.PILLAGER, new ItemStack[] { Items.pillager_meat.getRandomItemStack(),
+				new ItemStack(Material.CROSSBOW, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.PILLAGER, 5);
 
-		hunting.put(EntityType.RAVAGER, new ItemStack[] { new ItemStack(Material.SADDLE, 1 + 0, (short) 1) });
+		hunting.put(EntityType.RAVAGER, new ItemStack[] { Items.ravager_meat.getRandomItemStack(),
+				new ItemStack(Material.SADDLE, 1 + 0, (short) 1) });
 		hunting_exp.put(EntityType.RAVAGER, 10);
 
-		hunting.put(EntityType.SHULKER, new ItemStack[] { new ItemStack(Material.SHULKER_SHELL, 1 + 1, (short) 0) });
+		hunting.put(EntityType.SHULKER, new ItemStack[] { Items.shulker_meat.getRandomItemStack(),
+				new ItemStack(Material.SHULKER_SHELL, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.SHULKER, 3);
 
-		hunting.put(EntityType.SILVERFISH, new ItemStack[] {});
+		hunting.put(EntityType.SILVERFISH, new ItemStack[] { Items.sillverfish_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.SILVERFISH, 1);
 
-		hunting.put(EntityType.SKELETON,
-				new ItemStack[] { new ItemStack(Material.BONE, 1 + 2, (short) 0),
-						new ItemStack(Material.ARROW, 1 + 2, (short) 0),
-						new ItemStack(Material.SKELETON_SKULL, 1 + 1, (short) 0) });
+		hunting.put(EntityType.SKELETON, new ItemStack[] { Items.skeleton_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.SKELETON, 3);
 
-		hunting.put(EntityType.SLIME, new ItemStack[] { new ItemStack(Material.SLIME_BALL, 1 + 2, (short) 0) });
+		hunting.put(EntityType.SLIME, new ItemStack[] { Items.slime_meat.getRandomItemStack(),
+				new ItemStack(Material.SLIME_BALL, 1 + 2, (short) 0) });
 		hunting_exp.put(EntityType.SLIME, 1);
 
-		ItemStack slow_arrow = new ItemStack(Material.TIPPED_ARROW, 0 + 1, (short) 0);
+		hunting.put(EntityType.STRAY, new ItemStack[] { Items.stray_meat.getRandomItemStack(),
+				new ItemStack(Material.BONE, 1 + 2, (short) 0) });
+		hunting_exp.put(EntityType.STRAY, 6);
 
-		hunting.put(EntityType.STRAY, new ItemStack[] { new ItemStack(Material.BONE, 1 + 2, (short) 0),
-				new ItemStack(Material.ARROW, 1 + 2, (short) 0), slow_arrow });
-		hunting_exp.put(EntityType.MAGMA_CUBE, 6);
-
-		hunting.put(EntityType.VEX, new ItemStack[] {});
+		hunting.put(EntityType.VEX, new ItemStack[] { Items.vex_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.VEX, 1);
 
-		hunting.put(EntityType.VINDICATOR, new ItemStack[] { new ItemStack(Material.EMERALD, 1 + 1, (short) 0),
-				new ItemStack(Material.IRON_AXE, 1 + 1, (short) 0) });
+		hunting.put(EntityType.VINDICATOR, new ItemStack[] { Items.vindicator_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.VINDICATOR, 6);
 
-		hunting.put(EntityType.WITCH, new ItemStack[] { new ItemStack(Material.GLASS_BOTTLE, 1 + 1, (short) 0),
-				new ItemStack(Material.GLOWSTONE_DUST, 1 + 1, (short) 0),
-				new ItemStack(Material.GUNPOWDER, 1 + 1, (short) 0), new ItemStack(Material.REDSTONE, 1 + 1, (short) 0),
-				new ItemStack(Material.SPIDER_EYE, 1 + 1, (short) 0), new ItemStack(Material.SUGAR, 1 + 1, (short) 0),
-				new ItemStack(Material.STICK, 1 + 1, (short) 0) });
+		hunting.put(EntityType.WITCH, new ItemStack[] { Items.witch_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.WITHER, 6);
 
-		hunting.put(EntityType.WITHER_SKELETON,
-				new ItemStack[] { new ItemStack(Material.BONE, 1 + 2, (short) 0),
-						new ItemStack(Material.COAL, 1 + 1, (short) 0),
-						new ItemStack(Material.WITHER_SKELETON_SKULL, 1 + 1, (short) 0),
-						new ItemStack(Material.IRON_SWORD, 1 + 1, (short) 0) });
+		hunting.put(EntityType.WITHER_SKELETON, new ItemStack[] { Items.wither_skeleton_meat.getRandomItemStack(),
+
+				new ItemStack(Material.WITHER_SKELETON_SKULL, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.WITHER_SKELETON, 6);
 
-		hunting.put(EntityType.ZOGLIN, new ItemStack[] { new ItemStack(Material.ROTTEN_FLESH, 1 + 2, (short) 1) });
+		hunting.put(EntityType.ZOGLIN, new ItemStack[] { Items.zoglin_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.ZOGLIN, 6);
 
-		hunting.put(EntityType.ZOMBIE, new ItemStack[] { new ItemStack(Material.ROTTEN_FLESH, 1 + 2, (short) 0),
-				new ItemStack(Material.IRON_INGOT, 1 + 1, (short) 0), new ItemStack(Material.CARROT, 1 + 1, (short) 0),
-				new ItemStack(Material.POTATO, 1 + 1, (short) 0) });
+		hunting.put(EntityType.ZOMBIE, new ItemStack[] { Items.zombie_meat.getRandomItemStack(),
+				new ItemStack(Material.IRON_INGOT, 1 + 1, (short) 0) });
 		hunting_exp.put(EntityType.ZOMBIE, 3);
 
-		hunting.put(EntityType.ZOMBIE_VILLAGER,
-				new ItemStack[] { new ItemStack(Material.ROTTEN_FLESH, 1 + 2, (short) 0),
-						new ItemStack(Material.IRON_INGOT, 1 + 1, (short) 0),
-						new ItemStack(Material.CARROT, 1 + 1, (short) 0),
-						new ItemStack(Material.POTATO, 1 + 1, (short) 0) });
+		hunting.put(EntityType.ZOMBIE_VILLAGER, new ItemStack[] { Items.zombie_meat.getRandomItemStack(),
+				new ItemStack(Material.IRON_INGOT, 1 + 1, (short) 0), });
 		hunting_exp.put(EntityType.ZOMBIE_VILLAGER, 3);
 		// 사냥 - 보스
-		hunting.put(EntityType.ENDER_DRAGON, new ItemStack[] {});
+		hunting.put(EntityType.ENDER_DRAGON, new ItemStack[] { Items.enderdragon_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.ENDER_DRAGON, 250);
 
-		hunting.put(EntityType.WITHER, new ItemStack[] { new ItemStack(Material.NETHER_STAR, 1 + 0, (short) 0) });
+		hunting.put(EntityType.WITHER, new ItemStack[] { Items.wither_meat.getRandomItemStack(),
+				new ItemStack(Material.NETHER_STAR, 1 + 0, (short) 0) });
 		hunting_exp.put(EntityType.WITHER, 250);
 
 		// 사냥 - 인공 스폰
-		hunting.put(EntityType.GIANT, new ItemStack[] {});
+		hunting.put(EntityType.GIANT, new ItemStack[] { Items.giant_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.GIANT, 100);
 
-		hunting.put(EntityType.ZOMBIE_HORSE,
-				new ItemStack[] { new ItemStack(Material.ROTTEN_FLESH, 1 + 2, (short) 0) });
+		hunting.put(EntityType.ZOMBIE_HORSE, new ItemStack[] { Items.zombie_horse_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.ZOMBIE_HORSE, 1);
 
-		hunting.put(EntityType.ILLUSIONER, new ItemStack[] { new ItemStack(Material.BOW, 1 + 1, (short) 0) });
+		hunting.put(EntityType.ILLUSIONER, new ItemStack[] { Items.illusioner_meat.getRandomItemStack() });
 		hunting_exp.put(EntityType.ILLUSIONER, 50);
 
 		// 광질
@@ -886,7 +859,7 @@ public enum Basics {
 		chopping.put(Material.ACACIA_LOG, new ItemStack[] { new ItemStack(Material.ACACIA_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.ACACIA_LOG, 2);
 		chopping.put(Material.ACACIA_LEAVES, new ItemStack[] { new ItemStack(Material.ACACIA_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
+				Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.ACACIA_LEAVES, 1);
 		chopping_treetype.put(Material.ACACIA_SAPLING, TreeType.ACACIA);
 		chopping_sapling.put(Material.ACACIA_LOG, Material.ACACIA_SAPLING);
@@ -894,16 +867,15 @@ public enum Basics {
 		chopping.put(Material.BIRCH_LOG, new ItemStack[] { new ItemStack(Material.BIRCH_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.BIRCH_LOG, 2);
 		chopping.put(Material.BIRCH_LEAVES, new ItemStack[] { new ItemStack(Material.BIRCH_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
+				Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.BIRCH_LEAVES, 1);
 		chopping_treetype.put(Material.BIRCH_SAPLING, TreeType.BIRCH);
 		chopping_sapling.put(Material.BIRCH_LOG, Material.BIRCH_SAPLING);
 
 		chopping.put(Material.DARK_OAK_LOG, new ItemStack[] { new ItemStack(Material.DARK_OAK_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.DARK_OAK_LOG, 2);
-		chopping.put(Material.DARK_OAK_LEAVES,
-				new ItemStack[] { new ItemStack(Material.DARK_OAK_SAPLING, 1 + 1, (byte) 0),
-						new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
+		chopping.put(Material.DARK_OAK_LEAVES, new ItemStack[] {
+				new ItemStack(Material.DARK_OAK_SAPLING, 1 + 1, (byte) 0), Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.DARK_OAK_LEAVES, 1);
 		chopping_treetype.put(Material.DARK_OAK_SAPLING, TreeType.DARK_OAK);
 		chopping_sapling.put(Material.DARK_OAK_LOG, Material.DARK_OAK_SAPLING);
@@ -911,7 +883,7 @@ public enum Basics {
 		chopping.put(Material.JUNGLE_LOG, new ItemStack[] { new ItemStack(Material.JUNGLE_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.JUNGLE_LOG, 2);
 		chopping.put(Material.JUNGLE_LEAVES, new ItemStack[] { new ItemStack(Material.JUNGLE_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
+				Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.JUNGLE_LEAVES, 1);
 		chopping_treetype.put(Material.JUNGLE_SAPLING, TreeType.JUNGLE);
 		chopping_sapling.put(Material.JUNGLE_LOG, Material.JUNGLE_SAPLING);
@@ -919,7 +891,7 @@ public enum Basics {
 		chopping.put(Material.OAK_LOG, new ItemStack[] { new ItemStack(Material.OAK_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.OAK_LOG, 2);
 		chopping.put(Material.OAK_LEAVES, new ItemStack[] { new ItemStack(Material.OAK_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
+				Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.OAK_LEAVES, 1);
 		chopping_treetype.put(Material.OAK_SAPLING, TreeType.TREE);
 		chopping_sapling.put(Material.OAK_LOG, Material.OAK_SAPLING);
@@ -927,7 +899,7 @@ public enum Basics {
 		chopping.put(Material.SPRUCE_LOG, new ItemStack[] { new ItemStack(Material.SPRUCE_LOG, 1 + 0, (byte) 1) });
 		chopping_exp.put(Material.SPRUCE_LOG, 2);
 		chopping.put(Material.SPRUCE_LEAVES, new ItemStack[] { new ItemStack(Material.SPRUCE_SAPLING, 1 + 1, (byte) 0),
-				new ItemStack(Material.STICK, 1 + 2, (byte) 0), Items.apple.getRandomItemStack() });
+				Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.SPRUCE_LEAVES, 1);
 		chopping_treetype.put(Material.SPRUCE_SAPLING, TreeType.REDWOOD);
 		chopping_sapling.put(Material.SPRUCE_LOG, Material.SPRUCE_SAPLING);
@@ -947,69 +919,33 @@ public enum Basics {
 		chopping_treetype.put(Material.RED_MUSHROOM, TreeType.RED_MUSHROOM);
 
 		// 고고학
-		digging.put(Material.DIRT, new DiggingItems[] {});
 		digging_exp.put(Material.DIRT, 1);
-		digging.put(Material.DIRT_PATH, new DiggingItems[] {});
 		digging_exp.put(Material.DIRT_PATH, 1);
-		digging.put(Material.COARSE_DIRT, new DiggingItems[] {});
 		digging_exp.put(Material.COARSE_DIRT, 1);
-		digging.put(Material.ROOTED_DIRT, new DiggingItems[] {});
 		digging_exp.put(Material.ROOTED_DIRT, 1);
-
-		digging.put(Material.CLAY, new DiggingItems[] {});
 		digging_exp.put(Material.CLAY, 2);
-
-		digging.put(Material.MYCELIUM, new DiggingItems[] {});
 		digging_exp.put(Material.MYCELIUM, 3);
-
-		digging.put(Material.GRASS, new DiggingItems[] {});
 		digging_exp.put(Material.GRASS, 1);
-
-		digging.put(Material.SAND, new DiggingItems[] {});
 		digging_exp.put(Material.SAND, 1);
-
-		digging.put(Material.RED_SAND, new DiggingItems[] {});
 		digging_exp.put(Material.RED_SAND, 4);
-
-		digging.put(Material.SOUL_SAND, new DiggingItems[] {});
 		digging_exp.put(Material.SOUL_SAND, 3);
-		digging.put(Material.SOUL_SOIL, new DiggingItems[] {});
 		digging_exp.put(Material.SOUL_SOIL, 3);
-
-		digging.put(Material.GRAVEL, new DiggingItems[] {});
 		digging_exp.put(Material.GRAVEL, 2);
-
-		digging.put(Material.BLACK_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.BLACK_CONCRETE_POWDER, 2);
-		digging.put(Material.BLUE_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.BLUE_CONCRETE_POWDER, 2);
-		digging.put(Material.BROWN_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.BROWN_CONCRETE_POWDER, 2);
-		digging.put(Material.CYAN_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.CYAN_CONCRETE_POWDER, 2);
-		digging.put(Material.GRAY_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.GRAY_CONCRETE_POWDER, 2);
-		digging.put(Material.GREEN_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.GREEN_CONCRETE_POWDER, 2);
-		digging.put(Material.LIGHT_BLUE_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.LIGHT_BLUE_CONCRETE_POWDER, 2);
-		digging.put(Material.LIGHT_GRAY_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.LIGHT_GRAY_CONCRETE_POWDER, 2);
-		digging.put(Material.LIME_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.LIME_CONCRETE_POWDER, 2);
-		digging.put(Material.MAGENTA_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.MAGENTA_CONCRETE_POWDER, 2);
-		digging.put(Material.ORANGE_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.ORANGE_CONCRETE_POWDER, 2);
-		digging.put(Material.PINK_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.PINK_CONCRETE_POWDER, 2);
-		digging.put(Material.PURPLE_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.PURPLE_CONCRETE_POWDER, 2);
-		digging.put(Material.RED_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.RED_CONCRETE_POWDER, 2);
-		digging.put(Material.WHITE_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.WHITE_CONCRETE_POWDER, 2);
-		digging.put(Material.YELLOW_CONCRETE_POWDER, new DiggingItems[] {});
 		digging_exp.put(Material.YELLOW_CONCRETE_POWDER, 2);
 	}
 }

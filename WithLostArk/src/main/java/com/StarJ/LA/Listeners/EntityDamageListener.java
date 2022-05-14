@@ -1,12 +1,16 @@
 package com.StarJ.LA.Listeners;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -26,6 +30,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 
 import com.StarJ.LA.Core;
+import com.StarJ.LA.Items.CookingIngredient;
+import com.StarJ.LA.Items.FishItem;
+import com.StarJ.LA.Items.Items;
+import com.StarJ.LA.Items.Potioning.AdrenalineItem;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.Basics;
 import com.StarJ.LA.Systems.ConfigStore;
@@ -33,6 +41,7 @@ import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.EnchantsType;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
+import com.StarJ.LA.Systems.ShopStores;
 import com.StarJ.LA.Systems.Stats;
 import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
 
@@ -96,6 +105,7 @@ public class EntityDamageListener implements Listener {
 		Entity vic_e = e.getEntity();
 		Entity att_e = e.getDamager();
 		boolean critical = false;
+		double damage_multi = 1.0d;
 		if (att_e.getType().equals(EntityType.PLAYER)) {
 			Player att = (Player) att_e;
 			if (ConfigStore.getPlayerStatus(att)) {
@@ -109,6 +119,7 @@ public class EntityDamageListener implements Listener {
 				if (job != null && !e.isCancelled())
 					HashMapStore.setIdentity(att, HashMapStore.getIdentity(att) + job.getWeapon().getIdentity());
 				critical = Stats.isCritical(att);
+				damage_multi *= AdrenalineItem.getPower(att);
 			} else {
 				ItemStack main = att.getInventory().getItemInMainHand();
 				if (main != null) {
@@ -135,13 +146,32 @@ public class EntityDamageListener implements Listener {
 		if (vic_e.getType().equals(EntityType.VILLAGER) && vic_e.hasMetadata("key")
 				&& att_e.getType().equals(EntityType.PLAYER)) {
 			Player att = (Player) att_e;
-			for (MetadataValue value : vic_e.getMetadata("key"))
-				if (value.getOwningPlugin().equals(Core.getCore()))
-					if (att.getGameMode().equals(GameMode.CREATIVE)) {
-						HashMapStore.removeStores(vic_e.getLocation());
-						vic_e.remove();
-					} else
-						e.setCancelled(true);
+			if (ConfigStore.getPlayerStatus(att)) {
+				for (MetadataValue value : vic_e.getMetadata("key"))
+					if (value.getOwningPlugin().equals(Core.getCore())) {
+						if (value.asString().equals(ShopStores.Training.name())) {
+							double damage = HashMapStore.getMeasureDamage(att);
+							if (damage <= 0)
+								HashMapStore.setMeasureStartTime(att);
+							HashMapStore.setMeasureEndTime(att);
+							damage += e.getDamage() * (critical ? 2 : 1) * damage_multi;
+							HashMapStore.setMeasureDamage(att, damage);
+							HashMapStore.setMeasureDamageCount(att, HashMapStore.getMeasureDamageCount(att) + 1);
+							if (critical)
+								HashMapStore.setMeasureCriticalCount(att,
+										HashMapStore.getMeasureCriticalCount(att) + 1);
+							vic_e.playEffect(EntityEffect.HURT);
+						}
+					}
+
+			} else
+				for (MetadataValue value : vic_e.getMetadata("key"))
+					if (value.getOwningPlugin().equals(Core.getCore()))
+						if (att.getGameMode().equals(GameMode.CREATIVE)) {
+							HashMapStore.removeStores(vic_e.getLocation());
+							vic_e.remove();
+						} else
+							e.setCancelled(true);
 
 		} else if (vic_e.getType().equals(EntityType.PLAYER)) {
 			Player vic = (Player) vic_e;
@@ -171,7 +201,7 @@ public class EntityDamageListener implements Listener {
 				Jobs vic_job = ConfigStore.getJob(vic);
 				double vic_max = vic_job != null ? vic_job.getMaxHealth(vic) : 20;
 				double vic_health = HashMapStore.getHealth(vic);
-				vic_health -= e.getDamage() * (critical ? 2 : 1);
+				vic_health -= e.getDamage() * (critical ? 2 : 1) * damage_multi;
 
 				double vic_per = vic_health / vic_max * 100;
 				if (vic_per <= 1 && vic_per > 0) {
@@ -243,25 +273,67 @@ public class EntityDamageListener implements Listener {
 			e.setCancelled(true);
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void Events(EntityDeathEvent e) {
 		if (!e.getEntityType().equals(EntityType.PLAYER)) {
 			LivingEntity le = e.getEntity();
-			if (le.getKiller() != null) {
-				Player player = le.getKiller();
-				if (!ConfigStore.getPlayerStatus(player)) {
-					ItemStack main = player.getInventory().getItemInMainHand();
-					if (main != null) {
-						EnchantsType tool = EnchantsType.getEnchantType(main.getType());
-						if (tool != null) {
-							if (tool.equals(EnchantsType.Sword)) {
-								if (Basics.isHunting(le.getType())) {
+			List<ItemStack> list = e.getDrops();
+			list.clear();
+			if (!(le instanceof Ageable) || ((Ageable) le).isAdult())
+				for (ItemStack item : Basics.getHunting(e.getEntityType())) {
+					ItemStack add = item.clone();
+					int amount = item.getDurability() + new Random().nextInt(item.getAmount());
+					if (amount > 0) {
+						if (le.getFireTicks() > 0) {
+							Items i = Items.valueOf(add);
+							if (i != null && i instanceof CookingIngredient) {
+								CookingIngredient ci = (CookingIngredient) i;
+								if (ci.getCookedFood() != null)
+									add = ci.getCookedFood().getItemStack();
+							}
+						}
+						add.setAmount(amount);
+						add.setDurability((short) 0);
+						list.add(add);
+					}
+				}
+			if (le.getType().equals(EntityType.COD) || le.getType().equals(EntityType.SALMON)
+					|| le.getType().equals(EntityType.PUFFERFISH) || le.getType().equals(EntityType.TROPICAL_FISH)) {
+				List<FishItem> fishes = FishItem.getNormals();
+				Material type = FishItem.getMaterial(le.getType());
+				Collections.shuffle(fishes);
+				for (FishItem fish : fishes)
+					if (fish.getType().equals(type)) {
+						ItemStack item = fish.getItemStack();
+						if (le.getFireTicks() > 0)
+							item = FishItem.getCook(item);
+						list.add(item);
+						break;
+					}
+			}
+			if (le.getKiller() != null && le.getKiller() instanceof Player) {
+				if (Basics.isHunting(le.getType())) {
+					Player player = le.getKiller();
+					if (!ConfigStore.getPlayerStatus(player)) {
+						ItemStack main = player.getInventory().getItemInMainHand();
+						if (main != null) {
+							if (main.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
+								int loot = main.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
+								for (ItemStack item : list)
+									item.setAmount(item.getAmount() + loot);
+							}
+							EnchantsType tool = EnchantsType.getEnchantType(main.getType());
+							if (tool != null) {
+								if (tool.equals(EnchantsType.Sword)) {
 									int level = Basics.Hunting.getLevel(player);
-									List<ItemStack> list = e.getDrops();
-									for (ItemStack item : list)
-										if (Basics.Hunting.isActive(level))
-											item.setAmount(item.getAmount() + 2 + new Random().nextInt(level / 5 + 1));
-									Basics.Hunting.addEXP(player, Basics.getHuntingExp(le.getType()));
+									if (!(le instanceof Ageable) || ((Ageable) le).isAdult()) {
+										for (ItemStack item : list)
+											if (Basics.Hunting.isActive(level))
+												item.setAmount(
+														item.getAmount() + 2 + new Random().nextInt(level / 10 + 2));
+										Basics.Hunting.addEXP(player, Basics.getHuntingExp(le.getType()));
+									}
 								}
 							}
 						}

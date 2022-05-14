@@ -18,6 +18,7 @@ import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
+import com.StarJ.LA.Systems.Jobs;
 import com.StarJ.LA.Systems.Stats;
 import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 
@@ -28,13 +29,15 @@ public class RageSpear extends Skills {
 	}
 
 	public double getDrainDamage(Player player, boolean persona) {
-		return 02 * (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1)
-				* getWeaponPercent(player);
+		Jobs job = ConfigStore.getJob(player);
+		return 2.0d * (job != null ? job.getAttackDamagePercent(player) : 1)
+				* (persona ? 2 * Stats.Specialization.getStatPercent(player) : 1);
 	}
 
 	public double getAttackDamage(Player player, boolean persona) {
-		return 32 * (persona ? (2 * (1 + Stats.Specialization.getStat(player) * 0.0005)) : 1)
-				* getWeaponPercent(player);
+		Jobs job = ConfigStore.getJob(player);
+		return 32.0d * (job != null ? job.getAttackDamagePercent(player) : 1)
+				* (persona ? 2 * Stats.Specialization.getStatPercent(player) : 1);
 	}
 
 	@Override

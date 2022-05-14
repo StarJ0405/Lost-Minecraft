@@ -33,6 +33,7 @@ public class fixexitCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage(
 						ChatColor.GREEN + "현재 위치를 스퀘어홀로 지정했습니다. " + args[1] + " - " + player.getLocation().toString());
 				ConfigStore.Save();
+				ConfigStore.Confirm();
 			} else
 				sender.sendMessage(ChatColor.RED + "플레이어만 사용 가능합니다.");
 			return true;
@@ -46,6 +47,7 @@ public class fixexitCommand implements CommandExecutor, TabCompleter {
 				HashMapStore.addVillages(village);
 				sender.sendMessage(ChatColor.GREEN + "현재 위치를 스퀘어홀로 지정했습니다. " + args[1] + " - " + loc.toString());
 				ConfigStore.Save();
+				ConfigStore.Confirm();
 			} catch (IllegalArgumentException ex) {
 
 			}
@@ -62,6 +64,7 @@ public class fixexitCommand implements CommandExecutor, TabCompleter {
 				HashMapStore.addVillages(village);
 				sender.sendMessage(ChatColor.GREEN + "현재 위치를 스퀘어홀로 지정했습니다. " + args[1] + " - " + loc.toString());
 				ConfigStore.Save();
+				ConfigStore.Confirm();
 			} catch (IllegalArgumentException ex) {
 
 			}

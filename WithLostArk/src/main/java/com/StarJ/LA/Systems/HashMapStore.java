@@ -36,6 +36,11 @@ public class HashMapStore {
 	private static HashMap<String, ItemStack> enchant_item = new HashMap<String, ItemStack>();// 인챈트창
 	private static HashMap<String, ItemStack> enchant_book = new HashMap<String, ItemStack>();// 인챈트창
 	private static HashMap<UUID, Integer> skill_change_slot = new HashMap<UUID, Integer>();
+	private static HashMap<UUID, Long> measure_starttime = new HashMap<UUID, Long>();
+	private static HashMap<UUID, Long> measure_end = new HashMap<UUID, Long>();
+	private static HashMap<UUID, Double> measure_damage = new HashMap<UUID, Double>();
+	private static HashMap<UUID, Integer> measure_damage_count = new HashMap<UUID, Integer>();
+	private static HashMap<UUID, Integer> measure_critical_count = new HashMap<UUID, Integer>();
 
 	public static BigInteger getHomeCool(String key) {
 		return home_cool.containsKey(key) ? home_cool.get(key) : BigInteger.ZERO;
@@ -309,5 +314,51 @@ public class HashMapStore {
 
 	public static void setSkillChangeSlot(Player player, int slot) {
 		skill_change_slot.put(player.getUniqueId(), slot);
+	}
+
+	//
+	public static long getMeasureStartTime(Player player) {
+		UUID uuid = player.getUniqueId();
+		return measure_starttime.containsKey(uuid) ? measure_starttime.get(uuid) : System.currentTimeMillis();
+	}
+
+	public static void setMeasureStartTime(Player player) {
+		measure_starttime.put(player.getUniqueId(), System.currentTimeMillis());
+	}
+
+	public static long getMeasureEndTime(Player player) {
+		UUID uuid = player.getUniqueId();
+		return measure_end.containsKey(uuid) ? measure_end.get(uuid) : System.currentTimeMillis();
+	}
+
+	public static void setMeasureEndTime(Player player) {
+		measure_end.put(player.getUniqueId(), System.currentTimeMillis());
+	}
+
+	public static double getMeasureDamage(Player player) {
+		UUID uuid = player.getUniqueId();
+		return measure_damage.containsKey(uuid) ? measure_damage.get(uuid) : 0.0d;
+	}
+
+	public static void setMeasureDamage(Player player, double damage) {
+		measure_damage.put(player.getUniqueId(), damage);
+	}
+
+	public static int getMeasureDamageCount(Player player) {
+		UUID uuid = player.getUniqueId();
+		return measure_damage_count.containsKey(uuid) ? measure_damage_count.get(uuid) : 0;
+	}
+
+	public static void setMeasureDamageCount(Player player, int critical) {
+		measure_damage_count.put(player.getUniqueId(), critical);
+	}
+
+	public static int getMeasureCriticalCount(Player player) {
+		UUID uuid = player.getUniqueId();
+		return measure_critical_count.containsKey(uuid) ? measure_critical_count.get(uuid) : 0;
+	}
+
+	public static void setMeasureCriticalCount(Player player, int critical) {
+		measure_critical_count.put(player.getUniqueId(), critical);
 	}
 }

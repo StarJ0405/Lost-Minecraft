@@ -1,8 +1,7 @@
 package com.StarJ.LA.Listeners;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -13,9 +12,9 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
+import com.StarJ.LA.Items.CookingIngredient;
 import com.StarJ.LA.Items.FishItem;
 import com.StarJ.LA.Items.Items;
-import com.StarJ.LA.Systems.Fishes.Rarity;
 
 public class CraftListener implements Listener {
 	@EventHandler
@@ -49,53 +48,27 @@ public class CraftListener implements Listener {
 	public void Events(FurnaceSmeltEvent e) {
 		if (e.getResult() != null) {
 			Material type = e.getResult().getType();
-			if (type.equals(Material.BAKED_POTATO)) {
+			ItemStack source = e.getSource();
+			Items i = Items.valueOf(source);
+			if (i != null && i instanceof CookingIngredient && ((CookingIngredient) i).getCookedFood() != null) {
+				e.setResult(((CookingIngredient) i).getCookedFood().getItemStack());
+			} else if (type.equals(Material.BAKED_POTATO)) {
 				e.setResult(Items.baked_potato.getItemStack());
 			} else if (type.equals(Material.DRIED_KELP)) {
 				e.setResult(Items.dried_kelp.getItemStack());
-			} else if (type.equals(Material.COOKED_COD)) {
-				ItemStack item = e.getSource();
-				Items i = Items.valueOf(item);
-				Rarity rare = Rarity.getRandomRarity(new HashMap<Rarity, BigDecimal>(),
-						new HashMap<Rarity, BigDecimal>(), new ArrayList<Rarity>(), new HashMap<Rarity, BigDecimal>());
-				if (i != null && i instanceof FishItem)
-					rare = ((FishItem) i).getRarity();
-				if (rare.equals(Rarity.Trash)) {
-					e.setResult(Items.trash_cooked_cod.getItemStack());
-				} else if (rare.equals(Rarity.Common)) {
-					e.setResult(Items.common_cooked_cod.getItemStack());
-				} else if (rare.equals(Rarity.Uncommon)) {
-					e.setResult(Items.uncommon_cooked_cod.getItemStack());
-				} else if (rare.equals(Rarity.Rare)) {
-					e.setResult(Items.rare_cooked_cod.getItemStack());
-				} else if (rare.equals(Rarity.Epic)) {
-					e.setResult(Items.epic_cooked_cod.getItemStack());
-				} else if (rare.equals(Rarity.Treasure)) {
-					e.setResult(Items.treasure_cooked_cod.getItemStack());
-				} else if (rare.equals(Rarity.God)) {
-					e.setResult(Items.god_cooked_cod.getItemStack());
-				}
-			} else if (type.equals(Material.COOKED_SALMON)) {
-				ItemStack item = e.getSource();
-				Items i = Items.valueOf(item);
-				Rarity rare = Rarity.getRandomRarity(new HashMap<Rarity, BigDecimal>(),
-						new HashMap<Rarity, BigDecimal>(), new ArrayList<Rarity>(), new HashMap<Rarity, BigDecimal>());
-				if (i != null && i instanceof FishItem)
-					rare = ((FishItem) i).getRarity();
-				if (rare.equals(Rarity.Trash)) {
-					e.setResult(Items.trash_cooked_salmon.getItemStack());
-				} else if (rare.equals(Rarity.Common)) {
-					e.setResult(Items.common_cooked_salmon.getItemStack());
-				} else if (rare.equals(Rarity.Uncommon)) {
-					e.setResult(Items.uncommon_cooked_salmon.getItemStack());
-				} else if (rare.equals(Rarity.Rare)) {
-					e.setResult(Items.rare_cooked_salmon.getItemStack());
-				} else if (rare.equals(Rarity.Epic)) {
-					e.setResult(Items.epic_cooked_salmon.getItemStack());
-				} else if (rare.equals(Rarity.Treasure)) {
-					e.setResult(Items.treasure_cooked_salmon.getItemStack());
-				} else if (rare.equals(Rarity.God)) {
-					e.setResult(Items.god_cooked_salmon.getItemStack());
+			} else if (type.equals(Material.COOKED_COD) || type.equals(Material.COOKED_SALMON)) {
+				e.setResult(FishItem.getCook(source));
+			} else if (type.equals(Material.COOKED_PORKCHOP) || type.equals(Material.COOKED_BEEF)
+					|| type.equals(Material.COOKED_CHICKEN) || type.equals(Material.COOKED_RABBIT)
+					|| type.equals(Material.COOKED_MUTTON)) {
+				List<CookingIngredient> list = CookingIngredient.getList();
+				Collections.shuffle(list);
+				for (CookingIngredient cook : list) {
+					ItemStack item = cook.getItemStack();
+					if (item.getType().equals(type)) {
+						e.setResult(item);
+						break;
+					}
 				}
 			}
 		}

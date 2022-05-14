@@ -69,10 +69,15 @@ commands:
     aliases: [mw]
     permission: operator
   sudo:
-    description: "sudo"
+    description: "§3/sudo"
     usage : "§3/sudo [player] command..."
     aliases: [su]
     permission: operator
+  flyspeed:
+    description: "§3/fs <speed>"
+    aliases: [fs]
+    permission: operator
+
 permission:
     gambler:
         description: 도박장 관리를 위한 권한

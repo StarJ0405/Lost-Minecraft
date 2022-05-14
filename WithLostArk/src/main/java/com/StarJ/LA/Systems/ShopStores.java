@@ -17,7 +17,8 @@ import com.StarJ.LA.Core;
 public enum ShopStores {
 	Trash(ChatColor.GRAY + "잡템 상인", GUIStores.trash), Seller(ChatColor.GREEN + "잡화 상인", GUIStores.seller),
 	Warp(ChatColor.AQUA + "워프", GUIStores.warp), Coin(ChatColor.GOLD + "코인", GUIStores.coin),
-	FixError(ChatColor.GREEN + "요리&물약 교환", GUIStores.fix_error)
+	FixError(ChatColor.GREEN + "요리&물약 교환", GUIStores.fix_error),
+	Training(ChatColor.DARK_PURPLE + "허수아비", GUIStores.training)
 	//
 	;
 
@@ -94,6 +95,18 @@ public enum ShopStores {
 		prices.put(Material.GOLDEN_CARROT, 150l);
 
 		// 사냥
+		prices.put(Material.PORKCHOP, 1000l);
+		prices.put(Material.COOKED_PORKCHOP, 1500l);
+		prices.put(Material.BEEF, 1000l);
+		prices.put(Material.COOKED_BEEF, 1500l);
+		prices.put(Material.CHICKEN, 1000l);
+		prices.put(Material.COOKED_CHICKEN, 1500l);
+		prices.put(Material.MUTTON, 1000l);
+		prices.put(Material.COOKED_MUTTON, 1500l);
+		prices.put(Material.ROTTEN_FLESH, 1200l);
+		prices.put(Material.SPIDER_EYE, 1200l);
+
+		// 잡템
 		prices.put(Material.STRING, 100l);
 		prices.put(Material.INK_SAC, 100l);
 		prices.put(Material.GLOW_INK_SAC, 150l);
@@ -104,8 +117,6 @@ public enum ShopStores {
 		prices.put(Material.BLAZE_POWDER, 100l);
 		prices.put(Material.FIRE_CHARGE, 100l);
 		prices.put(Material.PRISMARINE_SHARD, 50l);
-
-		// 도축
 		prices.put(Material.FEATHER, 40l);
 		prices.put(Material.LEATHER, 100l);
 		prices.put(Material.INK_SAC, 100l);
@@ -130,23 +141,22 @@ public enum ShopStores {
 
 		// 나무
 		prices.put(Material.BAMBOO, 10l);
-		prices.put(Material.ACACIA_LOG, 250l);
-		prices.put(Material.BIRCH_LOG, 250l);
-		prices.put(Material.DARK_OAK_LOG, 250l);
-		prices.put(Material.JUNGLE_LOG, 250l);
-		prices.put(Material.OAK_LOG, 250l);
-		prices.put(Material.SPRUCE_LOG, 250l);
-		prices.put(Material.STRIPPED_ACACIA_LOG, 250l);
-		prices.put(Material.STRIPPED_BIRCH_LOG, 250l);
-		prices.put(Material.STRIPPED_DARK_OAK_LOG, 250l);
-		prices.put(Material.STRIPPED_JUNGLE_LOG, 250l);
-		prices.put(Material.STRIPPED_OAK_LOG, 250l);
-		prices.put(Material.STRIPPED_SPRUCE_LOG, 250l);
+		prices.put(Material.ACACIA_LOG, 100l);
+		prices.put(Material.BIRCH_LOG, 100l);
+		prices.put(Material.DARK_OAK_LOG, 100l);
+		prices.put(Material.JUNGLE_LOG, 100l);
+		prices.put(Material.OAK_LOG, 100l);
+		prices.put(Material.SPRUCE_LOG, 100l);
+		prices.put(Material.STRIPPED_ACACIA_LOG, 100l);
+		prices.put(Material.STRIPPED_BIRCH_LOG, 100l);
+		prices.put(Material.STRIPPED_DARK_OAK_LOG, 100l);
+		prices.put(Material.STRIPPED_JUNGLE_LOG, 100l);
+		prices.put(Material.STRIPPED_OAK_LOG, 100l);
+		prices.put(Material.STRIPPED_SPRUCE_LOG, 100l);
 
 		// 특수
 		prices.put(Material.GOLDEN_APPLE, 3000l);
 		prices.put(Material.ENCHANTED_GOLDEN_APPLE, 15000l);
 		prices.put(Material.HEART_OF_THE_SEA, 100000l);
-
 	}
 }

@@ -23,6 +23,7 @@ import com.StarJ.LA.Commands.ShopCommand;
 import com.StarJ.LA.Commands.StatusCommand;
 import com.StarJ.LA.Commands.degopCommand;
 import com.StarJ.LA.Commands.fixexitCommand;
+import com.StarJ.LA.Commands.FlySpeedCommand;
 import com.StarJ.LA.Commands.gopCommand;
 import com.StarJ.LA.Commands.sudoCommand;
 import com.StarJ.LA.Listeners.BlockListener;
@@ -30,7 +31,7 @@ import com.StarJ.LA.Listeners.CraftListener;
 import com.StarJ.LA.Listeners.EntityDamageListener;
 import com.StarJ.LA.Listeners.EntityShootListener;
 import com.StarJ.LA.Listeners.EntitySpawnListener;
-import com.StarJ.LA.Listeners.ExplodeListener;
+import com.StarJ.LA.Listeners.WorldListener;
 import com.StarJ.LA.Listeners.FishListener;
 import com.StarJ.LA.Listeners.InventoryListener;
 import com.StarJ.LA.Listeners.PlayerDeathListener;
@@ -64,7 +65,7 @@ public class Core extends JavaPlugin {
 		this.pm.registerEvents(new EntityDamageListener(), this);
 		this.pm.registerEvents(new EntityShootListener(), this);
 		this.pm.registerEvents(new EntitySpawnListener(), this);
-		this.pm.registerEvents(new ExplodeListener(), this);
+		this.pm.registerEvents(new WorldListener(), this);
 		this.pm.registerEvents(new FishListener(), this);
 		this.pm.registerEvents(new InventoryListener(), this);
 		this.pm.registerEvents(new PlayerDeathListener(), this);
@@ -89,6 +90,7 @@ public class Core extends JavaPlugin {
 		getCommand("pvp").setExecutor(new PVPCommand());
 		getCommand("multiworld").setExecutor(new MultiWorldCommand());
 		getCommand("sudo").setExecutor(new sudoCommand());
+		getCommand("flyspeed").setExecutor(new FlySpeedCommand());
 		for (World world : Bukkit.getWorlds()) {
 			world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
 			world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 15);

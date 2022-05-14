@@ -16,8 +16,8 @@ public class Jobs {
 	//
 	public final static Jobs Reaper = new Jobs("luan_soul_reaper", ChatColor.DARK_RED + "달소리퍼", Skills.Nightmare,
 			Skills.ShadowDot, Skills.SpiritCatch, Skills.RageSpear, Skills.Distortion, Skills.ShadowStorm,
-			Skills.LastGrapity, Skills.DancingofFury, Skills.Eclipse_Kadencha, Skills.Persona, WeaponItems.reaper, 500,
-			0.14f, ChatColor.DARK_PURPLE + "페르소나", 1000, true);
+			Skills.LastGrapity, Skills.DancingofFury, Skills.Eclipse_Kadencha, Skills.Persona, WeaponItems.reaper, 5000,
+			0.14f, ChatColor.DARK_PURPLE + "페르소나", 1000, true, new String[] {"페르소나 급습 스킬 피해량"});
 	//
 	private final String key;
 	private final String displayname;
@@ -30,11 +30,12 @@ public class Jobs {
 	private final float walkspeed;
 	private final String identity_name;
 	private final double max_identity;
+	private final String[] special_info;
 
 	public Jobs(String key, String displayname, Skills skill1, Skills skill2, Skills skill3, Skills skill4,
 			Skills skill5, Skills skill6, Skills skill7, Skills skill8, Skills awakening, Skills identity,
 			WeaponItems weapon, double max_health, float walkspeed, String identity_name, double max_identity,
-			boolean identity_percent) {
+			boolean identity_percent, String[] special_info) {
 		jobs.add(this);
 		this.key = key;
 		this.displayname = displayname;
@@ -54,6 +55,7 @@ public class Jobs {
 		this.identity_name = identity_name;
 		this.max_identity = max_identity;
 		this.identity_percent = identity_percent;
+		this.special_info = special_info;
 	}
 
 	public String getKey() {
@@ -74,6 +76,14 @@ public class Jobs {
 
 	public boolean isIdentityPercent() {
 		return identity_percent;
+	}
+
+	public String[] getSpecialinfo() {
+		return special_info;
+	}
+
+	public double getAttackDamagePercent(Player player) {
+		return (1 + ConfigStore.getWeaponLevel(player, this) * 0.1);
 	}
 
 	public Skills[] getSkills(Player player) {

@@ -18,7 +18,7 @@ public class ExitCommand implements CommandExecutor, TabCompleter {
 		if (args.length == 0) {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
-				GUIStores.Exit.openGUI(player, 0);
+				GUIStores.exit.openGUI(player, 0);
 			} else
 				sender.sendMessage(ChatColor.RED + "플레이어만 사용 가능합니다.");
 			return true;

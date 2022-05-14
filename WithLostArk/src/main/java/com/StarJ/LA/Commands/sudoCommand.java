@@ -24,8 +24,11 @@ public class sudoCommand implements CommandExecutor, TabCompleter {
 				for (int c = 1; c < args.length; c++)
 					command += args[c] + " ";
 				off.getPlayer().performCommand(command);
+				sender.sendMessage(
+						ChatColor.GOLD + off.getName() + ChatColor.WHITE + "님에게" + ChatColor.WHITE + "을 사용시켰습니다.");
 			} else
-				sender.sendMessage(ChatColor.RED + "");
+				sender.sendMessage(ChatColor.GOLD + off.getName() + ChatColor.RED + "님이 접속중이 아닙니다.");
+			return true;
 		}
 		return false;
 	}

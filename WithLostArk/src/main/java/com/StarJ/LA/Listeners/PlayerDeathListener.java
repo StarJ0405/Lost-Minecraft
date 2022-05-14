@@ -15,6 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.StarJ.LA.Items.Potioning.AdrenalineItem;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.HashMapStore;
@@ -74,6 +75,7 @@ public class PlayerDeathListener implements Listener {
 					BuffRunnable.cancel(player, skill);
 			}
 		}
+		AdrenalineItem.End(player);
 		HashMapStore.setSkillStop(player.getUniqueId().toString(), false);
 	}
 
@@ -81,5 +83,8 @@ public class PlayerDeathListener implements Listener {
 	public void Events(PlayerRespawnEvent e) {
 		Player player = e.getPlayer();
 		HashMapStore.cancelActionbar(player);
+		Location loc = player.getWorld().getSpawnLocation();
+		e.setRespawnLocation(loc);
+		player.teleport(loc);
 	}
 }

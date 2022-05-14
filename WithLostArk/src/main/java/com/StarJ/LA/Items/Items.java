@@ -8,11 +8,13 @@ import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Torch;
 
+import com.StarJ.LA.Items.CookingIngredient.IngredientType;
 import com.StarJ.LA.Items.JewerlyItems.Rank;
-import com.StarJ.LA.Items.Cooking.CookingIngredient;
-import com.StarJ.LA.Items.Cooking.CookingIngredient.IngredientType;
-import com.StarJ.LA.Systems.Fishes.Rarity;
+import com.StarJ.LA.Items.Potioning.AdrenalineItem;
+import com.StarJ.LA.Items.Potioning.AwakeningItem;
+import com.StarJ.LA.Items.Potioning.TornadoGranadeItem;
 import com.StarJ.LA.Systems.Stats;
 
 public abstract class Items {
@@ -113,46 +115,199 @@ public abstract class Items {
 	public final static CookingIngredient cake = new CookingIngredient("케이크", Material.CAKE, ChatColor.WHITE, 192,
 			IngredientType.Farming);
 	public final static CookingIngredient enchanted_golden_apple = new CookingIngredient("황금_사과",
-			Material.ENCHANTED_GOLDEN_APPLE, ChatColor.WHITE, 192, IngredientType.Farming);
+			Material.ENCHANTED_GOLDEN_APPLE, ChatColor.WHITE, 300, IngredientType.Farming);
 
-	public final static CookingIngredient trash_cooked_cod = new CookingIngredient(Rarity.Trash.getPrefix() + "_익힌_대구",
-			Material.COOKED_COD, Rarity.Trash.getColor(), Rarity.Trash.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient common_cooked_cod = new CookingIngredient(
-			Rarity.Common.getPrefix() + "_익힌_대구", Material.COOKED_COD, Rarity.Common.getColor(),
-			Rarity.Common.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient uncommon_cooked_cod = new CookingIngredient(
-			Rarity.Uncommon.getPrefix() + "_익힌_대구", Material.COOKED_COD, Rarity.Uncommon.getColor(),
-			Rarity.Uncommon.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient rare_cooked_cod = new CookingIngredient(Rarity.Rare.getPrefix() + "_익힌_대구",
-			Material.COOKED_COD, Rarity.Rare.getColor(), Rarity.Rare.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient epic_cooked_cod = new CookingIngredient(Rarity.Epic.getPrefix() + "_익힌_대구",
-			Material.COOKED_COD, Rarity.Epic.getColor(), Rarity.Epic.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient treasure_cooked_cod = new CookingIngredient(
-			Rarity.Treasure.getPrefix() + "_익힌_대구", Material.COOKED_COD, Rarity.Treasure.getColor(),
-			Rarity.Treasure.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient god_cooked_cod = new CookingIngredient(Rarity.God.getPrefix() + "_익힌_대구",
-			Material.COOKED_COD, Rarity.God.getColor(), Rarity.God.getMulti() * 32 * 1.5, IngredientType.Fishing);
-
-	public final static CookingIngredient trash_cooked_salmon = new CookingIngredient(
-			Rarity.Trash.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Trash.getColor(),
-			Rarity.Trash.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient common_cooked_salmon = new CookingIngredient(
-			Rarity.Common.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Common.getColor(),
-			Rarity.Common.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient uncommon_cooked_salmon = new CookingIngredient(
-			Rarity.Uncommon.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Uncommon.getColor(),
-			Rarity.Uncommon.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient rare_cooked_salmon = new CookingIngredient(Rarity.Rare.getPrefix() + "_익힌_연어",
-			Material.COOKED_SALMON, Rarity.Rare.getColor(), Rarity.Rare.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient epic_cooked_salmon = new CookingIngredient(Rarity.Epic.getPrefix() + "_익힌_연어",
-			Material.COOKED_SALMON, Rarity.Epic.getColor(), Rarity.Epic.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient treasure_cooked_salmon = new CookingIngredient(
-			Rarity.Treasure.getPrefix() + "_익힌_연어", Material.COOKED_SALMON, Rarity.Treasure.getColor(),
-			Rarity.Treasure.getMulti() * 32 * 1.5, IngredientType.Fishing);
-	public final static CookingIngredient god_cooked_salmon = new CookingIngredient(Rarity.God.getPrefix() + "_익힌_연어",
-			Material.COOKED_SALMON, Rarity.God.getColor(), Rarity.God.getMulti() * 32 * 1.5, IngredientType.Fishing);
-
-	
+	public final static CookingIngredient cooked_axolotl_meat = new CookingIngredient("익힌_아홀로틀_고기",
+			Material.COOKED_PORKCHOP, ChatColor.WHITE, 6, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient axolotl_meat = new CookingIngredient("아홀로틀_고기", Material.PORKCHOP,
+			ChatColor.WHITE, 4, 1 + 0, (short) 1, IngredientType.Hunting, cooked_axolotl_meat);
+	public final static CookingIngredient cooked_bat_meat = new CookingIngredient("익힌_박쥐_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 4.5, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient bat_meat = new CookingIngredient("박쥐_고기", Material.MUTTON, ChatColor.WHITE, 3,
+			1 + 0, (short) 1, IngredientType.Hunting, cooked_bat_meat);
+	public final static CookingIngredient cooked_cat_meat = new CookingIngredient("익힌_고양이_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 3, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cat_meat = new CookingIngredient("고양이_고기", Material.MUTTON, ChatColor.WHITE,
+			2, 1 + 0, (short) 1, IngredientType.Hunting, cooked_cat_meat);
+	public final static CookingIngredient cooked_chicken_meat = new CookingIngredient("익힌_닭_고기",
+			Material.COOKED_CHICKEN, ChatColor.WHITE, 6, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient chicken_meat = new CookingIngredient("닭_고기", Material.CHICKEN,
+			ChatColor.WHITE, 4, 1 + 0, (short) 1, IngredientType.Hunting, cooked_chicken_meat);
+	public final static CookingIngredient cooked_cow_meat = new CookingIngredient("익힌_소_고기", Material.COOKED_BEEF,
+			ChatColor.WHITE, 6, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cow_meat = new CookingIngredient("소_고기", Material.BEEF, ChatColor.WHITE, 4,
+			1 + 0, (short) 1, IngredientType.Hunting, cooked_cow_meat);
+	public final static CookingIngredient cooked_donkey_meat = new CookingIngredient("익힌_당나귀_고기", Material.COOKED_BEEF,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient donkey_meat = new CookingIngredient("당나귀_고기", Material.BEEF, ChatColor.WHITE,
+			6, 1 + 0, (short) 1, IngredientType.Hunting, cooked_donkey_meat);
+	public final static CookingIngredient cooked_fox_meat = new CookingIngredient("익힌_여우_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient fox_meat = new CookingIngredient("여우_고기", Material.MUTTON, ChatColor.WHITE, 6,
+			1 + 0, (short) 1, IngredientType.Hunting, cooked_fox_meat);
+	public final static CookingIngredient cooked_glow_squid_meat = new CookingIngredient("익힌_발광_오징어_고기",
+			Material.COOKED_MUTTON, ChatColor.WHITE, 15, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient glow_squid_meat = new CookingIngredient("발광_오징어_고기", Material.MUTTON,
+			ChatColor.WHITE, 10, 1 + 0, (short) 1, IngredientType.Hunting, cooked_glow_squid_meat);
+	public final static CookingIngredient cooked_horse_meat = new CookingIngredient("익힌_말_고기", Material.COOKED_BEEF,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient horse_meat = new CookingIngredient("말_고기", Material.BEEF, ChatColor.WHITE, 6,
+			1 + 0, (short) 1, IngredientType.Hunting, cooked_horse_meat);
+	public final static CookingIngredient cooked_mushrom_meat = new CookingIngredient("익힌_무시룸_고기", Material.COOKED_BEEF,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient mushrom_meat = new CookingIngredient("무시룸_고기", Material.BEEF, ChatColor.WHITE,
+			20, 1 + 0, (short) 1, IngredientType.Hunting, cooked_mushrom_meat);
+	public final static CookingIngredient cooked_mule_meat = new CookingIngredient("익힌_노새_고기", Material.COOKED_BEEF,
+			ChatColor.WHITE, 18, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient mule_meat = new CookingIngredient("노새_고기", Material.BEEF, ChatColor.WHITE, 12,
+			1 + 0, (short) 1, IngredientType.Hunting, cooked_mule_meat);
+	public final static CookingIngredient cooked_ocelot_meat = new CookingIngredient("익힌_오실롯_고기",
+			Material.COOKED_MUTTON, ChatColor.WHITE, 4, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient ocelot_meat = new CookingIngredient("오실롯_고기", Material.MUTTON,
+			ChatColor.WHITE, 6, 1 + 0, (short) 1, IngredientType.Hunting, cooked_ocelot_meat);
+	public final static CookingIngredient cooked_parrot_meat = new CookingIngredient("익힌_앵무새_고기",
+			Material.COOKED_CHICKEN, ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient parrot_meat = new CookingIngredient("앵무새_고기", Material.CHICKEN,
+			ChatColor.WHITE, 6, 1 + 0, (short) 1, IngredientType.Hunting, cooked_parrot_meat);
+	public final static CookingIngredient cooked_pig_meat = new CookingIngredient("익힌_돼지_고기", Material.COOKED_PORKCHOP,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient pig_meat = new CookingIngredient("돼지_고기", Material.PORKCHOP, ChatColor.WHITE,
+			6, 1 + 0, (short) 1, IngredientType.Hunting, cooked_pig_meat);
+	public final static CookingIngredient cooked_rabbit_meat = new CookingIngredient("익힌_토끼_고기", Material.COOKED_RABBIT,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient rabbit_meat = new CookingIngredient("토끼_고기", Material.RABBIT, ChatColor.WHITE,
+			6, 1 + 0, (short) 1, IngredientType.Hunting, cooked_rabbit_meat);
+	public final static CookingIngredient cooked_sheep_meat = new CookingIngredient("익힌_양_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient sheep_meat = new CookingIngredient("양_고기", Material.MUTTON, ChatColor.WHITE,
+			6, 1 + 0, (short) 1, IngredientType.Hunting, cooked_sheep_meat);
+	public final static CookingIngredient skeleton_horse_meat = new CookingIngredient("스켈레톤_말_고기",
+			Material.ROTTEN_FLESH, ChatColor.WHITE, 10, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient snowman_orb = new CookingIngredient("스노우맨_구슬", Material.SNOWBALL,
+			ChatColor.WHITE, 10, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_squid_meat = new CookingIngredient("익힌_오징어_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 15, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient squid_meat = new CookingIngredient("오징어_고기", Material.MUTTON, ChatColor.WHITE,
+			10, 1 + 0, (short) 1, IngredientType.Hunting, cooked_squid_meat);
+	public final static CookingIngredient cooked_strider_meat = new CookingIngredient("익힌_스트라이더_고기",
+			Material.COOKED_PORKCHOP, ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient strider_meat = new CookingIngredient("스트라이더_고기", Material.PORKCHOP,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting, cooked_strider_meat);
+	public final static CookingIngredient cooked_turtle_meat = new CookingIngredient("익힌_거북_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 15, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient turtle_meat = new CookingIngredient("거북_고기", Material.MUTTON, ChatColor.WHITE,
+			10, 1 + 0, (short) 1, IngredientType.Hunting, cooked_turtle_meat);
+	public final static CookingIngredient bee_meat = new CookingIngredient("벌_고기", Material.SPIDER_EYE, ChatColor.WHITE,
+			10, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cave_spider_meat = new CookingIngredient("동굴_거미_고기", Material.SPIDER_EYE,
+			ChatColor.WHITE, 10, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_dolphin_meat = new CookingIngredient("익힌_돌고래_고기",
+			Material.COOKED_MUTTON, ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient dolphin_meat = new CookingIngredient("돌고래_고기", Material.MUTTON,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting, cooked_dolphin_meat);
+	public final static CookingIngredient enderman_meat = new CookingIngredient("엔더맨_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_goat_meat = new CookingIngredient("익힌_염소_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient goat_meat = new CookingIngredient("염소_고기", Material.MUTTON, ChatColor.WHITE,
+			6, 1 + 0, (short) 1, IngredientType.Hunting, cooked_goat_meat);
+	public final static CookingIngredient irongolem_meat = new CookingIngredient("철골렘_고기", Material.IRON_INGOT,
+			ChatColor.WHITE, 40, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_llama_meat = new CookingIngredient("익힌_라마_고기", Material.COOKED_BEEF,
+			ChatColor.WHITE, 9, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient llama_meat = new CookingIngredient("라마_고기", Material.BEEF, ChatColor.WHITE, 6,
+			1 + 0, (short) 1, IngredientType.Hunting, cooked_llama_meat);
+	public final static CookingIngredient cooked_panda_meat = new CookingIngredient("익힌_판다_고기",
+			Material.COOKED_PORKCHOP, ChatColor.WHITE, 90, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient panda_meat = new CookingIngredient("판다_고기", Material.PORKCHOP,
+			ChatColor.WHITE, 60, 1 + 0, (short) 1, IngredientType.Hunting, cooked_panda_meat);
+	public final static CookingIngredient cooked_piglin_meat = new CookingIngredient("익힌_피글린_고기",
+			Material.COOKED_PORKCHOP, ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient piglin_meat = new CookingIngredient("피글린_고기", Material.PORKCHOP,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting, cooked_piglin_meat);
+	public final static CookingIngredient cooked_polar_bear_meat = new CookingIngredient("익힌_북극곰_고기",
+			Material.COOKED_PORKCHOP, ChatColor.WHITE, 45, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient polar_bear_meat = new CookingIngredient("북극곰_고기", Material.PORKCHOP,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting, cooked_polar_bear_meat);
+	public final static CookingIngredient spider_meat = new CookingIngredient("거미_고기", Material.SPIDER_EYE,
+			ChatColor.WHITE, 15, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_wolf_meat = new CookingIngredient("익힌_늑대_고기", Material.COOKED_BEEF,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient wolf_meat = new CookingIngredient("늑대_고기", Material.BEEF, ChatColor.WHITE, 20,
+			1 + 0, (short) 1, IngredientType.Hunting, cooked_wolf_meat);
+	public final static CookingIngredient zombified_piglin_meat = new CookingIngredient("좀비화된_피글린_고기",
+			Material.ROTTEN_FLESH, ChatColor.WHITE, 40, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient blaze_meat = new CookingIngredient("블레이즈_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 50, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient creeper_meat = new CookingIngredient("크리퍼_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient drowned_meat = new CookingIngredient("드라운드_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient elder_guardian_meat = new CookingIngredient("엘더_가디언_고기",
+			Material.COOKED_MUTTON, ChatColor.WHITE, 75, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient endermite_meat = new CookingIngredient("엔더마이트_고기", Material.SPIDER_EYE,
+			ChatColor.WHITE, 50, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient evoker_meat = new CookingIngredient("소환사_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 100, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient ghast_meat = new CookingIngredient("가스트_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 100, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient guardian_meat = new CookingIngredient("가디언_고기", Material.COOKED_MUTTON,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_hoglin_meat = new CookingIngredient("익힌_호글린_고기",
+			Material.COOKED_PORKCHOP, ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient hoglin_meat = new CookingIngredient("호글린_고기", Material.PORKCHOP,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting, cooked_hoglin_meat);
+	public final static CookingIngredient husk_meat = new CookingIngredient("허스크_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient magmacube_meat = new CookingIngredient("마그마큐브_고기", Material.SPIDER_EYE,
+			ChatColor.WHITE, 10, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_phantom_meat = new CookingIngredient("익힌_팬텀_고기",
+			Material.COOKED_CHICKEN, ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient phantom_meat = new CookingIngredient("팬텀_고기", Material.CHICKEN,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting, cooked_phantom_meat);
+	public final static CookingIngredient pillager_meat = new CookingIngredient("약탈자_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient cooked_ravager_meat = new CookingIngredient("익힌_파괴수_고기",
+			Material.COOKED_PORKCHOP, ChatColor.WHITE, 180, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient ravager_meat = new CookingIngredient("파괴수_고기", Material.PORKCHOP,
+			ChatColor.WHITE, 120, 1 + 0, (short) 1, IngredientType.Hunting, cooked_ravager_meat);
+	public final static CookingIngredient shulker_meat = new CookingIngredient("셜커_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 40, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient sillverfish_meat = new CookingIngredient("좀벌레_고기", Material.SPIDER_EYE,
+			ChatColor.WHITE, 40, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient skeleton_meat = new CookingIngredient("스켈레톤_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient slime_meat = new CookingIngredient("슬라임_고기", Material.SPIDER_EYE,
+			ChatColor.WHITE, 10, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient stray_meat = new CookingIngredient("스트레이_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient vex_meat = new CookingIngredient("벡스_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 30, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient vindicator_meat = new CookingIngredient("변명자_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 60, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient witch_meat = new CookingIngredient("마녀_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 60, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient wither_skeleton_meat = new CookingIngredient("위더_스켈레톤_고기",
+			Material.ROTTEN_FLESH, ChatColor.WHITE, 45, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient zoglin_meat = new CookingIngredient("조글린_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 45, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient zombie_meat = new CookingIngredient("좀비_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 20, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient enderdragon_meat = new CookingIngredient("엔더드래곤_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 2000, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient wither_meat = new CookingIngredient("위더_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 500, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient giant_meat = new CookingIngredient("거인_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 500, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient illusioner_meat = new CookingIngredient("환술사_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 100, 1 + 0, (short) 1, IngredientType.Hunting);
+	public final static CookingIngredient zombie_horse_meat = new CookingIngredient("좀비_말_고기", Material.ROTTEN_FLESH,
+			ChatColor.WHITE, 100, 1 + 0, (short) 1, IngredientType.Hunting);
+	// POTION
+	public final static AdrenalineItem adrenaline = new AdrenalineItem("아드레날린", ChatColor.DARK_PURPLE, 5);
+	public final static AwakeningItem awakening = new AwakeningItem("각성_물약", ChatColor.DARK_PURPLE, 5);
+	public final static TornadoGranadeItem tornado = new TornadoGranadeItem("회오리_폭탄", ChatColor.DARK_PURPLE, 500);
+	//순간공격폭탄, 지속공격폭탄, 화상폭탄, 신속로브, 은신로브, 보호물약, 홀닥불, 성부, 만능, 암폭
 	// WEAPON
 	public final static WeaponItems reaper = new WeaponItems("단검", Material.IRON_SWORD, ChatColor.DARK_RED, 2.5, 3, 10,
 			"월식: 카덴차", "페르소나");
@@ -189,6 +344,10 @@ public abstract class Items {
 
 	public String getKeyName() {
 		return loc + ":" + key;
+	}
+
+	public Material getType() {
+		return type;
 	}
 
 	public ItemStack getItemStack() {
