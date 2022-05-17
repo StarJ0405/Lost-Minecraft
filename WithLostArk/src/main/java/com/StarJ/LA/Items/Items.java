@@ -8,12 +8,13 @@ import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Torch;
 
 import com.StarJ.LA.Items.CookingIngredient.IngredientType;
 import com.StarJ.LA.Items.JewerlyItems.Rank;
 import com.StarJ.LA.Items.Potioning.AdrenalineItem;
 import com.StarJ.LA.Items.Potioning.AwakeningItem;
+import com.StarJ.LA.Items.Potioning.CorrosionGranadeItem;
+import com.StarJ.LA.Items.Potioning.FireGranadeItem;
 import com.StarJ.LA.Items.Potioning.TornadoGranadeItem;
 import com.StarJ.LA.Systems.Stats;
 
@@ -306,8 +307,10 @@ public abstract class Items {
 	// POTION
 	public final static AdrenalineItem adrenaline = new AdrenalineItem("아드레날린", ChatColor.DARK_PURPLE, 5);
 	public final static AwakeningItem awakening = new AwakeningItem("각성_물약", ChatColor.DARK_PURPLE, 5);
-	public final static TornadoGranadeItem tornado = new TornadoGranadeItem("회오리_폭탄", ChatColor.DARK_PURPLE, 500);
-	//순간공격폭탄, 지속공격폭탄, 화상폭탄, 신속로브, 은신로브, 보호물약, 홀닥불, 성부, 만능, 암폭
+	public final static TornadoGranadeItem tornado = new TornadoGranadeItem("회오리_폭탄", ChatColor.DARK_PURPLE, 100);
+	public final static CorrosionGranadeItem corrosion= new CorrosionGranadeItem("부식_폭탄", ChatColor.DARK_PURPLE, 10);
+	public final static FireGranadeItem fire = new FireGranadeItem("화염_폭탄", ChatColor.DARK_PURPLE, 30);
+	// 회오리폭탄, 부식폭탄, 화염폭탄, 암폭, 신속로브, 은신로브, 보호물약, 홀닥불, 성부, 만능
 	// WEAPON
 	public final static WeaponItems reaper = new WeaponItems("단검", Material.IRON_SWORD, ChatColor.DARK_RED, 2.5, 3, 10,
 			"월식: 카덴차", "페르소나");

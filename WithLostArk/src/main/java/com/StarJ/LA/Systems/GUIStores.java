@@ -2019,6 +2019,7 @@ public enum GUIStores {
 			double damage = HashMapStore.getMeasureDamage(player);
 			lore.add(ChatColor.WHITE + "지속시간 : " + duration);
 			lore.add(ChatColor.WHITE + "총 피해량 : " + Math.round(damage * 10) / 10.0);
+			lore.add(ChatColor.WHITE + "총타수 : " + HashMapStore.getMeasureDamageCount(player));
 			lore.add(ChatColor.WHITE + "치명타율 : " + Math.round(10000.0d * HashMapStore.getMeasureCriticalCount(player)
 					/ HashMapStore.getMeasureDamageCount(player)) / 100.0d + "%");
 			lore.add(ChatColor.GREEN + "DPS : " + (duration > 0 ? Math.round(damage * 10.0 / duration) / 10.0 : 0));
@@ -2048,7 +2049,8 @@ public enum GUIStores {
 				HashMapStore.setMeasureStartTime(player);
 				HashMapStore.setMeasureEndTime(player);
 				player.closeInventory();
-			}
+			} else
+				openGUI(player, 0);
 			return true;
 		}
 

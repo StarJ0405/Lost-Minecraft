@@ -59,9 +59,11 @@ public class EntityDamageListener implements Listener {
 						if (e.getCause().equals(DamageCause.VOID)) {
 							HashMapStore.removeStores(et.getLocation());
 							et.remove();
-						} else {
+						} else if (!value.asString().equals(ShopStores.Training.name())
+								&& !(e.getCause().equals(DamageCause.ENTITY_ATTACK)
+										|| e.getCause().equals(DamageCause.ENTITY_SWEEP_ATTACK)))
 							e.setCancelled(true);
-						}
+
 					}
 		} else if (e.getEntityType().equals(EntityType.PLAYER)) {
 			Player player = (Player) e.getEntity();
@@ -161,9 +163,12 @@ public class EntityDamageListener implements Listener {
 								HashMapStore.setMeasureCriticalCount(att,
 										HashMapStore.getMeasureCriticalCount(att) + 1);
 							vic_e.playEffect(EntityEffect.HURT);
+							Jobs job = ConfigStore.getJob(att);
+							HashMapStore.setIdentity(att,
+									HashMapStore.getIdentity(att) + job.getWeapon().getIdentity());
+							e.setDamage(0.01);
 						}
 					}
-
 			} else
 				for (MetadataValue value : vic_e.getMetadata("key"))
 					if (value.getOwningPlugin().equals(Core.getCore()))

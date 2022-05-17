@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
@@ -50,16 +51,18 @@ public class InventoryListener implements Listener {
 					if (i != null)
 						if (i instanceof CookingItem) {
 							if (CookingItem.use(player, item)) {
-								item.setAmount(item.getAmount() - 1);
-								if (item.getAmount() <= 0) {
-									item = null;
+								if (!player.getGameMode().equals(GameMode.CREATIVE)) {
+									item.setAmount(item.getAmount() - 1);
+									if (item.getAmount() <= 0) {
+										item = null;
+									}
+									items[num] = item;
+									ConfigStore.setConsumeItems(player, items);
+									if (item != null) {
+										inv.setItem(slot, item);
+									} else
+										inv.setItem(slot, ConfigStore.getEmpty());
 								}
-								items[num] = item;
-								ConfigStore.setConsumeItems(player, items);
-								if (item != null) {
-									inv.setItem(slot, item);
-								} else
-									inv.setItem(slot, ConfigStore.getEmpty());
 								Jobs job = ConfigStore.getJob(player);
 								double max = job != null ? job.getMaxHealth(player) : 20;
 								double health = HashMapStore.getHealth(player);
@@ -86,16 +89,18 @@ public class InventoryListener implements Listener {
 							PotionItems pi = (PotionItems) i;
 							if (pi != null) {
 								if (pi.Use(player, item)) {
-									item.setAmount(item.getAmount() - 1);
-									if (item.getAmount() <= 0) {
-										item = null;
+									if (!player.getGameMode().equals(GameMode.CREATIVE)) {
+										item.setAmount(item.getAmount() - 1);
+										if (item.getAmount() <= 0) {
+											item = null;
+										}
+										items[num] = item;
+										ConfigStore.setConsumeItems(player, items);
+										if (item != null) {
+											inv.setItem(slot, item);
+										} else
+											inv.setItem(slot, ConfigStore.getEmpty());
 									}
-									items[num] = item;
-									ConfigStore.setConsumeItems(player, items);
-									if (item != null) {
-										inv.setItem(slot, item);
-									} else
-										inv.setItem(slot, ConfigStore.getEmpty());
 									ActionBarRunnable.run(player);
 									player.closeInventory();
 								}

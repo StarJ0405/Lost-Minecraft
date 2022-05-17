@@ -91,11 +91,13 @@ public class RageSpear extends Skills {
 									&& (!(et instanceof Player) || (ConfigStore.getPlayerStatus((Player) et)
 											&& ConfigStore.getPVP(player) && ConfigStore.getPVP((Player) et)))) {
 								LivingEntity le = (LivingEntity) et;
-								le.setNoDamageTicks(0);
-								le.damage(getDrainDamage(player, persona), player);
-								le.setVelocity(dir.clone().multiply(-0.1));
-								addIdentity(player, 0);
-								list.add(et.getUniqueId());
+								if (!le.isDead()) {
+									le.setNoDamageTicks(0);
+									le.damage(getDrainDamage(player, persona), player);
+									le.setVelocity(dir.clone().multiply(-0.1));
+									addIdentity(player, 0);
+									list.add(et.getUniqueId());
+								}
 							}
 						}
 						Effects.spawnRedStone(now, 255, 0, 0, 1, 20, 1.2, 1.2, 1.2);
@@ -146,10 +148,12 @@ public class RageSpear extends Skills {
 								&& (!(et instanceof Player) || (ConfigStore.getPlayerStatus((Player) et)
 										&& ConfigStore.getPVP(player) && ConfigStore.getPVP((Player) et)))) {
 							LivingEntity le = (LivingEntity) et;
-							le.setNoDamageTicks(0);
-							le.damage(getAttackDamage(player, persona), player);
-							addIdentity(player, 0);
-							list.add(et.getUniqueId());
+							if (!le.isDead()) {
+								le.setNoDamageTicks(0);
+								le.damage(getAttackDamage(player, persona), player);
+								addIdentity(player, 0);
+								list.add(et.getUniqueId());
+							}
 						}
 					}
 					Effects.spawnRedStone(now, 163, 0, 0, 4, 50, 0.7, 0.7, 0.7);

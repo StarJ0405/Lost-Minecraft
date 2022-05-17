@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -74,7 +75,8 @@ public class CookingItem extends Items {
 								break;
 							}
 					HashMapStore.setHealth(player, health);
-					player.setCooldown(Material.HONEY_BOTTLE, 20 * 10);
+					if (!player.getGameMode().equals(GameMode.CREATIVE))
+						player.setCooldown(Material.HONEY_BOTTLE, 20 * 10);
 					player.closeInventory();
 					player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
 					Effects.Directional.HEART.spawnDirectional(player, player.getEyeLocation(), 5, 0.1, 0.1, 0.1, 1);

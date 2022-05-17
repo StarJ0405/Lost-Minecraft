@@ -1,6 +1,7 @@
 package com.StarJ.LA.Items.Potioning;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -26,11 +27,11 @@ public class AwakeningItem extends PotionItems {
 			if (!player.hasCooldown(this.type)) {
 				Jobs job = ConfigStore.getJob(player);
 				if (job != null) {
-					player.setCooldown(this.type, getCooldown());
+					if (!player.getGameMode().equals(GameMode.CREATIVE))
+						player.setCooldown(this.type, getCooldown());
 					player.closeInventory();
 					double identity = HashMapStore.getIdentity(player);
-					identity += ((AwakeningItem) i).getPower() * getRank(item).getMulti() / 100.0
-							* job.getMaxIdentity();
+					identity += getPower(item) / 100.0 * job.getMaxIdentity();
 					HashMapStore.setIdentity(player, identity);
 					player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
 					Effects.Directional.CRIMSON_SPORE.spawnDirectional(player, player.getEyeLocation(), 10, 0.1, 0.1,

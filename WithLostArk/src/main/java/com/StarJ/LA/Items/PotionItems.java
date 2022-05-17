@@ -18,7 +18,7 @@ public abstract class PotionItems extends Items {
 	//
 	private final String pre;
 	private final String sub;
-	private final double power;
+	protected final double power;
 
 	public PotionItems(String key, Material type, ChatColor color, String pre, String sub, double power) {
 		super("POTION", key, type, color);
@@ -38,10 +38,28 @@ public abstract class PotionItems extends Items {
 		return 20 * 30;
 	}
 
-	public double getPower() {
-		return power;
+	public static double getPower(ItemStack item) {
+		Items i = Items.valueOf(item);
+		if (i != null && i instanceof PotionItems) {
+			PotionItems pi = (PotionItems) i;
+			if (item.hasItemMeta() && item.getItemMeta().hasLore())
+				for (String l : item.getItemMeta().getLore())
+					if (l.contains(pi.pre) && l.contains(pi.sub)) {
+						try {
+							String sp = l.split(pi.pre)[1].split(pi.sub)[0];
+							if (pi.sub.equals(""))
+								sp = l.split(pi.pre)[1];
+							return Double.parseDouble(sp);
+						} catch (ArrayIndexOutOfBoundsException | NumberFormatException ex) {
+							break;
+						}
+					}
+
+		}
+		return 0;
 	}
 
+	@Deprecated
 	public static Rank getRank(ItemStack item) {
 		if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
 			for (String l : item.getItemMeta().getLore())
@@ -61,7 +79,7 @@ public abstract class PotionItems extends Items {
 		ItemMeta meta = item.getItemMeta();
 		Rank rank = Rank.getRandomRank();
 		double chance = Basics.Potioning.getChance(level).doubleValue();
-		double power = getPower();
+		double power = this.power;
 		if (level > 40 && r.nextDouble() < chance / 5) {
 			int ord = rank.ordinal();
 			if (ord < Rank.values().length - 1)
