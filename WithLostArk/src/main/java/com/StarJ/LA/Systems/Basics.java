@@ -275,7 +275,7 @@ public enum Basics {
 						+ "% 강해집니다.");
 			}
 			lore.add(ChatColor.GREEN + "양조 도구" + ChatColor.AQUA + " (패시브 / 확률)");
-			lore.add(ChatColor.WHITE + " - 양조시 " + getChance(level).doubleValue() * 100 + "확률로 제작도를 잃어버리지 않습니다.");
+			lore.add(ChatColor.WHITE + " - 양조시 " + getChance(level).doubleValue() * 100 / 2 + "확률로 제작도를 잃어버리지 않습니다.");
 			return lore;
 		}
 	}

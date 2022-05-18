@@ -16,41 +16,34 @@ import org.bukkit.scheduler.BukkitTask;
 import com.StarJ.LA.Core;
 import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.PotionItems;
+import com.StarJ.LA.Listeners.EntityDamageListener;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.HashMapStore;
+import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
 
-public class AdrenalineItem extends PotionItems {
+public class AbsorptionItem extends PotionItems {
 	private static HashMap<UUID, BukkitTask> tasks = new HashMap<UUID, BukkitTask>();
-	private static HashMap<UUID, Double> powers = new HashMap<UUID, Double>();
 
-	public AdrenalineItem(String key, ChatColor color, double power) {
-		super(key, Material.SUGAR, color, "피해증가 : ", "%", power);
-		this.lore.add(ChatColor.WHITE + "지속 시간 : " + getDuration() / 20 + "초");
+	public AbsorptionItem(String key, ChatColor color, double power) {
+		super(key, Material.SUGAR, color, "보호막 : ", "", power);
+		this.lore.add(ChatColor.GREEN + "지속 시간 : " + getDuration() / 20 + "초");
 	}
 
 	public static void End(Player player) {
 		UUID uuid = player.getUniqueId();
 		if (tasks.containsKey(uuid))
 			tasks.get(uuid).cancel();
-		powers.remove(uuid);
-	}
-
-	public static double getPower(Player player) {
-		UUID uuid = player.getUniqueId();
-		if (tasks.containsKey(uuid) && !tasks.get(uuid).isCancelled() && powers.containsKey(uuid)) {
-			return 1.0d + powers.get(uuid) / 100.0;
-		}
-		return 1.0D;
 	}
 
 	public int getDuration() {
-		return 20 * 15;
+		return 20 * 20;
 	}
 
 	@Override
 	public boolean Use(Player player, ItemStack item) {
 		Items i = Items.valueOf(item);
-		if (i != null && i instanceof AdrenalineItem)
+		if (i != null && i instanceof AbsorptionItem)
 			if (!player.hasCooldown(this.type)) {
 				if (!player.getGameMode().equals(GameMode.CREATIVE))
 					player.setCooldown(this.type, getCooldown());
@@ -64,14 +57,20 @@ public class AdrenalineItem extends PotionItems {
 						if (off.isOnline()) {
 							Player player = off.getPlayer();
 							if (ConfigStore.getPlayerStatus(player)) {
-								player.sendMessage(ChatColor.RED + "아드레날린 지속시간이 끝났습니다.");
+								HashMapStore.setAbsorption(player, key, 0);
+								EntityDamageListener.confirmHealthPercent(ConfigStore.getJob(player), player,
+										HashMapStore.getHealth(player), HashMapStore.getAllAbsorption(player));
+								ActionBarRunnable.run(player);
 								End(player);
 							}
 						}
 						this.cancel();
 					}
 				}.runTaskLater(Core.getCore(), getDuration()));
-				powers.put(uuid, getValue(item));
+				HashMapStore.setAbsorption(player, key, getValue(item));
+				EntityDamageListener.confirmHealthPercent(ConfigStore.getJob(player), player,
+						HashMapStore.getHealth(player), HashMapStore.getAllAbsorption(player));
+				ActionBarRunnable.run(player);
 				player.closeInventory();
 				player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
 				Effects.Directional.CRIMSON_SPORE.spawnDirectional(player, player.getEyeLocation(), 10, 0.1, 0.1, 0.1,

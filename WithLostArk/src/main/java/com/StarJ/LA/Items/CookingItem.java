@@ -13,11 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.StarJ.LA.Listeners.EntityDamageListener;
 import com.StarJ.LA.Systems.Basics;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
+import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
 
 public class CookingItem extends Items {
 	private static List<CookingItem> list = new ArrayList<CookingItem>();
@@ -75,6 +77,9 @@ public class CookingItem extends Items {
 								break;
 							}
 					HashMapStore.setHealth(player, health);
+					EntityDamageListener.confirmHealthPercent(job, player, health,
+							HashMapStore.getAllAbsorption(player));
+					ActionBarRunnable.run(player);
 					if (!player.getGameMode().equals(GameMode.CREATIVE))
 						player.setCooldown(Material.HONEY_BOTTLE, 20 * 10);
 					player.closeInventory();

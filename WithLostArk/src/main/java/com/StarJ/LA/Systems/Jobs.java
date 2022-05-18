@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.StarJ.LA.Items.WeaponItems;
+import com.StarJ.LA.Items.Potioning.SpeedRobeItem;
 import com.StarJ.LA.Skills.Skills;
 
 public class Jobs {
@@ -17,7 +18,7 @@ public class Jobs {
 	public final static Jobs Reaper = new Jobs("luan_soul_reaper", ChatColor.DARK_RED + "달소리퍼", Skills.Nightmare,
 			Skills.ShadowDot, Skills.SpiritCatch, Skills.RageSpear, Skills.Distortion, Skills.ShadowStorm,
 			Skills.LastGrapity, Skills.DancingofFury, Skills.Eclipse_Kadencha, Skills.Persona, WeaponItems.reaper, 5000,
-			0.14f, ChatColor.DARK_PURPLE + "페르소나", 1000, true, new String[] {"페르소나 급습 스킬 피해량"});
+			0.14f, ChatColor.DARK_PURPLE + "페르소나", 1000, true, new String[] { "페르소나 급습 스킬 피해량" });
 	//
 	private final String key;
 	private final String displayname;
@@ -107,8 +108,8 @@ public class Jobs {
 		return max_health * ConfigStore.getArmorHealth(player, this);
 	}
 
-	public float getWalkspeed() {
-		return walkspeed;
+	public float getWalkspeed(Player player) {
+		return walkspeed * SpeedRobeItem.getPower(player);
 	}
 
 	public WeaponItems getWeapon() {

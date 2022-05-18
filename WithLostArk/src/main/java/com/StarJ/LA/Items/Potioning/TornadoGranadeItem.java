@@ -32,7 +32,7 @@ import net.minecraft.world.phys.MovingObjectPosition;
 public class TornadoGranadeItem extends PotionItems {
 
 	public TornadoGranadeItem(String key, ChatColor color, double power) {
-		super(key, Material.SUGAR, color, "피해량 : ", "", power);
+		super(key, Material.SLIME_BALL, color, "피해량 : ", "", power);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class TornadoGranadeItem extends PotionItems {
 			if (!player.hasCooldown(this.type)) {
 				if (!player.getGameMode().equals(GameMode.CREATIVE))
 					player.setCooldown(this.type, getCooldown());
-				double power = getPower(item);
+				double power = getValue(item);
 				player.closeInventory();
 				player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
 				Effects.Directional.CRIMSON_SPORE.spawnDirectional(player, player.getEyeLocation(), 10, 0.1, 0.1, 0.1,

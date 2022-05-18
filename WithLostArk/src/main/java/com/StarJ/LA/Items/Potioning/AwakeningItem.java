@@ -31,7 +31,7 @@ public class AwakeningItem extends PotionItems {
 						player.setCooldown(this.type, getCooldown());
 					player.closeInventory();
 					double identity = HashMapStore.getIdentity(player);
-					identity += getPower(item) / 100.0 * job.getMaxIdentity();
+					identity += getValue(item) / 100.0 * job.getMaxIdentity();
 					HashMapStore.setIdentity(player, identity);
 					player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
 					Effects.Directional.CRIMSON_SPORE.spawnDirectional(player, player.getEyeLocation(), 10, 0.1, 0.1,

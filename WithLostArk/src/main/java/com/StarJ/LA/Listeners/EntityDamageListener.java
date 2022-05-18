@@ -28,12 +28,14 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.StarJ.LA.Core;
 import com.StarJ.LA.Items.CookingIngredient;
 import com.StarJ.LA.Items.FishItem;
 import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.Potioning.AdrenalineItem;
+import com.StarJ.LA.Items.Potioning.DarkGranadeItem;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.Basics;
 import com.StarJ.LA.Systems.ConfigStore;
@@ -66,38 +68,65 @@ public class EntityDamageListener implements Listener {
 
 					}
 		} else if (e.getEntityType().equals(EntityType.PLAYER)) {
-			Player player = (Player) e.getEntity();
-			if (!(e instanceof EntityDamageByEntityEvent) && ConfigStore.getPlayerStatus(player)) {
-				Jobs job = ConfigStore.getJob(player);
-				double max = job != null ? job.getMaxHealth(player) : 20;
-				double health = HashMapStore.getHealth(player);
-				health -= e.getDamage();
-
-				double per = health / max * 100;
-				if (per <= 1 && per > 0) {
-					per = 1;
-				} else if (per >= 99 && per < 100) {
-					per = 99;
-				}
-				if (per > 100) {
-					per = 100;
-				}
-				if (per <= 0)
-					if (health > 0) {
-						per = 1;
-					} else
-						per = 0;
-				HashMapStore.setHealth(player, health);
-				player.setHealth(per);
+			Player vic = (Player) e.getEntity();
+			if (!(e instanceof EntityDamageByEntityEvent) && ConfigStore.getPlayerStatus(vic)) {
+				Jobs job = ConfigStore.getJob(vic);
+				double health = HashMapStore.getHealth(vic);
+				health -= HashMapStore.damageAbsorption(vic,
+						e.getDamage() * DarkGranadeItem.getMulti(vic) * Stats.Enduration.getStatPercent(vic));
+				HashMapStore.setHealth(vic, health);
+				confirmHealthPercent(job, vic, health, HashMapStore.getAllAbsorption(vic));
 				e.setDamage(0.01d);
-				ActionBarRunnable.run(player);
-				for (String key : HashMapStore.getAttackedList(player)) {
+				ActionBarRunnable.run(vic);
+				for (String key : HashMapStore.getAttackedList(vic)) {
 					Skills skill = Skills.valueof(key);
 					if (skill != null)
-						e.setCancelled(skill.Attacked(player));
+						e.setCancelled(skill.Attacked(vic));
 				}
 			}
+		} else if (e.getEntity() instanceof LivingEntity) {
+			LivingEntity vic = (LivingEntity) e.getEntity();
+			double damage = e.getDamage() * DarkGranadeItem.getMulti(vic);
+			e.setDamage(damage);
 		}
+
+	}
+
+	public static void confirmHealthPercent(Jobs job, Player vic, double health, double abp) {
+		double max_health = job != null ? job.getMaxHealth(vic) : 20;
+		double per_health = health / max_health * 100;
+		if (per_health <= 1 && per_health > 0) {
+			per_health = 1;
+		} else if (per_health >= 99 && per_health < 100) {
+			per_health = 99;
+		}
+		if (per_health > 100) {
+			per_health = 100;
+		}
+		if (per_health <= 0)
+			if (health > 0) {
+				per_health = 1;
+			} else
+				per_health = 0;
+		double per_abp = abp / max_health * 100;
+		if (per_abp <= 1 && per_abp > 0) {
+			per_abp = 1;
+		}
+		if (per_abp <= 0)
+			if (abp > 0) {
+				per_abp = 1;
+			} else
+				per_abp = 0;
+
+		final double changed_abp = per_abp;
+		final double changed_health = per_health;
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				vic.setAbsorptionAmount(changed_abp);
+				vic.setHealth(changed_health);
+			}
+		}.runTaskLater(Core.getCore(), 1);
 
 	}
 
@@ -156,7 +185,8 @@ public class EntityDamageListener implements Listener {
 							if (damage <= 0)
 								HashMapStore.setMeasureStartTime(att);
 							HashMapStore.setMeasureEndTime(att);
-							damage += e.getDamage() * (critical ? 2 : 1) * damage_multi;
+							damage += e.getDamage() * (critical ? 2 : 1) * damage_multi
+									* DarkGranadeItem.getMulti((LivingEntity) vic_e);
 							HashMapStore.setMeasureDamage(att, damage);
 							HashMapStore.setMeasureDamageCount(att, HashMapStore.getMeasureDamageCount(att) + 1);
 							if (critical)
@@ -204,26 +234,11 @@ public class EntityDamageListener implements Listener {
 				}
 			if (ConfigStore.getPlayerStatus(vic)) {
 				Jobs vic_job = ConfigStore.getJob(vic);
-				double vic_max = vic_job != null ? vic_job.getMaxHealth(vic) : 20;
 				double vic_health = HashMapStore.getHealth(vic);
-				vic_health -= e.getDamage() * (critical ? 2 : 1) * damage_multi;
-
-				double vic_per = vic_health / vic_max * 100;
-				if (vic_per <= 1 && vic_per > 0) {
-					vic_per = 1;
-				} else if (vic_per >= 99 && vic_per < 100) {
-					vic_per = 99;
-				}
-				if (vic_per > 100) {
-					vic_per = 100;
-				}
-				if (vic_per <= 0)
-					if (vic_health > 0) {
-						vic_per = 1;
-					} else
-						vic_per = 0;
+				vic_health -= HashMapStore.damageAbsorption(vic, e.getDamage() * (critical ? 2 : 1) * damage_multi
+						* DarkGranadeItem.getMulti(vic) * Stats.Enduration.getStatPercent(vic));
 				HashMapStore.setHealth(vic, vic_health);
-				vic.setHealth(vic_per);
+				confirmHealthPercent(vic_job, vic, vic_health, HashMapStore.getAllAbsorption(vic));
 				e.setDamage(0.01d);
 				ActionBarRunnable.run(vic);
 			}
@@ -241,25 +256,10 @@ public class EntityDamageListener implements Listener {
 			Player player = (Player) e.getEntity();
 			if (ConfigStore.getPlayerStatus(player)) {
 				Jobs job = ConfigStore.getJob(player);
-				double max = job != null ? job.getMaxHealth(player) : 20;
 				double health = HashMapStore.getHealth(player);
 				health += e.getAmount();
-				double per = health / max * 100;
-				if (per <= 1 && per > 0) {
-					per = 1;
-				} else if (per >= 99 && per < 100) {
-					per = 99;
-				}
-				if (per > 100) {
-					per = 100;
-				}
-				if (per <= 0)
-					if (health > 0) {
-						per = 1;
-					} else
-						per = 0;
-				player.setHealth(per);
 				HashMapStore.setHealth(player, health);
+				confirmHealthPercent(job, player, health, HashMapStore.getAllAbsorption(player));
 				e.setCancelled(true);
 				ActionBarRunnable.run(player);
 			}

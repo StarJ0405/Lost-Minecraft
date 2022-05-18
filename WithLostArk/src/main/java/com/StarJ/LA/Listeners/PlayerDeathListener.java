@@ -15,7 +15,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.StarJ.LA.Items.Potioning.AbsorptionItem;
 import com.StarJ.LA.Items.Potioning.AdrenalineItem;
+import com.StarJ.LA.Items.Potioning.CorrosionGranadeItem;
+import com.StarJ.LA.Items.Potioning.DarkGranadeItem;
+import com.StarJ.LA.Items.Potioning.SpeedRobeItem;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.HashMapStore;
@@ -76,6 +80,10 @@ public class PlayerDeathListener implements Listener {
 			}
 		}
 		AdrenalineItem.End(player);
+		CorrosionGranadeItem.End(player);
+		DarkGranadeItem.End(player);
+		SpeedRobeItem.End(player);
+		AbsorptionItem.End(player);
 		HashMapStore.setSkillStop(player.getUniqueId().toString(), false);
 	}
 

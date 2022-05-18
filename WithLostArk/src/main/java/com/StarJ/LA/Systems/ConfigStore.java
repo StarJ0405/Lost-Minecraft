@@ -37,6 +37,7 @@ import com.StarJ.LA.Core;
 import com.StarJ.LA.Commands.MsgCommand;
 import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.JewerlyItems;
+import com.StarJ.LA.Listeners.EntityDamageListener;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.Fishes.Biomes;
 import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
@@ -1050,7 +1051,7 @@ public class ConfigStore {
 					//
 					player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(100D);
 					player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(0D);
-					player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(job.getWalkspeed());
+					player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(job.getWalkspeed(player));
 					inv.setItemInOffHand(air);
 					//
 
@@ -1062,24 +1063,11 @@ public class ConfigStore {
 									: max)
 							: max;
 
-					double per = health / max * 100;
-					if (per <= 1 && per > 0) {
-						per = 1;
-					} else if (per >= 99 && per < 100) {
-						per = 99;
-					}
-					if (per > 100) {
-						per = 100;
-					}
-					if (per <= 0)
-						if (health > 0) {
-							per = 1;
-						} else
-							per = 0;
 					HashMapStore.setHealth(player, health);
 					fc.set("health", player.getHealth());
 					player.setHealthScale(100);
-					player.setHealth(per);
+					EntityDamageListener.confirmHealthPercent(job, player, health,
+							HashMapStore.getAllAbsorption(player));
 					fc.set("food", player.getFoodLevel());
 					player.setFoodLevel(19);
 					player.sendMessage(ChatColor.RED + "전투 모드로 변경하였습니다.");
@@ -1106,6 +1094,7 @@ public class ConfigStore {
 						player.setHealth(fc.getDouble("health"));
 					} else
 						player.setHealth(20.0D);
+					player.setAbsorptionAmount(0);
 					if (fc.isInt("food"))
 						player.setFoodLevel(fc.getInt("food"));
 					Effects.sendActionBar(player, "");

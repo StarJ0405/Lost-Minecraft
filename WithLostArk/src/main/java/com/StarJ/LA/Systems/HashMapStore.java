@@ -3,6 +3,7 @@ package com.StarJ.LA.Systems;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ public class HashMapStore {
 	private static HashMap<String, Villages> bifrost2s = new HashMap<String, Villages>();
 	private static HashMap<String, HashMap<String, BigInteger>> coins = new HashMap<String, HashMap<String, BigInteger>>();
 	private static HashMap<String, Double> health = new HashMap<String, Double>();
+	private static HashMap<UUID, LinkedHashMap<String, Double>> absorption = new HashMap<UUID, LinkedHashMap<String, Double>>();
 	private static HashMap<String, BukkitTask> actions = new HashMap<String, BukkitTask>();
 	private static HashMap<String, Double> identity = new HashMap<String, Double>();
 	private static HashMap<String, List<String>> attacks = new HashMap<String, List<String>>(); // 공격
@@ -192,6 +194,46 @@ public class HashMapStore {
 			health = job.getMaxHealth(player);
 		}
 		HashMapStore.health.put(key, health);
+	}
+
+	public static double getAllAbsorption(Player player) {
+		UUID key = player.getUniqueId();
+		double abp = 0;
+		if (absorption.containsKey(key))
+			for (double a : absorption.get(key).values())
+				abp += a;
+		return abp;
+	}
+
+	public static double damageAbsorption(Player player, double damage) {
+		UUID key = player.getUniqueId();
+		if (absorption.containsKey(key)) {
+			LinkedHashMap<String, Double> hs = absorption.get(key);
+			for (String K : hs.keySet()) {
+				double V = hs.get(K);
+				if (V > 0) {
+					if (V > damage) {
+						hs.put(K, V - damage);
+						return 0;
+					} else {
+						hs.put(K, 0D);
+						damage -= V;
+					}
+				}
+			}
+			hs.entrySet().removeIf(entries -> entries.getValue() <= 0D);
+			absorption.put(key, hs);
+		}
+		return damage;
+	}
+
+	public static void setAbsorption(Player player, String name, double abp) {
+		UUID key = player.getUniqueId();
+		if (!absorption.containsKey(key))
+			absorption.put(key, new LinkedHashMap<String, Double>());
+		LinkedHashMap<String, Double> hs = absorption.get(key);
+		hs.put(name, abp);
+		absorption.put(key, hs);
 	}
 
 	public static void setActionbar(Player player, BukkitTask task) {

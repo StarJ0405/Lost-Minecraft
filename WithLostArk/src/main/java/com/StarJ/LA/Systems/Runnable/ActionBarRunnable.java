@@ -38,15 +38,23 @@ public class ActionBarRunnable extends BukkitRunnable {
 				}
 				double max_health = job.getMaxHealth(player);
 				double health = HashMapStore.getHealth(player);
+				double abp = HashMapStore.getAllAbsorption(player);
 				double max_identity = job.getMaxIdentity();
 				double identity = HashMapStore.getIdentity(player);
 				if (job.isIdentityPercent()) {
-					Effects.sendActionBar(player, ChatColor.GREEN + "체력 : " + health + " / " + max_health + "      "
-							+ job.getIdentityName() + " : "
-							+ Math.ceil(new BigDecimal(identity).divide(new BigDecimal(max_identity)).doubleValue() * 100.0d) + "%");
+					Effects.sendActionBar(player,
+							ChatColor.GREEN + "체력 : " + Math.round(health)
+									+ (abp > 0 ? "(+" + Math.round(abp) + ")" : "") + " / " + Math.round(max_health)
+									+ "      " + job.getIdentityName() + " : "
+									+ Math.ceil(
+											new BigDecimal(identity).divide(new BigDecimal(max_identity)).doubleValue()
+													* 100.0d)
+									+ "%");
 				} else
-					Effects.sendActionBar(player, ChatColor.GREEN + "체력 : " + health + " / " + max_health + "      "
-							+ job.getIdentityName() + " : " + identity + " / " + max_identity);
+					Effects.sendActionBar(player,
+							ChatColor.GREEN + "체력 : " + Math.round(health)
+									+ (abp > 0 ? "(+" + Math.round(abp) + ")" : "") + " / " + Math.round(max_health)
+									+ "      " + job.getIdentityName() + " : " + identity + " / " + max_identity);
 				this.time++;
 			} else {
 				Effects.sendActionBar(player, "");

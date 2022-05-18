@@ -38,7 +38,7 @@ public abstract class PotionItems extends Items {
 		return 20 * 30;
 	}
 
-	public static double getPower(ItemStack item) {
+	public static double getValue(ItemStack item) {
 		Items i = Items.valueOf(item);
 		if (i != null && i instanceof PotionItems) {
 			PotionItems pi = (PotionItems) i;
@@ -90,10 +90,8 @@ public abstract class PotionItems extends Items {
 		meta.setDisplayName(rank.getPrefix() + " " + this.key);
 		List<String> lore = new ArrayList<String>();
 		lore.addAll(this.lore);
-		lore.add(ChatColor.GREEN + pre + power * rank.getMulti() + sub);
+		lore.add(ChatColor.GREEN + pre + Math.round(power * rank.getMulti() * 10.0) / 10.0 + sub);
 		lore.add(rank.getColor() + "RANK : " + rank.name());
-		if (level > 20 && r.nextDouble() < chance / 3)
-			item.setAmount(1 + (level / 16));
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;

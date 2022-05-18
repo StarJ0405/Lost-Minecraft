@@ -13,13 +13,16 @@ import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 
 import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.PotionItems;
+import com.StarJ.LA.Listeners.EntityDamageListener;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.HashMapStore;
+import com.StarJ.LA.Systems.Jobs;
+import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
 import com.mojang.math.Vector3fa;
 
 import net.minecraft.core.particles.ParticleParamRedstone;
@@ -27,25 +30,22 @@ import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityAreaEffectCloud;
 import net.minecraft.world.entity.EntityLiving;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.projectile.EntityPotion;
 import net.minecraft.world.level.World;
-import net.minecraft.world.phys.MovingObjectPosition;
 
-public class FireGranadeItem extends PotionItems {
-	public FireGranadeItem(String key, ChatColor color, double power) {
-		super(key, Material.SLIME_BALL, color, "초당피해량 : ", "", power);
-		lore.add(ChatColor.WHITE + "장판 지속 시간 : " + getDuration() / 20);
+public class CampfireItem extends PotionItems {
+	public CampfireItem(String key, ChatColor color, double power) {
+		super(key, Material.CAMPFIRE, color, "초당회복량 : ", "%", power);
+		lore.add(ChatColor.WHITE + "지속 시간 : " + getDuration() / 20);
 	}
 
 	public int getDuration() {
-		return 10 * 20;
+		return 20 * 20;
 	}
 
 	@Override
 	public boolean Use(Player player, ItemStack item) {
 		Items i = Items.valueOf(item);
-		if (i != null && i instanceof FireGranadeItem)
+		if (i != null && i instanceof CampfireItem)
 			if (!player.hasCooldown(this.type)) {
 				if (!player.getGameMode().equals(GameMode.CREATIVE))
 					player.setCooldown(this.type, getCooldown());
@@ -54,12 +54,19 @@ public class FireGranadeItem extends PotionItems {
 				player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
 				Effects.Directional.CRIMSON_SPORE.spawnDirectional(player, player.getEyeLocation(), 10, 0.1, 0.1, 0.1,
 						0);
-				Location loc = player.getEyeLocation();
+				Location loc = player.getLocation();
 				WorldServer server = ((CraftWorld) loc.getWorld()).getHandle();
-				ThrownFireGranade et = new ThrownFireGranade(EntityTypes.aP, server, power, player);
-				et.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-				server.addFreshEntity(et, SpawnReason.CUSTOM);
-				et.getBukkitEntity().setVelocity(loc.getDirection().multiply(0.5));
+				FireAreaEffectCloud eaec = new FireAreaEffectCloud(server, loc.getX(), loc.getY() + 0.2, loc.getZ(),
+						power, player);
+				eaec.a(9.0F);
+				eaec.b(-1.0F);
+				eaec.b((int) (getDuration()));
+				eaec.c(5);
+				eaec.d(5);
+				eaec.av = 5;
+				eaec.c(-eaec.h() / eaec.n());
+				eaec.a(new ParticleParamRedstone(new Vector3fa(0f, 255f, 0f), 1));
+				server.b((Entity) eaec);
 				return true;
 			}
 		return false;
@@ -98,35 +105,6 @@ public class FireGranadeItem extends PotionItems {
 //		IRegistry.a(IRegistry.W, name, entity.a(name));
 //	}
 
-	public class ThrownFireGranade extends EntityPotion {
-		private final double power;
-		private final OfflinePlayer off;
-
-		public ThrownFireGranade(EntityTypes<? extends EntityPotion> entitytypes, World world, double power,
-				OfflinePlayer off) {
-			super(entitytypes, world);
-			this.power = power;
-			this.off = off;
-		}
-
-		protected void a(MovingObjectPosition movingobjectposition) {
-			if (off.isOnline()) {
-				Player att = off.getPlayer();
-				FireAreaEffectCloud eaec = new FireAreaEffectCloud(this.s, dc(), de(), di(), power, att);
-				eaec.a(9.0F);
-				eaec.b(-1.0F);
-				eaec.b((int) (getDuration()));
-				eaec.c(5);
-				eaec.d(5);
-				eaec.av = 5;
-				eaec.c(-eaec.h() / eaec.n());
-				eaec.a(new ParticleParamRedstone(new Vector3fa(255f, 0f, 0f), 1));
-				this.s.b((Entity) eaec);
-			}
-			super.a(movingobjectposition);
-		}
-	}
-
 	public class FireAreaEffectCloud extends EntityAreaEffectCloud {
 		private final double power;
 		private final OfflinePlayer off;
@@ -143,6 +121,9 @@ public class FireGranadeItem extends PotionItems {
 			super.k();
 			if (off.isOnline()) {
 				if (this.S % 20 == 0) {
+					if (this.getBukkitEntity() != null)
+						this.s.getWorld().playSound(this.getBukkitEntity().getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE,
+								1f, 1f);
 					Player att = off.getPlayer();
 					if (ConfigStore.getPlayerStatus(att)) {
 						List<EntityLiving> list1 = this.s.a(EntityLiving.class, cw());
@@ -161,12 +142,24 @@ public class FireGranadeItem extends PotionItems {
 								}
 							}
 							for (LivingEntity le : list)
-								if (!le.getUniqueId().equals(att.getUniqueId())) {
-									int ndt = le.getNoDamageTicks();
-									le.setNoDamageTicks(0);
-									le.damage(power * 0.5, att);
-									le.setNoDamageTicks(ndt);
+								if (le instanceof Player) {
+									Player vic = (Player) le;
+									if (le.getUniqueId().equals(att.getUniqueId()) || !ConfigStore.getPVP(att)
+											|| !ConfigStore.getPVP(vic)) {
+										Jobs job = ConfigStore.getJob(vic);
+										if (job != null) {
+											double health = HashMapStore.getHealth(vic);
+											health += job.getMaxHealth(vic) * power / 100.0;
+											HashMapStore.setHealth(vic, health);
+											EntityDamageListener.confirmHealthPercent(job, vic, health,
+													HashMapStore.getAllAbsorption(vic));
+											ActionBarRunnable.run(vic);
+											Effects.Directional.VILLAGER_HAPPY.spawnDirectional(vic.getEyeLocation(), 1,
+													0, 0, 0, 0.1);
+										}
+									}
 								}
+
 						}
 					}
 				}

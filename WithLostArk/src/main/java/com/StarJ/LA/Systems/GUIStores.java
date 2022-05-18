@@ -32,6 +32,7 @@ import com.StarJ.LA.Items.Buyable;
 import com.StarJ.LA.Items.CookingIngredient;
 import com.StarJ.LA.Items.CookingIngredient.IngredientType;
 import com.StarJ.LA.Items.CookingItem;
+import com.StarJ.LA.Items.DiggingItems;
 import com.StarJ.LA.Items.FishItem;
 import com.StarJ.LA.Items.InventoryItem;
 import com.StarJ.LA.Items.Items;
@@ -51,7 +52,7 @@ public enum GUIStores {
 			if (page < 0)
 				page = 0;
 			for (int c = 5 * 9; c < 6 * 9; c++)
-				inv.setItem(c, getEmpty());
+				inv.setItem(c, getBLACKEmpty());
 			if (list.size() > 5 * 9)
 				inv.setItem(inv.getSize() - 1, getInfoItemStack(page, max));
 			for (int c = page * 5 * 9; c < (page + 1) * 5 * 9; c++) {
@@ -484,7 +485,7 @@ public enum GUIStores {
 			if (page < 0)
 				page = 0;
 			for (int c = 5 * 9; c < 6 * 9; c++)
-				inv.setItem(c, getEmpty());
+				inv.setItem(c, getBLACKEmpty());
 			if (list.size() > 5 * 9)
 				inv.setItem(inv.getSize() - 1, getInfoItemStack(page, max));
 
@@ -579,7 +580,7 @@ public enum GUIStores {
 						} else
 							break;
 					for (int c = inv.getSize() - 9; c < inv.getSize(); c++)
-						inv.setItem(c, getEmpty());
+						inv.setItem(c, getBLACKEmpty());
 					inv.setItem(inv.getSize() - 1, getInfoItemStack(page, max));
 					// 45 46 47 48 49 50 51 52 53
 					player.openInventory(inv);
@@ -630,7 +631,7 @@ public enum GUIStores {
 		@Override
 		public void openGUI(Player player, int page) {
 			Inventory inv = Bukkit.createInventory(null, 54, ChatColor.GREEN + "정보창");
-			ItemStack none = getEmpty();
+			ItemStack none = getBLACKEmpty();
 			for (int c = 0; c < inv.getSize(); c++)
 				inv.setItem(c, none);
 			Jobs job = ConfigStore.getJob(player);
@@ -909,7 +910,7 @@ public enum GUIStores {
 		@Override
 		public void openGUI(Player player, int page) {
 			Inventory inv = Bukkit.createInventory(null, 54, ChatColor.AQUA + "보석창");
-			ItemStack none = getEmpty();
+			ItemStack none = getBLACKEmpty();
 			for (int c = 0; c < inv.getSize(); c++)
 				inv.setItem(c, none);
 			List<JewerlyItems> list = ConfigStore.getJewerlyItems(player);
@@ -1276,27 +1277,97 @@ public enum GUIStores {
 		}
 
 	},
-	potioning(ChatColor.GOLD + "양조", 1 * 9) {
+	potioning(ChatColor.GOLD + "양조", 2 * 9) {
 		@Override
 		public void openGUI(Player player, int page) {
-			Inventory inv = Bukkit.createInventory(null, 1 * 9, ChatColor.GOLD + "양조");
-			int level = Basics.Potioning.getLevel(player);
-			for (int c = (level / 10) + 4; c < 9; c++)
-				inv.setItem(c, getBROWNEmpty());
+			Inventory inv = Bukkit.createInventory(null, 3 * 9, ChatColor.GOLD + "양조");
+			for (int c = 0; c < 27; c++)
+				if (c == 4) {
+					inv.setItem(c, getBLACKEmpty());
+				} else
+					inv.setItem(c, getBROWNEmpty());
 			player.openInventory(inv);
 		}
 
 		@Override
 		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
-			return new ItemComparator().compare(clicked, getBROWNEmpty()) >= 3;
+			if (raw_slot == 4) {
+				if (clicked != null) {
+					ItemStack air = new ItemStack(Material.AIR);
+					if (clicked.getType().equals(getBLACKEmpty().getType())) {
+						ItemStack cursor = player.getItemOnCursor();
+						Items i = Items.valueOf(cursor);
+						if (i != null && i instanceof DiggingItems) {
+							DiggingItems dig = (DiggingItems) i;
+							if (clicked.getType().equals(getBLACKEmpty().getType())) {
+								player.setItemOnCursor(air);
+							} else
+								player.setItemOnCursor(clicked);
+							inv.setItem(4, cursor);
+							for (int c = 18; c < 18 + dig.getSlotCount(); c++)
+								inv.setItem(c, air);
+						}
+					} else {
+						ItemStack cursor = player.getItemOnCursor();
+						Items i = Items.valueOf(cursor);
+						if (i != null && i instanceof DiggingItems) {
+							DiggingItems dig = (DiggingItems) i;
+							player.setItemOnCursor(clicked);
+							inv.setItem(4, cursor);
+							for (int c = 18; c < 18 + dig.getSlotCount(); c++)
+								inv.setItem(c, air);
+						} else {
+							if (cursor == null || cursor.getType().equals(Material.AIR)) {
+								player.setItemOnCursor(clicked);
+								inv.setItem(4, getBLACKEmpty());
+								for (int c = 18; c < inv.getSize(); c++)
+									inv.setItem(c, getBROWNEmpty());
+							}
+							return true;
+						}
+					}
+				}
+			}
+			return clicked != null && (clicked.getType().equals(getBLACKEmpty().getType())
+					|| clicked.getType().equals(getBROWNEmpty().getType()));
 		}
 
 		@Override
 		public boolean Close(Player player, Inventory inv) {
+			ItemStack blueprint = inv.getItem(4);
+			Items i = Items.valueOf(blueprint);
+			if (i != null && i instanceof DiggingItems) {
+				DiggingItems dig = (DiggingItems) i;
+				ItemStack[] items = new ItemStack[dig.getSlotCount()];
+				for (int c = 0; c < items.length; c++)
+					items[c] = inv.getItem(c + 18);
+				if (dig.canMake(items)) {
+					int level = Basics.Potioning.getLevel(player);
+					int amount = dig.getResultCount();
+					Random r = new Random();
+					double chance = Basics.Potioning.getChance(level).doubleValue();
+					if (level > 20 && r.nextDouble() < chance / 3)
+						amount += level / 16;
+					for (int c = 0; c < amount; c++) {
+						PotionItems potion = dig.getPotion();
+						ItemStack item = potion.getItemStack(level);
+						if (player.getInventory().firstEmpty() != -1) {
+							player.getInventory().addItem(item);
+						} else
+							player.getWorld().dropItemNaturally(player.getEyeLocation(), item);
+					}
+					if (r.nextDouble() < chance / 2)
+						if (player.getInventory().firstEmpty() != -1) {
+							player.getInventory().addItem(blueprint);
+						} else
+							player.getWorld().dropItemNaturally(player.getEyeLocation(), blueprint);
+					return false;
+				}
+			}
 			for (ItemStack item : inv.getContents())
-				if (new ItemComparator().compare(item, getBROWNEmpty()) < 3)
+				if (item != null && !item.getType().equals(getBLACKEmpty().getType())
+						&& !item.getType().equals(getBROWNEmpty().getType()))
 					if (item != null) {
-						Items i = Items.valueOf(item);
 						if (player.getInventory().firstEmpty() != -1) {
 							player.getInventory().addItem(item);
 						} else
@@ -1317,7 +1388,7 @@ public enum GUIStores {
 			String key = player.getUniqueId().toString();
 			ItemStack tool = HashMapStore.getEnchantItemStack(key);
 			EnchantsType enchant = HashMapStore.getEnchantType(key);
-			ItemStack empty = getEmpty();
+			ItemStack empty = getBLACKEmpty();
 			ItemStack brown = getBROWNEmpty();
 			ItemStack red = getREDEmpty();
 			ItemStack book = HashMapStore.getEnchantBook(key);
@@ -2126,6 +2197,7 @@ public enum GUIStores {
 		return i;
 	}
 
+	@SuppressWarnings("unused")
 	private static ItemStack getGREENEmpty() {
 		return getGREENEmpty("");
 	}
@@ -2162,11 +2234,11 @@ public enum GUIStores {
 		return i;
 	}
 
-	private static ItemStack getEmpty() {
-		return getEmpty("");
+	private static ItemStack getBLACKEmpty() {
+		return getBLACKEmpty("");
 	}
 
-	private static ItemStack getEmpty(String display, String... lores) {
+	private static ItemStack getBLACKEmpty(String display, String... lores) {
 		ItemStack i = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
 		ItemMeta meta = i.getItemMeta();
 		meta.setDisplayName(ChatColor.GRAY + display);

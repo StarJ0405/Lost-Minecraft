@@ -8,6 +8,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,40 +19,37 @@ import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.PotionItems;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.Jobs;
 
-public class AdrenalineItem extends PotionItems {
+public class SpeedRobeItem extends PotionItems {
 	private static HashMap<UUID, BukkitTask> tasks = new HashMap<UUID, BukkitTask>();
-	private static HashMap<UUID, Double> powers = new HashMap<UUID, Double>();
 
-	public AdrenalineItem(String key, ChatColor color, double power) {
-		super(key, Material.SUGAR, color, "피해증가 : ", "%", power);
-		this.lore.add(ChatColor.WHITE + "지속 시간 : " + getDuration() / 20 + "초");
+	public SpeedRobeItem(String key, ChatColor color, double duration) {
+		super(key, Material.ELYTRA, color, "지속 시간 : ", "", duration);
+		this.lore.add(ChatColor.WHITE + "속도 증가량 : " + Math.round((getPower() - 1f) * 100f) + "%");
 	}
 
 	public static void End(Player player) {
 		UUID uuid = player.getUniqueId();
 		if (tasks.containsKey(uuid))
 			tasks.get(uuid).cancel();
-		powers.remove(uuid);
 	}
 
-	public static double getPower(Player player) {
+	private static float getPower() {
+		return 1.2f;
+	}
+
+	public static float getPower(Player player) {
 		UUID uuid = player.getUniqueId();
-		if (tasks.containsKey(uuid) && !tasks.get(uuid).isCancelled() && powers.containsKey(uuid)) {
-			return 1.0d + powers.get(uuid) / 100.0;
-		}
-		return 1.0D;
-	}
-
-	public int getDuration() {
-		return 20 * 15;
+		return tasks.containsKey(uuid) && !tasks.get(uuid).isCancelled() ? getPower() : 1f;
 	}
 
 	@Override
 	public boolean Use(Player player, ItemStack item) {
 		Items i = Items.valueOf(item);
-		if (i != null && i instanceof AdrenalineItem)
+		if (i != null && i instanceof SpeedRobeItem)
 			if (!player.hasCooldown(this.type)) {
+				Jobs job = ConfigStore.getJob(player);
 				if (!player.getGameMode().equals(GameMode.CREATIVE))
 					player.setCooldown(this.type, getCooldown());
 				End(player);
@@ -64,14 +62,16 @@ public class AdrenalineItem extends PotionItems {
 						if (off.isOnline()) {
 							Player player = off.getPlayer();
 							if (ConfigStore.getPlayerStatus(player)) {
-								player.sendMessage(ChatColor.RED + "아드레날린 지속시간이 끝났습니다.");
+								player.sendMessage(ChatColor.RED + "신속 로브 지속시간이 끝났습니다.");
 								End(player);
+								player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)
+										.setBaseValue(job.getWalkspeed(player));
 							}
 						}
 						this.cancel();
 					}
-				}.runTaskLater(Core.getCore(), getDuration()));
-				powers.put(uuid, getValue(item));
+				}.runTaskLater(Core.getCore(), (int) (getValue(item) * 20)));
+				player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(job.getWalkspeed(player));
 				player.closeInventory();
 				player.playSound(player, Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 2f, 1f);
 				Effects.Directional.CRIMSON_SPORE.spawnDirectional(player, player.getEyeLocation(), 10, 0.1, 0.1, 0.1,
