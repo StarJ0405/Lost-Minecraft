@@ -16,7 +16,7 @@ import com.StarJ.LA.Systems.Effects;
 public class InvisibleRobeItem extends PotionItems {
 
 	public InvisibleRobeItem(String key, ChatColor color, double duration) {
-		super(key, Material.ELYTRA, color, "지속 시간 : ", "", duration);
+		super(key, Material.PHANTOM_MEMBRANE, color, "지속 시간 : ", "", duration);
 	}
 
 	@Override

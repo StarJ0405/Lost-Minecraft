@@ -26,11 +26,14 @@ import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
 import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
 import com.StarJ.LA.Systems.Runnable.BuffRunnable;
+import com.StarJ.LA.Systems.Runnable.ComboCoolRunnable;
+import com.StarJ.LA.Systems.Runnable.SkillCoolRunnable;
 
 public class PlayerDeathListener implements Listener {
 	@EventHandler
 	public void Events(PlayerDeathEvent e) {
 		Player player = e.getEntity();
+		Jobs job = ConfigStore.getJob(player);
 		if (player.getGameMode().equals(GameMode.SURVIVAL) || player.getGameMode().equals(GameMode.ADVENTURE)) {
 			Location loc = player.getLocation();
 			World world = loc.getWorld();
@@ -55,7 +58,6 @@ public class PlayerDeathListener implements Listener {
 			}
 			player.setLevel(level);
 			player.getInventory().setContents(items);
-			Jobs job = ConfigStore.getJob(player);
 			if (job != null && ConfigStore.getPlayerStatus(player)) {
 				List<ItemStack> jobitems = job.getJobitems(player);
 				for (int c = 0; c < 9; c++)
@@ -63,28 +65,34 @@ public class PlayerDeathListener implements Listener {
 						player.getInventory().setItem(c, jobitems.get(c));
 			}
 			for (ItemStack drop : drops)
-				world.dropItem(loc, drop);
-
-			HashMapStore.setHealth(player, job != null ? job.getMaxHealth(player) : 20);
-			HashMapStore.cancelActionbar(player);
-			ActionBarRunnable.run(player);
-			for (String key : HashMapStore.getAttackedList(player)) {
-				Skills skill = Skills.valueof(key);
-				if (skill != null)
-					BuffRunnable.cancel(player, skill);
-			}
-			for (String key : HashMapStore.getAttackList(player)) {
-				Skills skill = Skills.valueof(key);
-				if (skill != null)
-					BuffRunnable.cancel(player, skill);
+				world.dropItemNaturally(loc, drop);
+		}
+		if (job != null && ConfigStore.getPlayerStatus(player)) {
+			for (Skills skill : job.getSkills(player)) {
+				ComboCoolRunnable.EndCombo(player, skill);
+				SkillCoolRunnable.end(player, skill);
+				skill.End(player, 0);
 			}
 		}
+		HashMapStore.setHealth(player, job != null ? job.getMaxHealth(player) : 20);
+		HashMapStore.cancelActionbar(player);
+		ActionBarRunnable.run(player);
+		for (String key : HashMapStore.getAttackedList(player)) {
+			Skills skill = Skills.valueof(key);
+			if (skill != null)
+				BuffRunnable.cancel(player, skill);
+		}
+		for (String key : HashMapStore.getAttackList(player)) {
+			Skills skill = Skills.valueof(key);
+			if (skill != null)
+				BuffRunnable.cancel(player, skill);
+		}
+
 		AdrenalineItem.End(player);
 		CorrosionGranadeItem.End(player);
 		DarkGranadeItem.End(player);
 		SpeedRobeItem.End(player);
 		AbsorptionItem.End(player);
-		HashMapStore.setSkillStop(player.getUniqueId().toString(), false);
 	}
 
 	@EventHandler

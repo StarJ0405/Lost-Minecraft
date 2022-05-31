@@ -50,7 +50,7 @@ public class ArmorItems extends Items {
 				"GENERIC_MAX_HEALTH", getPercent() * count, Operation.ADD_SCALAR, slot));
 		List<String> lore = new ArrayList<String>();
 		lore.add(ChatColor.GREEN + "강화 레벨 : " + count);
-		lore.add(ChatColor.WHITE + "클릭시 보석창으로 이동");
+		lore.add(ChatColor.GRAY + "클릭시 보석창으로 이동");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;

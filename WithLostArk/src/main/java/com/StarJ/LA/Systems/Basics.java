@@ -132,7 +132,7 @@ public enum Basics {
 			List<String> lore = new ArrayList<String>();
 			if (level >= 40) {
 				lore.add(ChatColor.GREEN + "X-Ray" + ChatColor.AQUA + " (쉬프트+쉬프트 / " + (450 - level * 3) + "초)");
-				lore.add(ChatColor.WHITE + " - " + (5 + level / 5) + "칸 내에 광물의 위치를 발견합니다.");
+				lore.add(ChatColor.WHITE + " - " + (5 + level / 5 * 5) + "칸 내에 광물의 위치를 발견합니다.");
 			}
 			if (level >= 20) {
 				lore.add(ChatColor.GREEN + "피버 타임" + ChatColor.AQUA + " (쉬프트+우클릭 / " + (300 - level) + "초)");
@@ -249,7 +249,7 @@ public enum Basics {
 	Potioning("양조", Material.BREWING_STAND) {
 		@Override
 		public int getNeedEXP(int level) {
-			return level * level * 50;
+			return level * level * 10;
 		}
 
 		@Override
@@ -885,7 +885,7 @@ public enum Basics {
 		chopping.put(Material.JUNGLE_LEAVES, new ItemStack[] { new ItemStack(Material.JUNGLE_SAPLING, 1 + 1, (byte) 0),
 				Items.apple.getRandomItemStack() });
 		chopping_exp.put(Material.JUNGLE_LEAVES, 1);
-		chopping_treetype.put(Material.JUNGLE_SAPLING, TreeType.JUNGLE);
+		chopping_treetype.put(Material.JUNGLE_SAPLING, TreeType.SMALL_JUNGLE);
 		chopping_sapling.put(Material.JUNGLE_LOG, Material.JUNGLE_SAPLING);
 
 		chopping.put(Material.OAK_LOG, new ItemStack[] { new ItemStack(Material.OAK_LOG, 1 + 0, (byte) 1) });
@@ -925,7 +925,7 @@ public enum Basics {
 		digging_exp.put(Material.ROOTED_DIRT, 1);
 		digging_exp.put(Material.CLAY, 2);
 		digging_exp.put(Material.MYCELIUM, 3);
-		digging_exp.put(Material.GRASS, 1);
+		digging_exp.put(Material.GRASS_BLOCK, 1);
 		digging_exp.put(Material.SAND, 1);
 		digging_exp.put(Material.RED_SAND, 4);
 		digging_exp.put(Material.SOUL_SAND, 3);

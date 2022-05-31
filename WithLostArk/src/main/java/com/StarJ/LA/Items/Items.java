@@ -312,20 +312,50 @@ public abstract class Items {
 	// POTION
 	public final static AdrenalineItem adrenaline = new AdrenalineItem("아드레날린", ChatColor.DARK_PURPLE, 5);
 	public final static AwakeningItem awakening = new AwakeningItem("각성_물약", ChatColor.DARK_PURPLE, 5);
-	public final static TornadoGranadeItem tornado = new TornadoGranadeItem("회오리_폭탄", ChatColor.DARK_PURPLE, 100);
-	public final static CorrosionGranadeItem corrosion = new CorrosionGranadeItem("부식_폭탄", ChatColor.DARK_PURPLE, 10);
-	public final static FireGranadeItem fire = new FireGranadeItem("화염_폭탄", ChatColor.DARK_PURPLE, 30);
-	public final static DarkGranadeItem dark = new DarkGranadeItem("암흑_폭탄", ChatColor.DARK_PURPLE, 5);
+	public final static TornadoGranadeItem tornado_granade = new TornadoGranadeItem("회오리_폭탄", ChatColor.DARK_PURPLE,
+			100);
+	public final static CorrosionGranadeItem corrosion_granade = new CorrosionGranadeItem("부식_폭탄",
+			ChatColor.DARK_PURPLE, 10);
+	public final static FireGranadeItem fire_granade = new FireGranadeItem("화염_폭탄", ChatColor.DARK_PURPLE, 30);
+	public final static DarkGranadeItem dark_granade = new DarkGranadeItem("암흑_폭탄", ChatColor.DARK_PURPLE, 5);
 	public final static SpeedRobeItem speed_robe = new SpeedRobeItem("신속_로브", ChatColor.DARK_PURPLE, 5);
-	public final static InvisibleRobeItem invsible_robe = new InvisibleRobeItem("은신_로브", ChatColor.DARK_PURPLE, 5);
+	public final static InvisibleRobeItem invisible_robe = new InvisibleRobeItem("은신_로브", ChatColor.DARK_PURPLE, 5);
 	public final static CampfireItem campfire = new CampfireItem("모닥불", ChatColor.DARK_PURPLE, 0.1);
 	public final static AbsorptionItem absorption = new AbsorptionItem("보호_물약", ChatColor.DARK_PURPLE, 500);
 	// DIGGING
-	public final static DiggingItems blueprint_adrenaline = new DiggingItems("아드레날린_제작서", Material.MAP, ChatColor.AQUA,
-			adrenaline, new ItemStack[] { new ItemStack(Material.IRON_INGOT, 3) });
+	public final static DiggingItems blueprint_adrenaline1 = new DiggingItems("아드레날린_제작서1", ChatColor.AQUA, adrenaline,
+			new ItemStack[] { new ItemStack(Material.BAMBOO, 16), new ItemStack(Material.IRON_INGOT, 8) });
+	public final static DiggingItems blueprint_awkening1 = new DiggingItems("각성_물약_제작서1", ChatColor.AQUA, awakening,
+			new ItemStack[] { new ItemStack(Material.SPRUCE_LOG, 16), new ItemStack(Material.GOLD_INGOT, 8) });
+	public final static DiggingItems blueprint_tornado_grande1 = new DiggingItems("회오리_폭탄_제작서1", ChatColor.AQUA,
+			tornado_granade,
+			new ItemStack[] { new ItemStack(Material.OAK_LOG, 8), new ItemStack(Material.LAPIS_LAZULI, 16) });
+	public final static DiggingItems blueprint_corrosion_granade1 = new DiggingItems("부식_폭탄_제작서1", ChatColor.AQUA,
+			corrosion_granade,
+			new ItemStack[] { new ItemStack(Material.ACACIA_LOG, 8), new ItemStack(Material.REDSTONE, 16) });
+	public final static DiggingItems blueprint_fire_granade1 = new DiggingItems("화염_폭탄_제작서1", ChatColor.AQUA,
+			fire_granade,
+			new ItemStack[] { new ItemStack(Material.JUNGLE_LOG, 16), new ItemStack(Material.REDSTONE, 8) });
+	public final static DiggingItems blueprint_dark_granade1 = new DiggingItems("암흑_폭탄_제작서1", ChatColor.AQUA,
+			dark_granade,
+			new ItemStack[] { new ItemStack(Material.DARK_OAK_LOG, 16), new ItemStack(Material.LAPIS_LAZULI, 8) });
+	public final static DiggingItems blueprint_speed_robe1 = new DiggingItems("신속_로브_제작서1", ChatColor.AQUA, speed_robe,
+			new ItemStack[] { new ItemStack(Material.BIRCH_LOG, 8), new ItemStack(Material.REDSTONE, 4),
+					new ItemStack(Material.LAPIS_LAZULI, 4) });
+	public final static DiggingItems blueprint_invisible_robe1 = new DiggingItems("은신_로브_제작서1", ChatColor.AQUA,
+			invisible_robe, new ItemStack[] { new ItemStack(Material.DARK_OAK_LOG, 8),
+					new ItemStack(Material.GOLD_INGOT, 4), new ItemStack(Material.IRON_INGOT, 4) });
+	public final static DiggingItems blueprint_campfire1 = new DiggingItems("모닥불_제작서1", ChatColor.AQUA, campfire,
+			new ItemStack[] { new ItemStack(Material.OAK_LOG, 8), new ItemStack(Material.COPPER_INGOT, 4),
+					new ItemStack(Material.GOLD_INGOT, 4), new ItemStack(Material.IRON_INGOT, 4) });
+	public final static DiggingItems blueprint_absorption1 = new DiggingItems("보호물약_제작서1", ChatColor.AQUA, absorption,
+			new ItemStack[] { new ItemStack(Material.ACACIA_LOG, 8), new ItemStack(Material.BAMBOO, 16),
+					new ItemStack(Material.BIRCH_LOG, 8), new ItemStack(Material.COPPER_INGOT, 4) });
 	// WEAPON
-	public final static WeaponItems reaper = new WeaponItems("단검", Material.IRON_SWORD, ChatColor.DARK_RED, 2.5, 3, 10,
-			"월식: 카덴차", "페르소나");
+	public final static WeaponItems reaper_lunarsound = new WeaponItems("단검", Material.IRON_SWORD, ChatColor.DARK_RED,
+			2.5, 30, 25, "월식: 카덴차", "페르소나");
+	public final static WeaponItems battlemaster_beginner = new WeaponItems("건틀릿", Material.SHEARS, ChatColor.DARK_RED,
+			1.5, 60, 0, "극의: 일순난격", "매혹의 본능");
 	//
 	protected final String loc;
 	protected final String key;

@@ -127,7 +127,7 @@ public class Core extends JavaPlugin {
 				player.setHealth(per);
 				HashMapStore.setActionbar(player, new ActionBarRunnable(player).runTaskTimer(Core.getCore(), 0, 10));
 			}
-			HashMapStore.setSkillStop(player.getUniqueId().toString(), false);
+			player.setAllowFlight(true);
 		}
 		ConfigStore.Load();
 		ShopStores.initial();
@@ -139,7 +139,7 @@ public class Core extends JavaPlugin {
 		for (Recipes recipe : Recipes.values())
 			recipe.RegistRecipe();
 		//
-		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "플러그인 정상 작동되었습니다.");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "로스트 마인크래프트 플러그인 정상 작동되었습니다.");
 	}
 
 	public void onDisable() {
@@ -161,6 +161,6 @@ public class Core extends JavaPlugin {
 		}
 		ConfigStore.Save();
 		//
-		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "플러그인 종료되었습니다.");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "로스트 마인크래프트 플러그인 종료되었습니다.");
 	}
 }

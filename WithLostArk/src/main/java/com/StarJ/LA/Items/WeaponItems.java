@@ -38,7 +38,7 @@ public class WeaponItems extends Items {
 	}
 
 	public static double getPercent() {
-		return 0.1;
+		return 0.05;
 	}
 
 	public double getIdentity() {

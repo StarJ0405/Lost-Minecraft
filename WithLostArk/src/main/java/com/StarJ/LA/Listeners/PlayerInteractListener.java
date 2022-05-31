@@ -38,6 +38,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
@@ -57,9 +58,11 @@ import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.EnchantsType;
 import com.StarJ.LA.Systems.GUIStores;
-import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
 import com.StarJ.LA.Systems.ShopStores;
+import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
+import com.StarJ.LA.Systems.Runnable.DebuffRunnable;
+import com.StarJ.LA.Systems.Runnable.DebuffRunnable.DebuffType;
 import com.StarJ.LA.Systems.Runnable.SneakRunnable;
 
 public class PlayerInteractListener implements Listener {
@@ -67,8 +70,12 @@ public class PlayerInteractListener implements Listener {
 	@EventHandler
 	public void Events(PlayerToggleSneakEvent e) {
 		Player player = e.getPlayer();
+		if (ConfigStore.getPlayerStatus(player)) {
+			ActionBarRunnable.run(player);
+		}
 		if (player.isSneaking()) {
-			SneakRunnable.Start(player);
+			if (!ConfigStore.getPlayerStatus(player))
+				SneakRunnable.Start(player);
 		} else if (SneakRunnable.isSneaking(player)) {
 			ItemStack item = player.getInventory().getItemInMainHand();
 			if (item == null || EnchantsType.getEnchantType(item.getType()) == null)
@@ -199,7 +206,7 @@ public class PlayerInteractListener implements Listener {
 									|| !ConfigStore.isBasicsCool(player, Basics.Mining, 3)) {
 								player.playSound(player, Sound.BLOCK_BEACON_POWER_SELECT, 1f, 2f);
 								Location loc = player.getLocation();
-								int range = 5 + level / 5;
+								int range = 5 + (level / 5) * 5;
 								HashMap<Material, Location> mine_loc = new HashMap<Material, Location>();
 								for (int y = -range; y <= range; y++)
 									for (int x = -range; x <= range; x++)
@@ -983,17 +990,7 @@ public class PlayerInteractListener implements Listener {
 
 	@EventHandler
 	public void Events(PlayerInteractAtEntityEvent e) {
-	}
 
-	@EventHandler
-	public void Events(PlayerDropItemEvent e) {
-		Player player = e.getPlayer();
-		if (ConfigStore.getPlayerStatus(player)) {
-			Jobs job = ConfigStore.getJob(player);
-			if (job != null)
-				job.getSpecialArts().Use(player, -1);
-			e.setCancelled(true);
-		}
 	}
 
 	@EventHandler
@@ -1041,12 +1038,23 @@ public class PlayerInteractListener implements Listener {
 	}
 
 	@EventHandler
+	public void Events(PlayerDropItemEvent e) {
+		Player player = e.getPlayer();
+		if (ConfigStore.getPlayerStatus(player)) {
+			Jobs job = ConfigStore.getJob(player);
+			if (job != null)
+				job.getSpecialArts().Use(player, 25);
+			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler
 	public void Events(PlayerSwapHandItemsEvent e) {
 		Player player = e.getPlayer();
 		if (ConfigStore.getPlayerStatus(player)) {
 			Jobs job = ConfigStore.getJob(player);
 			if (job != null)
-				job.getIdentity().Use(player, -1);
+				job.getIdentity().Use(player, 34);
 			e.setCancelled(true);
 		}
 	}
@@ -1078,6 +1086,16 @@ public class PlayerInteractListener implements Listener {
 	@EventHandler
 	public void Events(PlayerMoveEvent e) {
 		Player player = e.getPlayer();
-		e.setCancelled(HashMapStore.isSkillStop(player));
+		if (ConfigStore.getPlayerStatus(player) && DebuffRunnable.hasDebuff(player, DebuffType.Restraint)
+				&& e.getTo().distance(e.getFrom()) > 0)
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void Events(PlayerTeleportEvent e) {
+		Player player = e.getPlayer();
+		if (ConfigStore.getPlayerStatus(player) && DebuffRunnable.hasDebuff(player, DebuffType.Restraint)
+				&& e.getTo().distance(e.getFrom()) > 0)
+			e.setCancelled(true);
 	}
 }

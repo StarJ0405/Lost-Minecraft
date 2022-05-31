@@ -4,64 +4,106 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
-import com.StarJ.LA.Skills.Reaper.DancingofFury;
-import com.StarJ.LA.Skills.Reaper.Distortion;
-import com.StarJ.LA.Skills.Reaper.Eclipse_Kadencha;
-import com.StarJ.LA.Skills.Reaper.LastGrapity;
-import com.StarJ.LA.Skills.Reaper.Nightmare;
-import com.StarJ.LA.Skills.Reaper.Persona;
-import com.StarJ.LA.Skills.Reaper.RageSpear;
-import com.StarJ.LA.Skills.Reaper.ShadowDot;
-import com.StarJ.LA.Skills.Reaper.ShadowStorm;
-import com.StarJ.LA.Skills.Reaper.SpiritCatch;
+import com.StarJ.LA.Core;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.EnergyCombustion;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.Fascination;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.FlashHeatFang;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.LightningKick;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.MoonFlashKick;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.OnesHeart_MomentaryBlow;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.RoarofCourage;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.SkyShatteringBlow;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.SweepingKick;
+import com.StarJ.LA.Skills.Battlemaster_Beginner.WindsWhisper;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.DancingofFury;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.Distortion;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.Eclipse_Kadencha;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.LastGrapity;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.Nightmare;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.Persona;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.RageSpear;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.ShadowDot;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.ShadowStorm;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.SpiritCatch;
 import com.StarJ.LA.Systems.ConfigStore;
-import com.StarJ.LA.Systems.HashMapStore;
-import com.StarJ.LA.Systems.Jobs;
+import com.StarJ.LA.Systems.ShopStores;
 import com.StarJ.LA.Systems.Stats;
 import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
 import com.StarJ.LA.Systems.Runnable.BuffRunnable;
+import com.StarJ.LA.Systems.Runnable.ComboCoolRunnable;
+import com.StarJ.LA.Systems.Runnable.DebuffRunnable;
+import com.StarJ.LA.Systems.Runnable.DebuffRunnable.DebuffType;
 import com.StarJ.LA.Systems.Runnable.SkillCoolRunnable;
 
 public abstract class Skills {
 	private final static List<Skills> skills = new ArrayList<Skills>();
 
-	// REAPER
-	public static Skills Nightmare = new Nightmare();
-	public static Skills ShadowDot = new ShadowDot();
-	public static Skills SpiritCatch = new SpiritCatch();
-	public static Skills RageSpear = new RageSpear();
-	public static Skills Distortion = new Distortion();
-	public static Skills ShadowStorm = new ShadowStorm();
-	public static Skills LastGrapity = new LastGrapity();
-	public static Skills DancingofFury = new DancingofFury();
-	public static Skills Eclipse_Kadencha = new Eclipse_Kadencha();
-	public static Skills Persona = new Persona();
+	// REAPER_LUNAR
+	public static Nightmare Nightmare = new Nightmare();
+	public static ShadowDot ShadowDot = new ShadowDot();
+	public static SpiritCatch SpiritCatch = new SpiritCatch();
+	public static RageSpear RageSpear = new RageSpear();
+	public static Distortion Distortion = new Distortion();
+	public static ShadowStorm ShadowStorm = new ShadowStorm();
+	public static LastGrapity LastGrapity = new LastGrapity();
+	public static DancingofFury DancingofFury = new DancingofFury();
+	public static Eclipse_Kadencha Eclipse_Kadencha = new Eclipse_Kadencha();
+	public static Persona Persona = new Persona();
 
-	//
+	// BATTLEMASTER_BEGINNER
+	public static RoarofCourage RoarofCourage = new RoarofCourage();
+	public static WindsWhisper WindsWhisper = new WindsWhisper();
+	public static SweepingKick SweepingKick = new SweepingKick();
+	public static MoonFlashKick MoonFlashKick = new MoonFlashKick();
+	public static FlashHeatFang FlashHeatFang = new FlashHeatFang();
+	public static SkyShatteringBlow SkyShatteringBlow = new SkyShatteringBlow();
+	public static LightningKick LightningKick = new LightningKick();
+	public static EnergyCombustion EnergyCombustion = new EnergyCombustion();
+	public static OnesHeart_MomentaryBlow OnesHeart_MomentaryBlow = new OnesHeart_MomentaryBlow();
+	public static Fascination Fascination = new Fascination();
 
 	private final String key;
 	private final String displayname;
 	private final List<String> lore;
-	private final double cooldown;
+	protected final double cooldown;
 	private final ChatColor color;
+	private final AttackType type;
 
-	public Skills(String key, String displayname, double cooldown, ChatColor color) {
+	public Skills(String key, String displayname, double cooldown, ChatColor color, String... lore) {
+		this(key, displayname, cooldown, color, AttackType.NONE, lore);
+	}
+
+	public Skills(String key, String displayname, double cooldown, ChatColor color, AttackType type, String... lore) {
 		skills.add(this);
 		this.key = key;
 		this.displayname = displayname;
 		this.lore = new ArrayList<String>();
+		for (String l : lore)
+			this.lore.add(ChatColor.WHITE + l);
+		if (!type.equals(AttackType.NONE))
+			this.lore.add(ChatColor.GREEN + "공격타입 : " + type.getName());
+		this.lore.add(ChatColor.GRAY + "재사용 대기시간 : " + cooldown + "초");
 		this.cooldown = cooldown;
 		this.color = color;
+		this.type = type;
+	}
+
+	public AttackType getAttackType() {
+		return type;
 	}
 
 	public ItemStack getItemStack() {
@@ -79,11 +121,18 @@ public abstract class Skills {
 		meta.setDisplayName(color + getDisplayname());
 		List<String> lore = new ArrayList<String>();
 		lore.addAll(this.lore);
-		lore.add(ChatColor.WHITE + "클릭시 슬롯 변경");
-		lore.add(ChatColor.WHITE + "우클릭시 전체 스킬 슬롯 초기화");
+		lore.add(ChatColor.GRAY + "클릭시 슬롯 변경");
+		lore.add(ChatColor.GRAY + "우클릭시 전체 스킬 슬롯 초기화");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;
+	}
+
+	public void damage(Player att, LivingEntity le, double damage) {
+		int ndt = le.getNoDamageTicks();
+		le.setNoDamageTicks(0);
+		le.damage(damage, att);
+		le.setNoDamageTicks(ndt);
 	}
 
 	public ItemStack getComboItemStack() {
@@ -119,10 +168,14 @@ public abstract class Skills {
 	public abstract Vector getHitBox();
 
 	public boolean Use(Player player, int slot) {
-		if (HashMapStore.isSkillStop(player))
+		if (DebuffRunnable.hasDebuff(player, DebuffType.Silence)) {
+			player.sendMessage(ChatColor.RED + "침묵 중에는 스킬 사용이 불가능합니다.");
 			return true;// 종료
+		}
+		if (ComboCoolRunnable.hasCombo(player, this))
+			return false;// 진행
 		double cool = ConfigStore.getSkillCooldown(player, ConfigStore.getJob(player), this);
-		if (cool > 0) {
+		if (cool > 0 && !player.getGameMode().equals(GameMode.CREATIVE)) {
 			player.sendMessage(this.getDisplayname() + ChatColor.AQUA + " : " + cool);
 			return true; // 종료
 		} else
@@ -153,8 +206,14 @@ public abstract class Skills {
 	}
 
 	public void comboEnd(Player player, int slot) {
-		if (slot >= 0 && ConfigStore.getPlayerStatus(player))
-			player.getInventory().setItem(slot, getCoolItemStack());
+		ComboCoolRunnable.EndCombo(player, this);
+		if (slot >= 0 && ConfigStore.getPlayerStatus(player)) {
+			double cool = ConfigStore.getSkillCooldown(player, ConfigStore.getJob(player), this);
+			if (cool > 0) {
+				player.getInventory().setItem(slot, getCoolItemStack());
+			} else
+				player.getInventory().setItem(slot, getItemStack());
+		}
 	}
 
 	public void End(Player player, int slot) {
@@ -163,8 +222,13 @@ public abstract class Skills {
 	}
 
 	public void BuffEnd(Player player, int slot) {
-		if (slot >= 0 && ConfigStore.getPlayerStatus(player))
-			player.getInventory().setItem(slot, getCoolItemStack());
+		if (slot >= 0 && ConfigStore.getPlayerStatus(player)) {
+			double cool = ConfigStore.getSkillCooldown(player, ConfigStore.getJob(player), this);
+			if (cool > 0) {
+				player.getInventory().setItem(slot, getCoolItemStack());
+			} else
+				player.getInventory().setItem(slot, getItemStack());
+		}
 		BuffRunnable.cancel(player, this);
 	}
 
@@ -181,20 +245,39 @@ public abstract class Skills {
 	}
 
 	public double getCooldown(Player player) {
-		return cooldown * Stats.Speed.getStatPercent(player);
+		return player.getGameMode().equals(GameMode.CREATIVE) ? 0 : cooldown * Stats.Speed.getStatPercent(player);
 	}
 
-	public void addIdentity(Player player, double identity) {
-		Jobs job = ConfigStore.getJob(player);
-		double now = HashMapStore.getIdentity(player);
-		if (now < job.getMaxIdentity()) {
-			now = now + identity - (job != null ? job.getWeapon().getIdentity() : 0);
-			if (now < 0)
-				now = 0;
-			HashMapStore.setIdentity(player, now);
-		} else
-			HashMapStore.setIdentity(player, now);
+	public int getComboDuration() {
+		return (int) (this.cooldown * 20 / 2);
 	}
+
+	public static boolean canAttack(Player player, Entity et) {
+		if (!player.getUniqueId().equals(et.getUniqueId()))
+			if (et != null && !et.isDead() && et instanceof LivingEntity
+					&& (!(et instanceof Player) || (ConfigStore.getPlayerStatus((Player) et)
+							&& ConfigStore.getPVP(player) && ConfigStore.getPVP((Player) et)))) {
+				if (et.hasMetadata("key"))
+					for (MetadataValue v : et.getMetadata("key"))
+						if (v.getOwningPlugin().equals(Core.getCore())
+								&& !v.asString().equals(ShopStores.Training.name()))
+							return false;
+				return true;
+			}
+		return false;
+	}
+
+//	public static void addIdentity(Player player, double identity) {
+//		Jobs job = ConfigStore.getJob(player);
+//		double now = HashMapStore.getIdentity(player);
+//		if (now < job.getMaxIdentity()) {
+//			now = now + identity - (job != null ? job.getWeapon().getIdentity() : 0);
+//			if (now < 0)
+//				now = 0;
+//			HashMapStore.setIdentity(player, now);
+//		} else
+//			HashMapStore.setIdentity(player, now);
+//	}
 
 	public static Skills valueof(String key) {
 		for (Skills skill : values())
@@ -207,4 +290,37 @@ public abstract class Skills {
 		return skills;
 	}
 
+	public enum AttackType {
+		BACK("백 어택"), HEAD("헤드 어택"), NONE("")
+		//
+		;
+
+		private final String name;
+
+		private AttackType(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public static AttackType getAttackType(Entity vic_e, Entity att_e) {
+			return getAttackType(vic_e, att_e.getLocation());
+		}
+
+		public static AttackType getAttackType(Entity vic_e, Location att_loc) {
+			Vector vic_dir = vic_e.getLocation().getDirection().clone().setY(0).normalize();
+			Vector att_dir = vic_e.getLocation().clone().subtract(att_loc).toVector().setY(0).normalize();
+			double angle = vic_dir.angle(att_dir);
+			if (angle > 2.4) {
+				// head
+				return HEAD;
+			} else if (angle < 0.65) {
+				// back
+				return BACK;
+			} else
+				return NONE;
+		}
+	}
 }

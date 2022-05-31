@@ -342,7 +342,6 @@ public class CustomAdvancements {
 		Advancement ad = cad.getAdvancement();
 		net.minecraft.advancements.AdvancementProgress progress = p.M().b(ad);
 		return progress.a();
-
 	}
 
 }

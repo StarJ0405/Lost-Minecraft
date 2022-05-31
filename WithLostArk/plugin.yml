@@ -59,7 +59,7 @@ commands:
   status:
     description: "상태 전환 직업 -> 생활 / 생활 -> 직업"
     usage : "§3/상태\n§3/b"
-    aliases: [상태,tkdxo,b]
+    aliases: [상태,tkdxo,bb]
   pvp:
     description: "PVP모드 전환"
     usage : "§3/pvp\n§3/b"

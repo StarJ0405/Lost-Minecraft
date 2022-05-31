@@ -29,13 +29,23 @@ public class BuffRunnable extends BukkitRunnable {
 			player.getInventory().setItem(slot, skill.getBuffItemStack());
 	}
 
-	public static void run(Player player, Skills skill, int duration, int slot) {
-		if (skill != null && duration > 0) {
-			String key = player.getUniqueId().toString();
-			HashMap<String, BuffInfo> buffs = infos.containsKey(key) ? infos.get(key) : new HashMap<String, BuffInfo>();
-			buffs.put(skill.getKey(),
-					new BuffInfo(new BuffRunnable(player, skill, slot).runTaskLater(Core.getCore(), duration), slot));
-			infos.put(key, buffs);
+	public static void run(Player player, Skills skill, double duration, int slot) {
+		if (skill != null) {
+			if (duration > 0) {
+				String key = player.getUniqueId().toString();
+				HashMap<String, BuffInfo> buffs = infos.containsKey(key) ? infos.get(key)
+						: new HashMap<String, BuffInfo>();
+				if (buffs.containsKey(skill.getKey())) {
+					BuffInfo info = buffs.get(skill.getKey());
+					BukkitTask task = info.getTask();
+					if (task != null)
+						task.cancel();
+				}
+				buffs.put(skill.getKey(), new BuffInfo(
+						new BuffRunnable(player, skill, slot).runTaskLater(Core.getCore(), (int) duration * 20), slot));
+				infos.put(key, buffs);
+			} else
+				skill.BuffEnd(player, slot);
 		}
 	}
 
@@ -62,7 +72,7 @@ public class BuffRunnable extends BukkitRunnable {
 					task.cancel();
 				buffs.remove(skill.getKey());
 				infos.put(key, buffs);
-				skill.End(player, info.getSlot());
+				skill.BuffEnd(player, info.getSlot());
 			}
 		}
 	}
@@ -74,6 +84,7 @@ public class BuffRunnable extends BukkitRunnable {
 			Jobs job = ConfigStore.getJob(player);
 			if (job != null && job.getKey().equalsIgnoreCase(key)) {
 				skill.BuffEnd(player, slot);
+				this.cancel();
 			} else
 				this.cancel();
 		} else

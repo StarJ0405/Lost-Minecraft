@@ -13,14 +13,13 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.StarJ.LA.Systems.ConfigStore;
-import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Villages;
 
 public class fixexitCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-			if (HashMapStore.removeVillages(args[1])) {
+			if (ConfigStore.removeVillages(args[1])) {
 				sender.sendMessage(ChatColor.RED + args[1] + "스퀘어홀을 제거했습니다.");
 			} else
 				sender.sendMessage(ChatColor.RED + "없는 스퀘어홀입니다.");
@@ -29,7 +28,7 @@ public class fixexitCommand implements CommandExecutor, TabCompleter {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				Villages village = new Villages(args[1], player.getLocation());
-				HashMapStore.addVillages(village);
+				ConfigStore.addVillages(village);
 				sender.sendMessage(
 						ChatColor.GREEN + "현재 위치를 스퀘어홀로 지정했습니다. " + args[1] + " - " + player.getLocation().toString());
 				ConfigStore.Save();
@@ -44,7 +43,7 @@ public class fixexitCommand implements CommandExecutor, TabCompleter {
 				double z = Double.parseDouble(args[4]);
 				Location loc = new Location(Bukkit.getWorlds().get(0), x, y, z);
 				Villages village = new Villages(args[1], loc);
-				HashMapStore.addVillages(village);
+				ConfigStore.addVillages(village);
 				sender.sendMessage(ChatColor.GREEN + "현재 위치를 스퀘어홀로 지정했습니다. " + args[1] + " - " + loc.toString());
 				ConfigStore.Save();
 				ConfigStore.Confirm();
@@ -61,7 +60,7 @@ public class fixexitCommand implements CommandExecutor, TabCompleter {
 				float pitch = Float.parseFloat(args[6]);
 				Location loc = new Location(Bukkit.getWorlds().get(0), x, y, z, yaw, pitch);
 				Villages village = new Villages(args[1], loc);
-				HashMapStore.addVillages(village);
+				ConfigStore.addVillages(village);
 				sender.sendMessage(ChatColor.GREEN + "현재 위치를 스퀘어홀로 지정했습니다. " + args[1] + " - " + loc.toString());
 				ConfigStore.Save();
 				ConfigStore.Confirm();
@@ -81,9 +80,9 @@ public class fixexitCommand implements CommandExecutor, TabCompleter {
 				list.add("add");
 			if (args[0].equalsIgnoreCase("") && "remove".startsWith(args[0].toLowerCase()))
 				list.add("remove");
-		} else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-			list.addAll(HashMapStore.getVillageNames());
-		}
+		} else if (args.length == 2 && args[0].equalsIgnoreCase("remove"))
+			for (Villages villages : ConfigStore.getVillages())
+				list.add(villages.getName());
 		return list;
 	}
 }

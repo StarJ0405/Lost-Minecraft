@@ -20,6 +20,7 @@ import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.PotionItems;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.HashMapStore;
 import com.mojang.math.Vector3fa;
 
 import net.minecraft.core.particles.ParticleParamRedstone;
@@ -160,6 +161,7 @@ public class FireGranadeItem extends PotionItems {
 										list.add((LivingEntity) entityliving.getBukkitEntity());
 								}
 							}
+							double identity = HashMapStore.getIdentity(att);
 							for (LivingEntity le : list)
 								if (!le.getUniqueId().equals(att.getUniqueId())) {
 									int ndt = le.getNoDamageTicks();
@@ -167,6 +169,7 @@ public class FireGranadeItem extends PotionItems {
 									le.damage(power * 0.5, att);
 									le.setNoDamageTicks(ndt);
 								}
+							HashMapStore.setIdentity(att, identity);
 						}
 					}
 				}

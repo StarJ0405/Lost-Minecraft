@@ -1,5 +1,6 @@
 package com.StarJ.LA.Listeners;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,9 +46,10 @@ public class PlayerLogListener implements Listener {
 			HashMapStore.setHealth(player, health);
 			player.setHealth(per);
 			ActionBarRunnable.run(player);
-			HashMapStore.setSkillStop(player.getUniqueId().toString(), false);
+			player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(job.getWalkspeed(player));
 		}
-		if (player.getPlayerTime() == -1)
+		player.setAllowFlight(true);
+		if (player.getLastPlayed() == 0)
 			player.teleport(player.getWorld().getSpawnLocation());
 	}
 

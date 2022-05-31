@@ -25,6 +25,7 @@ import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.PotionItems;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.HashMapStore;
 
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EntityLiving;
@@ -188,11 +189,13 @@ public class CorrosionGranadeItem extends PotionItems {
 						return;
 					}
 				}
+				double identity = HashMapStore.getIdentity(att);
 				Effects.spawnRedStone(vic.getEyeLocation(), 0, 255, 0, 2, 10, 0.1, 0.1, 0.1);
 				int ndt = vic.getNoDamageTicks();
 				vic.setNoDamageTicks(0);
 				vic.damage(power, att);
 				vic.setNoDamageTicks(ndt);
+				HashMapStore.setIdentity(att, identity);
 				this.age--;
 			} else {
 				this.cancel();

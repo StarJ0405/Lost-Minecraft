@@ -20,6 +20,7 @@ import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.PotionItems;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.HashMapStore;
 
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EntityLiving;
@@ -90,7 +91,7 @@ public class TornadoGranadeItem extends PotionItems {
 //		}
 //		IRegistry.a(IRegistry.W, name, entity.a(name));
 //	}
-	
+
 	public class ThrownTornadoGranade extends EntityPotion {
 		private final double power;
 		private final OfflinePlayer off;
@@ -108,6 +109,7 @@ public class TornadoGranadeItem extends PotionItems {
 			if (off.isOnline())
 				if (!list1.isEmpty()) {
 					Player att = off.getPlayer();
+					double identity = HashMapStore.getIdentity(att);
 					Iterator<EntityLiving> iterator = list1.iterator();
 					while (iterator.hasNext()) {
 						EntityLiving entityliving = iterator.next();
@@ -122,6 +124,7 @@ public class TornadoGranadeItem extends PotionItems {
 								((LivingEntity) et).damage(power, att);
 						}
 					}
+					HashMapStore.setIdentity(att, identity);
 				}
 			super.a(movingobjectposition);
 		}

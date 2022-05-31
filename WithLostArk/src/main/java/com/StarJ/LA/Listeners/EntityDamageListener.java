@@ -147,10 +147,26 @@ public class EntityDamageListener implements Listener {
 					if (skill != null)
 						e.setCancelled(skill.Attack(att));
 				}
-				if (job != null && !e.isCancelled())
-					HashMapStore.setIdentity(att, HashMapStore.getIdentity(att) + job.getWeapon().getIdentity());
+				if (att.getAttackCooldown() == 1.0f)
+					if (job != null && !e.isCancelled())
+						if (vic_e instanceof Player) {
+							Player vic = (Player) vic_e;
+							if (ConfigStore.getPlayerStatus(vic) && ConfigStore.getPVP(vic))
+								HashMapStore.setIdentity(att,
+										HashMapStore.getIdentity(att) + job.getWeapon().getIdentity());
+						} else
+							HashMapStore.setIdentity(att,
+									HashMapStore.getIdentity(att) + job.getWeapon().getIdentity());
 				critical = Stats.isCritical(att);
 				damage_multi *= AdrenalineItem.getPower(att);
+//				AttackType type = AttackType.getAttackType(vic_e, att);
+//				if (vic_e instanceof LivingEntity)
+//					if (type.equals(AttackType.HEAD)) {
+//						Effects.spawnNote(att, ((LivingEntity) vic_e).getEyeLocation(), 0);
+//					} else if (type.equals(AttackType.BACK)) {
+//						Effects.spawnNote(att, ((LivingEntity) vic_e).getEyeLocation(), 10d);
+//					} else
+//						Effects.spawnNote(att, ((LivingEntity) vic_e).getEyeLocation(), 5d);
 			} else {
 				ItemStack main = att.getInventory().getItemInMainHand();
 				if (main != null) {
@@ -193,9 +209,6 @@ public class EntityDamageListener implements Listener {
 								HashMapStore.setMeasureCriticalCount(att,
 										HashMapStore.getMeasureCriticalCount(att) + 1);
 							vic_e.playEffect(EntityEffect.HURT);
-							Jobs job = ConfigStore.getJob(att);
-							HashMapStore.setIdentity(att,
-									HashMapStore.getIdentity(att) + job.getWeapon().getIdentity());
 							e.setDamage(0.01);
 						}
 					}

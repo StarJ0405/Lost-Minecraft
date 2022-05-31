@@ -18,7 +18,10 @@ public interface Buyable {
 	public default ItemStack getInfoItemStack(Player player, ItemStack i) {
 		ItemMeta meta = i.getItemMeta();
 		List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<String>();
-		lore.add(ChatColor.YELLOW + "구매 가격 : " + getMoney(player).toString());
+		if (getMoney(player).doubleValue() > 0) {
+			lore.add(ChatColor.YELLOW + "구매 가격 : " + getMoney(player).toString());
+		} else
+			lore.add(ChatColor.YELLOW + "구매 불가");
 		meta.setLore(lore);
 		i.setItemMeta(meta);
 		return i;

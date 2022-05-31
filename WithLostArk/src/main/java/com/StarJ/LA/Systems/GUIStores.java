@@ -45,7 +45,7 @@ public enum GUIStores {
 	exit(ChatColor.GREEN + "탈출의노래", 6 * 9) {
 		@Override
 		public void openGUI(Player player, int page) {
-			List<Villages> list = HashMapStore.getVillages();
+			List<Villages> list = ConfigStore.getVillages();
 			int max = (list.size() + 1) / (5 * 9);
 			if (page > max)
 				page = max;
@@ -85,7 +85,7 @@ public enum GUIStores {
 		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
 			if (clicked != null && !clicked.getType().equals(Material.AIR) && slot != inv.getSize() - 1) {
 				int page = getInfoPage(inv.getItem(inv.getSize() - 1));
-				List<Villages> list = HashMapStore.getVillages();
+				List<Villages> list = ConfigStore.getVillages();
 				if (list.size() > page * 5 * 9 + slot) {
 					BigInteger time = BigInteger.valueOf(System.currentTimeMillis())
 							.subtract(HashMapStore.getExitCool(player.getUniqueId().toString()));
@@ -448,17 +448,21 @@ public enum GUIStores {
 				if (type.equals(ClickType.LEFT) && i instanceof Buyable) {
 					Buyable buy = (Buyable) i;
 					BigInteger has = ConfigStore.getPlayerMoney(player);
-					if (has.compareTo(buy.getMoney(player)) >= 0 || player.getGameMode().equals(GameMode.CREATIVE)) {
-						if (!player.getGameMode().equals(GameMode.CREATIVE))
-							ConfigStore.setPlayerMoney(player, has.subtract(buy.getMoney(player)));
-						if (buy instanceof InventoryItem) {
-							((InventoryItem) buy).Use(player, new ItemStack(Material.AIR), null, null);
-							openGUI(player, 0);
+					if (buy.getMoney(player).doubleValue() > 0) {
+						if (has.compareTo(buy.getMoney(player)) >= 0
+								|| player.getGameMode().equals(GameMode.CREATIVE)) {
+							if (!player.getGameMode().equals(GameMode.CREATIVE))
+								ConfigStore.setPlayerMoney(player, has.subtract(buy.getMoney(player)));
+							if (buy instanceof InventoryItem) {
+								((InventoryItem) buy).Use(player, new ItemStack(Material.AIR), null, null);
+								openGUI(player, 0);
+							} else
+								player.getInventory().addItem(i.getItemStack(buy.getCount()));
+							player.sendMessage(ChatColor.GREEN + i.getKey() + ChatColor.WHITE + "을 구매하였습니다.");
 						} else
-							player.getInventory().addItem(i.getItemStack(buy.getCount()));
-						player.sendMessage(ChatColor.GREEN + i.getKey() + ChatColor.WHITE + "을 구매하였습니다.");
+							player.sendMessage(ChatColor.RED + "돈이 부족합니다.");
 					} else
-						player.sendMessage(ChatColor.RED + "돈이 부족합니다.");
+						player.sendMessage(ChatColor.RED + "구매 불가능한 상품입니다.");
 
 				}
 			}
@@ -478,7 +482,7 @@ public enum GUIStores {
 	warp(ChatColor.GOLD + "워프", 6 * 9) {
 		@Override
 		public void openGUI(Player player, int page) {
-			List<Villages> list = HashMapStore.getVillages();
+			List<Villages> list = ConfigStore.getVillages();
 			int max = (list.size() + 1) / (5 * 9);
 			if (page > max)
 				page = max;
@@ -513,7 +517,7 @@ public enum GUIStores {
 		public boolean Click(Player player, ClickType type, int slot, int raw_slot, ItemStack clicked, Inventory inv) {
 			if (clicked != null && !clicked.getType().equals(Material.AIR) && slot != inv.getSize() - 1) {
 				int page = getInfoPage(inv.getItem(inv.getSize() - 1));
-				List<Villages> list = HashMapStore.getVillages();
+				List<Villages> list = ConfigStore.getVillages();
 				if (list.size() > page * 5 * 9 + slot) {
 					player.teleport(list.get(page * 5 * 9 + slot).getLocation());
 					player.closeInventory();
@@ -599,9 +603,22 @@ public enum GUIStores {
 					max = max - 1;
 				if (slot == inv.getSize() - 1)
 					if ((type.equals(ClickType.LEFT) || type.equals(ClickType.SHIFT_LEFT)) && page > 0) {
-						openGUI(player, page - 1);
+						if (type.equals(ClickType.LEFT)) {
+							openGUI(player, page - 1);
+						} else if (type.equals(ClickType.SHIFT_LEFT))
+							if (page > 10) {
+								openGUI(player, page - 10);
+							} else
+								openGUI(player, 0);
 					} else if ((type.equals(ClickType.RIGHT) || type.equals(ClickType.SHIFT_RIGHT)) && page < max)
-						openGUI(player, page + 1);
+						if (type.equals(ClickType.RIGHT)) {
+							openGUI(player, page + 1);
+						} else if (type.equals(ClickType.SHIFT_RIGHT))
+							if (max - page > 10) {
+								openGUI(player, page + 10);
+							} else
+								openGUI(player, max);
+
 				return true;
 			}
 			return false;
@@ -819,7 +836,7 @@ public enum GUIStores {
 					Jobs job = ConfigStore.getJob(player);
 					if (job != null)
 						for (String l : job.getSpecialinfo())
-							lore.add(ChatColor.WHITE + l + " : "
+							lore.add(ChatColor.WHITE + " - " + l + " : "
 									+ Math.round((Stats.Specialization.getStatPercent(player) - 1) * 10000.0d) / 100.0d
 									+ "%");
 				} else if (stat.equals(Stats.Critical)) {
@@ -872,13 +889,13 @@ public enum GUIStores {
 			if (job != null) {
 				if (ConfigStore.getPlayerStatus(player))
 					ConfigStore.changePlayerStatus(player);
+				ConfigStore.setJob(player, job);
 				new BukkitRunnable() {
 					@Override
 					public void run() {
 						ConfigStore.changePlayerStatus(player);
 					}
-				}.runTaskLater(Core.getCore(), 1);
-				ConfigStore.setJob(player, job);
+				}.runTaskLater(Core.getCore(), 2);
 				player.sendMessage(ChatColor.RED + job.getDisplayname() + "을 직업으로 고르셨습니다.");
 				player.closeInventory();
 			} else if (raw_slot == inv.getSize() - 1)
@@ -1283,7 +1300,7 @@ public enum GUIStores {
 			Inventory inv = Bukkit.createInventory(null, 3 * 9, ChatColor.GOLD + "양조");
 			for (int c = 0; c < 27; c++)
 				if (c == 4) {
-					inv.setItem(c, getBLACKEmpty());
+					inv.setItem(c, getBLACKEmpty(ChatColor.DARK_PURPLE + "제작서 위치"));
 				} else
 					inv.setItem(c, getBROWNEmpty());
 			player.openInventory(inv);
@@ -1355,7 +1372,10 @@ public enum GUIStores {
 							player.getInventory().addItem(item);
 						} else
 							player.getWorld().dropItemNaturally(player.getEyeLocation(), item);
+						if (!player.getGameMode().equals(GameMode.CREATIVE))
+							Basics.Potioning.addEXP(player, PotionItems.getRank(item).getMulti());
 					}
+
 					if (r.nextDouble() < chance / 2)
 						if (player.getInventory().firstEmpty() != -1) {
 							player.getInventory().addItem(blueprint);

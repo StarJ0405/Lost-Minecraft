@@ -17,7 +17,6 @@ import com.StarJ.LA.Skills.Skills;
 public class HashMapStore {
 	private static HashMap<String, BigInteger> home_cool = new HashMap<String, BigInteger>();
 	private static HashMap<String, BigInteger> exit_cool = new HashMap<String, BigInteger>();
-	private static List<Villages> villages = new ArrayList<Villages>();
 	private static HashMap<Location, String> msgs = new HashMap<Location, String>();
 	private static HashMap<Location, ShopStores> stores = new HashMap<Location, ShopStores>();
 	private static HashMap<String, BigInteger> bifrosts_cool = new HashMap<String, BigInteger>();
@@ -33,7 +32,6 @@ public class HashMapStore {
 	private static HashMap<String, Double> identity = new HashMap<String, Double>();
 	private static HashMap<String, List<String>> attacks = new HashMap<String, List<String>>(); // 공격
 	private static HashMap<String, List<String>> attackeds = new HashMap<String, List<String>>(); // 피격
-	private static HashMap<String, Boolean> skill_stop = new HashMap<String, Boolean>(); // 스킬 정지
 	private static HashMap<String, EnchantsType> enchant_type = new HashMap<String, EnchantsType>();// 인챈트창
 	private static HashMap<String, ItemStack> enchant_item = new HashMap<String, ItemStack>();// 인챈트창
 	private static HashMap<String, ItemStack> enchant_book = new HashMap<String, ItemStack>();// 인챈트창
@@ -58,30 +56,6 @@ public class HashMapStore {
 
 	public static void setExitCool(String key, BigInteger value) {
 		exit_cool.put(key, value);
-	}
-
-	public static List<Villages> getVillages() {
-		return villages;
-	}
-
-	public static void addVillages(Villages value) {
-		villages.add(value);
-	}
-
-	public static boolean removeVillages(String name) {
-		for (Villages vil : villages)
-			if (vil.getName().equals(name)) {
-				villages.remove(vil);
-				return true;
-			}
-		return false;
-	}
-
-	public static List<String> getVillageNames() {
-		final List<String> list = new ArrayList<String>();
-		for (Villages vil : villages)
-			list.add(vil.getName());
-		return list;
 	}
 
 	public static HashMap<Location, String> getMsgs() {
@@ -238,7 +212,11 @@ public class HashMapStore {
 
 	public static void setActionbar(Player player, BukkitTask task) {
 		String key = player.getUniqueId().toString();
-		cancelActionbar(player);
+		if (actions.containsKey(key)) {
+			BukkitTask pre = actions.get(key);
+			if (!pre.isCancelled())
+				pre.cancel();
+		}
 		actions.put(key, task);
 	}
 
@@ -311,16 +289,6 @@ public class HashMapStore {
 		if (list.contains(skill.getKey()))
 			list.remove(skill.getKey());
 		attackeds.put(key, list);
-	}
-
-	//
-	public static boolean isSkillStop(Player player) {
-		String key = player.getUniqueId().toString();
-		return skill_stop.containsKey(key) ? skill_stop.get(key) : false;
-	}
-
-	public static void setSkillStop(String key, boolean stop) {
-		skill_stop.put(key, stop);
 	}
 
 	//

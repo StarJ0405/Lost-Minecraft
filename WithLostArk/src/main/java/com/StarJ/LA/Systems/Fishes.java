@@ -346,9 +346,7 @@ public class Fishes {
 		List<Fishes> canCaught = new ArrayList<Fishes>();
 		Size size = FishingrodItem.getSize(rod);
 		for (Fishes fish : values()) {
-			boolean canCycle = false;
-			if (canCycle && Biomes.canCaught(fish.biomes, loc.getBlock().getBiome())
-					&& (size == null || fish.size.equals(size)))
+			if (Biomes.canCaught(fish.biomes, loc.getBlock().getBiome()) && (size == null || fish.size.equals(size)))
 				canCaught.add(fish);
 		}
 		if (canCaught.size() > 0) {

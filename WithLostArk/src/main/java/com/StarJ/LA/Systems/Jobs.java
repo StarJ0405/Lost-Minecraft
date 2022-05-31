@@ -11,32 +11,87 @@ import org.bukkit.inventory.ItemStack;
 import com.StarJ.LA.Items.WeaponItems;
 import com.StarJ.LA.Items.Potioning.SpeedRobeItem;
 import com.StarJ.LA.Skills.Skills;
+import com.StarJ.LA.Skills.Reaper_Lunarsound.Nightmare;
+import com.StarJ.LA.Systems.Runnable.BuffRunnable;
+import com.StarJ.LA.Systems.Runnable.DebuffRunnable;
 
-public class Jobs {
+public abstract class Jobs {
 	private final static List<Jobs> jobs = new ArrayList<Jobs>();
 	//
-	public final static Jobs Reaper = new Jobs("luan_soul_reaper", ChatColor.DARK_RED + "달소리퍼", Skills.Nightmare,
-			Skills.ShadowDot, Skills.SpiritCatch, Skills.RageSpear, Skills.Distortion, Skills.ShadowStorm,
-			Skills.LastGrapity, Skills.DancingofFury, Skills.Eclipse_Kadencha, Skills.Persona, WeaponItems.reaper, 5000,
-			0.14f, ChatColor.DARK_PURPLE + "페르소나", 1000, true, new String[] { "페르소나 급습 스킬 피해량" });
+	public final static Jobs Reaper_Lunar = new Jobs("reaper_lunarsound", ChatColor.DARK_RED + "리퍼: 달의소리",
+			Skills.Nightmare, Skills.ShadowDot, Skills.SpiritCatch, Skills.RageSpear, Skills.Distortion,
+			Skills.ShadowStorm, Skills.LastGrapity, Skills.DancingofFury, Skills.Eclipse_Kadencha, Skills.Persona,
+			WeaponItems.reaper_lunarsound, 5000, 0.14f, ChatColor.DARK_PURPLE + "페르소나", 1000, IdentityType.Percent,
+			new String[] { "급습 스킬 피해량" }) {
+
+		@Override
+		public float getWalkspeed(Player player) {
+			return walkspeed * Math.max(0f,
+					Math.min(1.4f, Skills.Eclipse_Kadencha.isActive(player) ? 1.4f
+							: (1f + SpeedRobeItem.getPower(player) + Nightmare.getSpeed(player)
+									+ (BuffRunnable.has(player, Skills.Persona) ? Skills.Persona.getSpeed() : 0f)
+									+ (BuffRunnable.has(player, Skills.Distortion) ? Skills.Distortion.getSpeed() : 0f)
+									+ SpeedRobeItem.getPower(player) - DebuffRunnable.getSlowness(player))));
+		}
+
+		@Override
+		public <T1, T2> double getAttackDamagePercent(Player player, T1 sudden_attack, T2 persona) {
+			if (sudden_attack instanceof Boolean) {
+				if (persona instanceof Boolean) {
+					return (1 + ConfigStore.getWeaponLevel(player, this) * 0.05) * ((boolean) persona ? 1.25 : 1)
+							* ((boolean) sudden_attack ? Stats.Specialization.getStatPercent(player) : 1);
+				} else
+					return (1 + ConfigStore.getWeaponLevel(player, this) * 0.05)
+							* ((boolean) sudden_attack ? Stats.Specialization.getStatPercent(player) : 1);
+			} else
+				return (1 + ConfigStore.getWeaponLevel(player, this) * 0.05);
+		}
+
+	};
+	public final static Jobs Battlemaster_Beginner = new Jobs("battlemaster_beginner", ChatColor.DARK_RED + "배틀마스터: 초심",
+			Skills.RoarofCourage, Skills.WindsWhisper, Skills.SweepingKick, Skills.MoonFlashKick, Skills.FlashHeatFang,
+			Skills.SkyShatteringBlow, Skills.LightningKick, Skills.EnergyCombustion, Skills.OnesHeart_MomentaryBlow,
+			Skills.Fascination, WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "매혹의 본능", 100,
+			IdentityType.Buff, new String[] { "매혹 피해량" }) {
+		@Override
+		public float getWalkspeed(Player player) {
+			return walkspeed * Math.max(0f, Math.min(1.4f, 1f + SpeedRobeItem.getPower(player)
+					- DebuffRunnable.getSlowness(player)
+					+ (BuffRunnable.has(player, Skills.WindsWhisper) ? Skills.WindsWhisper.getWalkSpeed() : 0f)));
+		}
+
+		@Override
+		public <T> double getAttackDamagePercent(Player player) {
+			return super.getAttackDamagePercent(player) * (BuffRunnable.has(player, Skills.WindsWhisper) ? 1.497d : 1d);
+		}
+
+		@Override
+		public double getReduceDamage(Player player) {
+			return BuffRunnable.has(player, Skills.WindsWhisper) ? Skills.WindsWhisper.getReduceDamage() : 0;
+		}
+	};
 	//
 	private final String key;
 	private final String displayname;
 	private final Skills[] skills = new Skills[8];
 	private final Skills specialarts;
 	private final Skills identity;
-	private final boolean identity_percent;
+	private final IdentityType identity_type;
 	private final WeaponItems weapon;
 	private final double max_health;
-	private final float walkspeed;
+	protected final float walkspeed;
 	private final String identity_name;
 	private final double max_identity;
 	private final String[] special_info;
 
+	public enum IdentityType {
+		Int, Percent, Buff
+	}
+
 	public Jobs(String key, String displayname, Skills skill1, Skills skill2, Skills skill3, Skills skill4,
 			Skills skill5, Skills skill6, Skills skill7, Skills skill8, Skills awakening, Skills identity,
 			WeaponItems weapon, double max_health, float walkspeed, String identity_name, double max_identity,
-			boolean identity_percent, String[] special_info) {
+			IdentityType identity_type, String[] special_info) {
 		jobs.add(this);
 		this.key = key;
 		this.displayname = displayname;
@@ -55,7 +110,7 @@ public class Jobs {
 		this.walkspeed = walkspeed;
 		this.identity_name = identity_name;
 		this.max_identity = max_identity;
-		this.identity_percent = identity_percent;
+		this.identity_type = identity_type;
 		this.special_info = special_info;
 	}
 
@@ -75,16 +130,28 @@ public class Jobs {
 		return identity;
 	}
 
-	public boolean isIdentityPercent() {
-		return identity_percent;
+	public IdentityType getIdentityType() {
+		return identity_type;
 	}
 
 	public String[] getSpecialinfo() {
 		return special_info;
 	}
 
-	public double getAttackDamagePercent(Player player) {
-		return (1 + ConfigStore.getWeaponLevel(player, this) * 0.1);
+	public <T> double getAttackDamagePercent(Player player) {
+		return getAttackDamagePercent(player, null, null);
+	}
+
+	public <T1> double getAttackDamagePercent(Player player, T1 T1) {
+		return getAttackDamagePercent(player, T1, null);
+	}
+
+	public <T1, T2> double getAttackDamagePercent(Player player, T1 T1, T2 T2) {
+		return (1 + ConfigStore.getWeaponLevel(player, this) * 0.05);
+	}
+
+	public double getReduceDamage(Player player) {
+		return 0d;
 	}
 
 	public Skills[] getSkills(Player player) {
@@ -104,12 +171,24 @@ public class Jobs {
 		return skills;
 	}
 
+	public int getSkillSlot(Player player, Skills skill) {
+		Skills[] skills = getSkills(player);
+		for (int c = 0; c < skills.length; c++)
+			if (skills[c] == skill)
+				if (c == 7) {
+					return c + 1;
+				} else
+					return c;
+		return -1;
+	}
+
 	public double getMaxHealth(Player player) {
 		return max_health * ConfigStore.getArmorHealth(player, this);
 	}
 
 	public float getWalkspeed(Player player) {
-		return walkspeed * SpeedRobeItem.getPower(player);
+		return walkspeed * Math.max(0f,
+				Math.min(1.4f, 1f + SpeedRobeItem.getPower(player) - DebuffRunnable.getSlowness(player)));
 	}
 
 	public WeaponItems getWeapon() {

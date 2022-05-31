@@ -59,7 +59,6 @@ public abstract class PotionItems extends Items {
 		return 0;
 	}
 
-	@Deprecated
 	public static Rank getRank(ItemStack item) {
 		if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
 			for (String l : item.getItemMeta().getLore())

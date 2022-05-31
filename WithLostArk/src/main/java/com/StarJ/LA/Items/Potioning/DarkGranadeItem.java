@@ -25,6 +25,7 @@ import com.StarJ.LA.Items.Items;
 import com.StarJ.LA.Items.PotionItems;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
+import com.StarJ.LA.Systems.HashMapStore;
 
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EntityLiving;
@@ -136,6 +137,7 @@ public class DarkGranadeItem extends PotionItems {
 				if (!list1.isEmpty()) {
 					Player att = off.getPlayer();
 					Iterator<EntityLiving> iterator = list1.iterator();
+					double identity = HashMapStore.getIdentity(att);
 					while (iterator.hasNext()) {
 						EntityLiving entityliving = iterator.next();
 						if (entityliving.eX()) {
@@ -156,6 +158,7 @@ public class DarkGranadeItem extends PotionItems {
 							}
 						}
 					}
+					HashMapStore.setIdentity(att, identity);
 				}
 			super.a(movingobjectposition);
 		}

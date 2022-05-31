@@ -12,6 +12,7 @@ import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
+import com.StarJ.LA.Systems.Jobs.IdentityType;
 
 public class ActionBarRunnable extends BukkitRunnable {
 	private final OfflinePlayer off;
@@ -41,20 +42,29 @@ public class ActionBarRunnable extends BukkitRunnable {
 				double abp = HashMapStore.getAllAbsorption(player);
 				double max_identity = job.getMaxIdentity();
 				double identity = HashMapStore.getIdentity(player);
-				if (job.isIdentityPercent()) {
+				IdentityType iden_type = job.getIdentityType();
+				if (iden_type.equals(IdentityType.Buff)) {
 					Effects.sendActionBar(player,
 							ChatColor.GREEN + "체력 : " + Math.round(health)
 									+ (abp > 0 ? "(+" + Math.round(abp) + ")" : "") + " / " + Math.round(max_health)
-									+ "      " + job.getIdentityName() + " : "
-									+ Math.ceil(
-											new BigDecimal(identity).divide(new BigDecimal(max_identity)).doubleValue()
-													* 100.0d)
-									+ "%");
-				} else
+									+ "      " + job.getIdentityName() + " : " + identity + "초");
+				} else if (iden_type.equals(IdentityType.Percent)) {
+					Effects.sendActionBar(player, ChatColor.GREEN + "체력 : " + Math.round(health)
+							+ (abp > 0 ? "(+" + Math.round(abp) + ")" : "") + " / " + Math.round(max_health) + "      "
+							+ job.getIdentityName() + " : "
+							+ Math.ceil(new BigDecimal(identity).divide(new BigDecimal(max_identity)).doubleValue()
+									* 10000.0d) / 100.0d
+							+ "%");
+				} else if (iden_type.equals(IdentityType.Int)) {
 					Effects.sendActionBar(player,
 							ChatColor.GREEN + "체력 : " + Math.round(health)
 									+ (abp > 0 ? "(+" + Math.round(abp) + ")" : "") + " / " + Math.round(max_health)
 									+ "      " + job.getIdentityName() + " : " + identity + " / " + max_identity);
+				} else
+					Effects.sendActionBar(player,
+							ChatColor.GREEN + "체력 : " + Math.round(health)
+									+ (abp > 0 ? "(+" + Math.round(abp) + ")" : "") + " / " + Math.round(max_health)
+									+ "                            ");
 				this.time++;
 			} else {
 				Effects.sendActionBar(player, "");

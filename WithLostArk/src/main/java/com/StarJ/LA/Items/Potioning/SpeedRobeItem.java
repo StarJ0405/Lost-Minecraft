@@ -25,8 +25,8 @@ public class SpeedRobeItem extends PotionItems {
 	private static HashMap<UUID, BukkitTask> tasks = new HashMap<UUID, BukkitTask>();
 
 	public SpeedRobeItem(String key, ChatColor color, double duration) {
-		super(key, Material.ELYTRA, color, "지속 시간 : ", "", duration);
-		this.lore.add(ChatColor.WHITE + "속도 증가량 : " + Math.round((getPower() - 1f) * 100f) + "%");
+		super(key, Material.PHANTOM_MEMBRANE, color, "지속 시간 : ", "", duration);
+		this.lore.add(ChatColor.WHITE + "속도 증가량 : " + Math.round((getPower()) * 100f) + "%");
 	}
 
 	public static void End(Player player) {
@@ -36,12 +36,12 @@ public class SpeedRobeItem extends PotionItems {
 	}
 
 	private static float getPower() {
-		return 1.2f;
+		return 0.2f;
 	}
 
 	public static float getPower(Player player) {
 		UUID uuid = player.getUniqueId();
-		return tasks.containsKey(uuid) && !tasks.get(uuid).isCancelled() ? getPower() : 1f;
+		return tasks.containsKey(uuid) && !tasks.get(uuid).isCancelled() ? getPower() : 0f;
 	}
 
 	@Override
@@ -56,7 +56,6 @@ public class SpeedRobeItem extends PotionItems {
 				UUID uuid = player.getUniqueId();
 				tasks.put(uuid, new BukkitRunnable() {
 					OfflinePlayer off = player;
-
 					@Override
 					public void run() {
 						if (off.isOnline()) {
