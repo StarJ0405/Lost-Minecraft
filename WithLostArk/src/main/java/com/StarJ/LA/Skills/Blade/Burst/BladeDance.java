@@ -1,4 +1,4 @@
-package com.StarJ.LA.Skills.Battlemaster_Beginner;
+package com.StarJ.LA.Skills.Blade.Burst;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,9 +16,9 @@ import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.Jobs;
 import com.StarJ.LA.Systems.Stats;
 
-public class FlashHeatFang extends Skills {
+public class BladeDance extends Skills {
 
-	public FlashHeatFang() {
+	public BladeDance() {
 		// 쿨타임 : 14d
 		// 무력 : 54 / 9 = 6d
 		super("flash_heat_fang", "섬열란아", 14.0d, 6d, ChatColor.GRAY, new AttackType[] { AttackType.BACK },

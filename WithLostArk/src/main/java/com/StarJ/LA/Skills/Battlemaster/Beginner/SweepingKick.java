@@ -1,4 +1,4 @@
-package com.StarJ.LA.Skills.Battlemaster_Beginner;
+package com.StarJ.LA.Skills.Battlemaster.Beginner;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.StarJ.LA.Skills.Battlemaster_Beginner;
+package com.StarJ.LA.Skills.Blade.Burst;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,9 +13,9 @@ import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.Jobs;
 import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 
-public class WindsWhisper extends Skills {
+public class MaelStorm extends Skills {
 
-	public WindsWhisper() {
+	public MaelStorm() {
 		// 쿨타임 : (30- 9) = 21d
 		// 무력 : 0d
 		super("winds_whisper", "바람의 속삭임", 21d, 0, ChatColor.GRAY,

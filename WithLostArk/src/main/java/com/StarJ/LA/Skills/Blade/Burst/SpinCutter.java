@@ -1,4 +1,4 @@
-package com.StarJ.LA.Skills.Battlemaster_Beginner;
+package com.StarJ.LA.Skills.Blade.Burst;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,9 +15,9 @@ import com.StarJ.LA.Systems.Jobs;
 import com.StarJ.LA.Systems.Stats;
 import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 
-public class RoarofCourage extends Skills {
+public class SpinCutter extends Skills {
 
-	public RoarofCourage() {
+	public SpinCutter() {
 		// 쿨타임 : (25 - 5) = 20d
 		// 무력 : 21d
 		super("roar_of_courage", "용맹의 포효", 20d, 21d, ChatColor.GRAY, new AttackType[] { AttackType.BACK },

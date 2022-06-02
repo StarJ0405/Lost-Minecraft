@@ -20,26 +20,36 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
 import com.StarJ.LA.Core;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.EnergyCombustion;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.Fascination;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.FlashHeatFang;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.LightningKick;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.MoonFlashKick;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.OnesHeart_MomentaryBlow;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.RoarofCourage;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.SkyShatteringBlow;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.SweepingKick;
-import com.StarJ.LA.Skills.Battlemaster_Beginner.WindsWhisper;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.DancingofFury;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.Distortion;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.Eclipse_Kadencha;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.LastGrapity;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.Nightmare;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.Persona;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.RageSpear;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.ShadowDot;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.ShadowStorm;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.SpiritCatch;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.EnergyCombustion;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.Fascination;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.FlashHeatFang;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.LightningKick;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.MoonFlashKick;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.OnesHeart_MomentaryBlow;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.RoarofCourage;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.SkyShatteringBlow;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.SweepingKick;
+import com.StarJ.LA.Skills.Battlemaster.Beginner.WindsWhisper;
+import com.StarJ.LA.Skills.Blade.Burst.BladeArts;
+import com.StarJ.LA.Skills.Blade.Burst.BladeAssault;
+import com.StarJ.LA.Skills.Blade.Burst.BladeDance;
+import com.StarJ.LA.Skills.Blade.Burst.BlitzRush;
+import com.StarJ.LA.Skills.Blade.Burst.DarkAxel;
+import com.StarJ.LA.Skills.Blade.Burst.EarthSlash;
+import com.StarJ.LA.Skills.Blade.Burst.FallStar;
+import com.StarJ.LA.Skills.Blade.Burst.MaelStorm;
+import com.StarJ.LA.Skills.Blade.Burst.MoonLightSonic;
+import com.StarJ.LA.Skills.Blade.Burst.SpinCutter;
+import com.StarJ.LA.Skills.Reaper.LunarSound.DancingofFury;
+import com.StarJ.LA.Skills.Reaper.LunarSound.Distortion;
+import com.StarJ.LA.Skills.Reaper.LunarSound.Eclipse_Kadencha;
+import com.StarJ.LA.Skills.Reaper.LunarSound.LastGrapity;
+import com.StarJ.LA.Skills.Reaper.LunarSound.Nightmare;
+import com.StarJ.LA.Skills.Reaper.LunarSound.Persona;
+import com.StarJ.LA.Skills.Reaper.LunarSound.RageSpear;
+import com.StarJ.LA.Skills.Reaper.LunarSound.ShadowDot;
+import com.StarJ.LA.Skills.Reaper.LunarSound.ShadowStorm;
+import com.StarJ.LA.Skills.Reaper.LunarSound.SpiritCatch;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.ShopStores;
@@ -55,7 +65,7 @@ import com.StarJ.LA.Systems.Runnable.SkillCoolRunnable;
 public abstract class Skills {
 	private final static List<Skills> skills = new ArrayList<Skills>();
 
-	// REAPER_LUNAR
+	// REAPER_LUNARSOUND
 	public static Nightmare Nightmare = new Nightmare();
 	public static ShadowDot ShadowDot = new ShadowDot();
 	public static SpiritCatch SpiritCatch = new SpiritCatch();
@@ -80,6 +90,17 @@ public abstract class Skills {
 	public static Fascination Fascination = new Fascination();
 
 	// BLADE_BURST
+	public static SpinCutter SpinCutter= new SpinCutter();
+	public static MaelStorm MaelStorm= new MaelStorm();
+	public static FallStar FallStar = new FallStar();
+	public static MoonLightSonic MoonLightSonic = new MoonLightSonic();
+	public static BladeDance BladeDance = new BladeDance();
+	public static BlitzRush BlitzRush = new BlitzRush();
+	public static EarthSlash EarthSlash = new EarthSlash();
+	public static DarkAxel DarkAxel = new DarkAxel();
+	public static BladeAssault BladeAssault = new BladeAssault();
+	public static BladeArts bladeArts = new BladeArts();
+
 	
 	private final String key;
 	private final String displayname;

@@ -11,14 +11,14 @@ import org.bukkit.inventory.ItemStack;
 import com.StarJ.LA.Items.WeaponItems;
 import com.StarJ.LA.Items.Potioning.SpeedRobeItem;
 import com.StarJ.LA.Skills.Skills;
-import com.StarJ.LA.Skills.Reaper_Lunarsound.Nightmare;
+import com.StarJ.LA.Skills.Reaper.LunarSound.Nightmare;
 import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 import com.StarJ.LA.Systems.Runnable.DebuffRunnable;
 
 public abstract class Jobs {
 	private final static List<Jobs> jobs = new ArrayList<Jobs>();
 	//
-	public final static Jobs Reaper_Lunar = new Jobs("reaper_lunarsound", ChatColor.DARK_RED + "리퍼: 달의소리",
+	public final static Jobs Reaper_Lunarsound = new Jobs("reaper_lunarsound", ChatColor.DARK_RED + "리퍼: 달의소리",
 			Skills.Nightmare, Skills.ShadowDot, Skills.SpiritCatch, Skills.RageSpear, Skills.Distortion,
 			Skills.ShadowStorm, Skills.LastGrapity, Skills.DancingofFury, Skills.Eclipse_Kadencha, Skills.Persona,
 			WeaponItems.reaper_lunarsound, 5000, 0.14f, ChatColor.DARK_PURPLE + "페르소나", 1000, IdentityType.Percent,
@@ -49,10 +49,10 @@ public abstract class Jobs {
 
 	};
 	public final static Jobs Battlemaster_Beginner = new Jobs("battlemaster_beginner", ChatColor.DARK_RED + "배틀마스터: 초심",
-			Skills.RoarofCourage, Skills.WindsWhisper, Skills.SweepingKick, Skills.MoonFlashKick, Skills.FlashHeatFang,
-			Skills.SkyShatteringBlow, Skills.LightningKick, Skills.EnergyCombustion, Skills.OnesHeart_MomentaryBlow,
-			Skills.Fascination, WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "매혹의 본능",
-			Skills.Fascination.getDuration(), IdentityType.Buff, new String[] { "매혹 피해량" }) {
+			Skills.SpinCutter, Skills.MaelStorm, Skills.FallStar, Skills.MoonLightSonic, Skills.BladeDance,
+			Skills.BlitzRush, Skills.EarthSlash, Skills.DarkAxel, Skills.BladeAssault, Skills.bladeArts,
+			WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "매혹의 본능", 3000, IdentityType.Buff,
+			new String[] { "매혹 피해량" }) {
 		@Override
 		public float getWalkspeed(Player player) {
 			return walkspeed * Math.max(0f, Math.min(1.4f, 1f + SpeedRobeItem.getPower(player)
@@ -76,8 +76,13 @@ public abstract class Jobs {
 	public final static Jobs Blade_Burst = new Jobs("blade_burst", ChatColor.DARK_RED + "블레이드: 버스트",
 			Skills.RoarofCourage, Skills.WindsWhisper, Skills.SweepingKick, Skills.MoonFlashKick, Skills.FlashHeatFang,
 			Skills.SkyShatteringBlow, Skills.LightningKick, Skills.EnergyCombustion, Skills.OnesHeart_MomentaryBlow,
-			Skills.Fascination, WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "매혹의 본능",
-			Skills.Fascination.getDuration(), IdentityType.Buff, new String[] { "매혹 피해량" }) {
+			Skills.Fascination, WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "블레이드 오브",
+			Skills.Fascination.getDuration(), IdentityType.Buff, new String[] { "버스트 피해량", "재사용 대기시간 감소 : " }) {
+
+//		@Override
+//		public IdentityType getIdentityType() {
+//			return BuffRunnable.has(player, Skills) super.getIdentityType();
+//		}
 		@Override
 		public float getWalkspeed(Player player) {
 			return walkspeed * Math.max(0f, Math.min(1.4f, 1f + SpeedRobeItem.getPower(player)

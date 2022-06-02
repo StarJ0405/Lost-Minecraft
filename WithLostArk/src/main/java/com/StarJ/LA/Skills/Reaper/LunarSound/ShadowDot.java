@@ -1,4 +1,4 @@
-package com.StarJ.LA.Skills.Reaper_Lunarsound;
+package com.StarJ.LA.Skills.Reaper.LunarSound;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

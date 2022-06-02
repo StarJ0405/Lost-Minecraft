@@ -1,4 +1,4 @@
-package com.StarJ.LA.Skills.Battlemaster_Beginner;
+package com.StarJ.LA.Skills.Blade.Burst;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -18,9 +18,9 @@ import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.Jobs;
 
-public class EnergyCombustion extends Skills {
+public class DarkAxel extends Skills {
 
-	public EnergyCombustion() {
+	public DarkAxel() {
 		// 쿨타임 : 36d
 		// 무력 : 45d
 		super("energy_combustion", "내공연소", 36d, 45d, ChatColor.GRAY,
