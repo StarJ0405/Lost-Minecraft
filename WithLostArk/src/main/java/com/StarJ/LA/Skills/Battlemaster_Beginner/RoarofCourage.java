@@ -18,16 +18,17 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 public class RoarofCourage extends Skills {
 
 	public RoarofCourage() {
-		// 25 - 9 = 16
-		super("roar_of_courage", "용맹의 포효", 16d, ChatColor.GRAY, AttackType.BACK,
-				ChatColor.YELLOW + "일반             " + ChatColor.GRAY + "[일반 스킬]", "기합을 내뿜어 피해를 줍니다.",
-				"- 치명타 적중률 18%증가");
+		// 쿨타임 : (25 - 5) = 20d
+		// 무력 : 21d
+		super("roar_of_courage", "용맹의 포효", 20d, 21d, ChatColor.GRAY, new AttackType[] { AttackType.BACK },
+				ChatColor.YELLOW + "일반                " + ChatColor.GRAY + "[일반 스킬]", "기합을 내뿜어 피해를 줍니다.",
+				"- 6초동안 치명타 적중률 +18%");
 	}
 
 	private double getDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 289
-		return 289d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 1136
+		return 1136d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	private double getDuration() {
@@ -40,15 +41,9 @@ public class RoarofCourage extends Skills {
 			return true;
 		Location loc = player.getEyeLocation();
 		Effects.spawnRedStone(loc, 255, 127, 0, 1, 250, 1f, 1f, 1f);
-		for (Entity et : loc.getWorld().getNearbyEntities(loc, 1f, 1f, 1f))
-			if (Skills.canAttack(player, et)) {
-				if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-					Stats.Critical.setImportantStat(player, 0.1 + (BuffRunnable.has(player, this) ? 0.18 : 0));
-					damage(player, (LivingEntity) et, getDamage(player));
-					Stats.Critical.setImportantStat(player, 0 + (BuffRunnable.has(player, this) ? 0.18 : 0));
-				} else
-					damage(player, (LivingEntity) et, getDamage(player));
-			}
+		for (Entity et : loc.getWorld().getNearbyEntities(loc, 2f, 2f, 2f))
+			if (Skills.canAttack(player, et)) 
+				damage(player, (LivingEntity) et, getDamage(player));
 		player.playSound(player, Sound.ENTITY_WOLF_GROWL, 0.75f, 1f);
 		Stats.Critical.setImportantStat(player, 0.18);
 		BuffRunnable.run(player, this, getDuration(), slot);

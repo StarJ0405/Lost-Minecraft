@@ -1,6 +1,7 @@
 package com.StarJ.LA.Systems.Runnable;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -13,11 +14,11 @@ import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Jobs;
 
 public class BuffRunnable extends BukkitRunnable {
-	private final static HashMap<String, HashMap<String, BuffInfo>> infos = new HashMap<String, HashMap<String, BuffInfo>>();
+	private final static HashMap<UUID, HashMap<String, BuffInfo>> infos = new HashMap<UUID, HashMap<String, BuffInfo>>();
 	private final OfflinePlayer off;
+	private final Skills skill;
 	private final String key;
 	private final int slot;
-	private final Skills skill;
 
 	public BuffRunnable(Player player, Skills skill, int slot) {
 		this.off = player;
@@ -30,9 +31,9 @@ public class BuffRunnable extends BukkitRunnable {
 	}
 
 	public static void run(Player player, Skills skill, double duration, int slot) {
-		if (skill != null) {
+		if (skill != null)
 			if (duration > 0) {
-				String key = player.getUniqueId().toString();
+				UUID key = player.getUniqueId();
 				HashMap<String, BuffInfo> buffs = infos.containsKey(key) ? infos.get(key)
 						: new HashMap<String, BuffInfo>();
 				if (buffs.containsKey(skill.getKey())) {
@@ -46,11 +47,10 @@ public class BuffRunnable extends BukkitRunnable {
 				infos.put(key, buffs);
 			} else
 				skill.BuffEnd(player, slot);
-		}
 	}
 
 	public static boolean has(Player player, Skills skill) {
-		String key = player.getUniqueId().toString();
+		UUID key = player.getUniqueId();
 		if (infos.containsKey(key)) {
 			HashMap<String, BuffInfo> buffs = infos.get(key);
 			if (buffs.containsKey(skill.getKey())) {
@@ -62,7 +62,7 @@ public class BuffRunnable extends BukkitRunnable {
 	}
 
 	public static void cancel(Player player, Skills skill) {
-		String key = player.getUniqueId().toString();
+		UUID key = player.getUniqueId();
 		if (infos.containsKey(key)) {
 			HashMap<String, BuffInfo> buffs = infos.get(key);
 			if (buffs.containsKey(skill.getKey())) {

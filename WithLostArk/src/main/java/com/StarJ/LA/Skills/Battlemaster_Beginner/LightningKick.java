@@ -14,274 +14,92 @@ import com.StarJ.LA.Core;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
-import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
-import com.StarJ.LA.Systems.Stats;
-import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 
 public class LightningKick extends Skills {
 
 	public LightningKick() {
-		// 28
-		super("dancing_of_fury", "댄싱 오브 퓨리", 28.0d, ChatColor.RED, AttackType.BACK,
-				ChatColor.YELLOW + "일반                    " + ChatColor.RED + "[급습 스킬]", "붉은 그림자 기운으로 피해를 줍니다.",
-				" - 치명타 적중률 +60%");
+		// 쿨타임 : 9d
+		// 무력 : 20d
+		super("lightning_kick", "뇌명각", 9d, 20d, ChatColor.GRAY, new AttackType[] { AttackType.BACK },
+				ChatColor.YELLOW + "일반                " + ChatColor.GRAY + "[일반 스킬]", "강력하게 내려찍어 피해를 줍니다.",
+				" - 내려찍기 적중시 전기 피해");
 	}
 
-	private double getFirstDamage(Player player, boolean persona) {
+	private double getDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 299 * 1.7 * 1.31 / 6 = 111
-		return 111d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 182 * 3 + 825 = 1371 
+		// 1371 * 1.4 * 1.1 * 1.05 = 2216d 
+		return 2216d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
-	private double getLastDamage(Player player, boolean persona) {
+	private double getLightningDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 447 * 1.7 * 1.31
-		return 995d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 164 * 1.1 * 1.05 = 189 
+		return 189d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	@Override
 	public boolean Use(Player player, int slot) {
 		if (super.Use(player, slot))
 			return true;
-		Skills persona = Skills.Persona;
-
-		final int num = 5;
-		final int interval = 4;
-		boolean per = BuffRunnable.has(player, persona);
-		Location loc = player.getEyeLocation().clone().subtract(0, 0.75, 0);
-		Vector dir = loc.getDirection().clone().setY(0).normalize();
-		for (int i = 0; i < num; i++) {
-			Location now = loc.clone().add(Effects.getRel(dir, 1.5 + 0.1 * i, 0.25 * i, -num / 2 * 0.5 + 0.5 * i));
-			Effects.spawnRedStone(now, 255, 0, 0, 1, 10, 0.1, 0.1, 0.1);
-		}
-		double identity = HashMapStore.getIdentity(player);
-		Stats.Critical.setImportantStat(player, 0.6);
-		for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)), 2.5, 2, 2.5))
-			if (Skills.canAttack(player, et)) {
-				if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-					Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-					damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-					Stats.Critical.setImportantStat(player, 0.6);
-				} else
-					damage(player, (LivingEntity) et, getFirstDamage(player, per));
-			}
-		HashMapStore.setIdentity(player, identity);
-		Stats.Critical.removeImportantStat(player);
-		player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
+		Vector dir = player.getLocation().getDirection().clone().setY(0).normalize().setY(0.4);
+		player.setVelocity(dir);
 		new BukkitRunnable() {
-			OfflinePlayer off = player;
+			private OfflinePlayer off = player;
+			private int time = 0;
 
 			@Override
 			public void run() {
 				if (off.isOnline()) {
 					Player player = off.getPlayer();
+					Location loc = player.getLocation();
 					if (ConfigStore.getPlayerStatus(player)) {
-						Location loc = player.getEyeLocation().clone().subtract(0, 0.75, 0);
-						Vector dir = loc.getDirection().clone().setY(0).normalize();
-						for (int i = 0; i < num; i++) {
-							Location now = loc.clone()
-									.add(Effects.getRel(dir, 2.0 - 0.4 * i, 1.75 - 0.25 * i, 1.0 - 0.1 * i));
-							Effects.spawnRedStone(now, 255, 0, 0, 1, 10, 0.1, 0.1, 0.1);
-						}
-						double identity = HashMapStore.getIdentity(player);
-						Stats.Critical.setImportantStat(player, 0.6);
-						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
-								2.5, 2, 2.5))
-							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
-						HashMapStore.setIdentity(player, identity);
-						Stats.Critical.removeImportantStat(player);
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
-					} else
-						this.cancel();
-				} else
-					this.cancel();
-			}
-		}.runTaskLater(Core.getCore(), interval);
-		new BukkitRunnable() {
-			OfflinePlayer off = player;
+						if (this.time > 5 && ((Entity) player).isOnGround()) {
+							double half = 20;
+							for (int i = 0; i <= half; i++) {
+								double x = i / 10.0d;
+								double z = Math.sqrt(half * half - i * i) / 10.0d;
+								Effects.spawnRedStone(loc.clone().add(x, 0.15, z), 0, 127, 127, 1, 20, 0.1, 0.1, 0.1);
+								Effects.spawnRedStone(loc.clone().add(x, 0.15, -z), 0, 127, 127, 1, 20, 0.1, 0.1, 0.1);
+								Effects.spawnRedStone(loc.clone().add(-x, 0.15, z), 0, 127, 127, 1, 20, 0.1, 0.1, 0.1);
+								Effects.spawnRedStone(loc.clone().add(-x, 0.15, -z), 0, 127, 127, 1, 20, 0.1, 0.1, 0.1);
+							}
+							for (Entity et : loc.getWorld().getNearbyEntities(loc, 2, 2, 2))
+								if (Skills.canAttack(player, et)) {
+									damage(player, (LivingEntity) et, getDamage(player), 0, 0);
+									new BukkitRunnable() {
+										private int time = 0;
 
-			@Override
-			public void run() {
-				if (off.isOnline()) {
-					Player player = off.getPlayer();
-					if (ConfigStore.getPlayerStatus(player)) {
-						Location loc = player.getEyeLocation().clone().subtract(0, 0.75, 0);
-						Vector dir = loc.getDirection().clone().setY(0).normalize();
-						for (int i = 0; i < num; i++) {
-							Location now = loc.clone()
-									.add(Effects.getRel(dir, 0 + 0.5 * i, 0.5 + 0.125 * i, 0.5 - 0.5 * i));
-							Effects.spawnRedStone(now, 255, 0, 0, 1, 10, 0.1, 0.1, 0.1);
-						}
-						double identity = HashMapStore.getIdentity(player);
-						Stats.Critical.setImportantStat(player, 0.6);
-						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
-								2.5, 2, 2.5))
-							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
-						HashMapStore.setIdentity(player, identity);
-						Stats.Critical.removeImportantStat(player);
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
+										@Override
+										public void run() {
+											if (this.time < 4) {
+												if (Skills.canAttack(player, et)) {
+													LivingEntity le = (LivingEntity) et;
+													damage(player, le, null, getLightningDamage(player));
+													player.playSound(le.getLocation(), Sound.ENTITY_GUARDIAN_ATTACK, 3f,
+															2f);
+													for (int y = 0; y <= 6; y++)
+														Effects.spawnRedStone(
+																le.getEyeLocation().clone().add(0, y * 0.5, 0), 0, 255,
+																255, 1, 10, 0.1, 0.1, 0.1);
+												}
+												this.time++;
+											} else
+												this.cancel();
+										}
+									}.runTaskTimer(Core.getCore(), 10, 20);
+								}
+							this.cancel();
+						} else
+							Effects.spawnRedStone(loc, 0, 127, 127, 1, 20, 0.1, 0.1, 0.1);
+						this.time++;
 					} else
 						this.cancel();
 				} else
 					this.cancel();
 			}
-		}.runTaskLater(Core.getCore(), interval * 2);
-		new BukkitRunnable() {
-			OfflinePlayer off = player;
-
-			@Override
-			public void run() {
-				if (off.isOnline()) {
-					Player player = off.getPlayer();
-					if (ConfigStore.getPlayerStatus(player)) {
-						Location loc = player.getEyeLocation().clone().subtract(0, 0.75, 0);
-						Vector dir = loc.getDirection().clone().setY(0).normalize();
-						for (int i = 0; i < num; i++) {
-							Location now = loc.clone().add(Effects.getRel(dir, 2.0, 1.0 + 0.125 * i, -1.5 + 0.75 * i));
-							Effects.spawnRedStone(now, 255, 0, 0, 1, 10, 0.1, 0.1, 0.1);
-						}
-						double identity = HashMapStore.getIdentity(player);
-						Stats.Critical.setImportantStat(player, 0.6);
-						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
-								2.5, 2, 2.5))
-							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
-						HashMapStore.setIdentity(player, identity);
-						Stats.Critical.removeImportantStat(player);
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
-					} else
-						this.cancel();
-				} else
-					this.cancel();
-			}
-		}.runTaskLater(Core.getCore(), interval * 3);
-		new BukkitRunnable() {
-			OfflinePlayer off = player;
-
-			@Override
-			public void run() {
-				if (off.isOnline()) {
-					Player player = off.getPlayer();
-					if (ConfigStore.getPlayerStatus(player)) {
-						Location loc = player.getEyeLocation().clone().subtract(0, 0.75, 0);
-						Vector dir = loc.getDirection().clone().setY(0).normalize();
-						for (int i = 0; i < num; i++) {
-							Location now = loc.clone()
-									.add(Effects.getRel(dir, 2.0 - 0.4 * i, 1.5 - 0.3 * i, 1.5 - 0.5 * i));
-							Effects.spawnRedStone(now, 255, 0, 0, 1, 10, 0.1, 0.1, 0.1);
-						}
-						double identity = HashMapStore.getIdentity(player);
-						Stats.Critical.setImportantStat(player, 0.6);
-						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
-								2.5, 2, 2.5))
-							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
-						HashMapStore.setIdentity(player, identity);
-						Stats.Critical.removeImportantStat(player);
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
-					} else
-						this.cancel();
-				} else
-					this.cancel();
-			}
-		}.runTaskLater(Core.getCore(), interval * 4);
-		new BukkitRunnable() {
-			OfflinePlayer off = player;
-
-			@Override
-			public void run() {
-				if (off.isOnline()) {
-					Player player = off.getPlayer();
-					if (ConfigStore.getPlayerStatus(player)) {
-						Location loc = player.getEyeLocation().clone().subtract(0, 0.75, 0);
-						Vector dir = loc.getDirection().clone().setY(0).normalize();
-						for (int i = 0; i < num; i++) {
-							Location now = loc.clone()
-									.add(Effects.getRel(dir, 0.4 + 0.4 * i, 0.3 + 0.3 * i, -0.5 + 0.25 * i));
-							Effects.spawnRedStone(now, 255, 0, 0, 1, 10, 0.1, 0.1, 0.1);
-						}
-						double identity = HashMapStore.getIdentity(player);
-						Stats.Critical.setImportantStat(player, 0.6);
-						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
-								2.5, 2, 2.5))
-							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
-						HashMapStore.setIdentity(player, identity);
-						Stats.Critical.removeImportantStat(player);
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
-					} else
-						this.cancel();
-				} else
-					this.cancel();
-			}
-		}.runTaskLater(Core.getCore(), interval * 5);
-		new BukkitRunnable() {
-			OfflinePlayer off = player;
-
-			@Override
-			public void run() {
-				if (off.isOnline()) {
-					Player player = off.getPlayer();
-					if (ConfigStore.getPlayerStatus(player)) {
-						Location loc = player.getEyeLocation().clone().subtract(0, 0.75, 0);
-						Vector dir = loc.getDirection().clone().setY(0).normalize();
-						for (int i = 0; i < num; i++) {
-							Effects.Directional.SWEEP_ATTACK.spawnDirectional(
-									loc.clone().add(Effects.getRel(dir, 0.5 * i, 0.2 * i, 1.5d + 0.3 * i)), 1, 0, 0, 0,
-									1);
-							Effects.Directional.SWEEP_ATTACK.spawnDirectional(
-									loc.clone().add(Effects.getRel(dir, 0.5 * i, 0.2 * i, -1.5d + 0.3 * i)), 1, 0, 0, 0,
-									1);
-						}
-						double identity = HashMapStore.getIdentity(player);
-						Stats.Critical.setImportantStat(player, 0.6);
-						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
-								2.5, 2, 2.5))
-							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getLastDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getLastDamage(player, per));
-						HashMapStore.setIdentity(player, identity);
-						Stats.Critical.removeImportantStat(player);
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);
-					} else
-						this.cancel();
-				} else
-					this.cancel();
-			}
-		}.runTaskLater(Core.getCore(), interval * 7);
-		persona.BuffEnd(player, -1);
+		}.runTaskTimer(Core.getCore(), 2, 2);
 		return false;
 	}
 

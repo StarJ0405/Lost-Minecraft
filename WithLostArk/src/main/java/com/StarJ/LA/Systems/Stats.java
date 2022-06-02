@@ -57,15 +57,18 @@ public enum Stats {
 	public abstract double getStatPercent(Player player);
 
 	public void setImportantStat(Player player, double stat) {
-		add.put(player.getUniqueId(), stat);
-	}
-
-	public double getImportantStat(Player player) {
-		return add.containsKey(player.getUniqueId()) ? add.get(player.getUniqueId()) : 0d;
+		if (stat == 0) {
+			add.remove(player.getUniqueId());
+		} else
+			add.put(player.getUniqueId(), stat);
 	}
 
 	public void removeImportantStat(Player player) {
 		add.remove(player.getUniqueId());
+	}
+
+	public double getImportantStat(Player player) {
+		return add.containsKey(player.getUniqueId()) ? add.get(player.getUniqueId()) : 0d;
 	}
 
 	public double getStat(Player player) {
@@ -95,7 +98,7 @@ public enum Stats {
 	}
 
 	public static boolean isCritical(Player player) {
-		player.sendMessage(Stats.Critical.getStatPercent(player) + 0.01 + "");
+//		player.sendMessage(Stats.Critical.getStatPercent(player) + 0.01 + "");
 		return (Stats.Critical.getStatPercent(player) + 0.01) > new Random().nextDouble();
 	}
 }

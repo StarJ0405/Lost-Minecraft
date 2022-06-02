@@ -81,7 +81,7 @@ public class EntityDamageListener implements Listener {
 				for (String key : HashMapStore.getAttackedList(vic)) {
 					Skills skill = Skills.valueof(key);
 					if (skill != null)
-						e.setCancelled(skill.Attacked(vic));
+						e.setCancelled(skill.Attacked(vic, null));
 				}
 			}
 		} else if (e.getEntity() instanceof LivingEntity) {
@@ -145,7 +145,7 @@ public class EntityDamageListener implements Listener {
 				for (String key : HashMapStore.getAttackList(att)) {
 					Skills skill = Skills.valueof(key);
 					if (skill != null)
-						e.setCancelled(skill.Attack(att));
+						e.setCancelled(skill.Attack(att, vic_e instanceof LivingEntity ? (LivingEntity) vic_e : null));
 				}
 				if (att.getAttackCooldown() == 1.0f)
 					if (job != null && !e.isCancelled())
@@ -243,7 +243,8 @@ public class EntityDamageListener implements Listener {
 				for (String key : HashMapStore.getAttackedList(vic)) {
 					Skills skill = Skills.valueof(key);
 					if (skill != null)
-						e.setCancelled(skill.Attacked(vic));
+						e.setCancelled(
+								skill.Attacked(vic, att_e instanceof LivingEntity ? (LivingEntity) att_e : null));
 				}
 			if (ConfigStore.getPlayerStatus(vic)) {
 				Jobs vic_job = ConfigStore.getJob(vic);

@@ -1,12 +1,10 @@
 package com.StarJ.LA.Skills.Battlemaster_Beginner;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -18,172 +16,95 @@ import com.StarJ.LA.Core;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
-import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
-import com.StarJ.LA.Systems.Stats;
-import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 
 public class EnergyCombustion extends Skills {
 
 	public EnergyCombustion() {
-		// 25 - 9 = 16
-		super("rage_spear", "레이지 스피어", 16.0d, ChatColor.RED, AttackType.BACK,
-				ChatColor.YELLOW + "일반         " + ChatColor.RED + "[급습 스킬]", "전방의 적을 찌릅니다.", " - 치명타 적중률 +40%",
-				" - 기 모으는 도중 피해");
+		// 쿨타임 : 36d
+		// 무력 : 45d
+		super("energy_combustion", "내공연소", 36d, 45d, ChatColor.GRAY,
+				ChatColor.YELLOW + "일반                " + ChatColor.GRAY + "[일반 스킬]", "자신을 휘감는 돌풍을 발생시킨다.",
+				"- 피해 감소 19.2%", "- 적중시 연소 피해 +9%씩", "- 최대 증가량 90%", "- 종료시 폭발");
 	}
 
-	public double getDrainDamage(Player player, boolean persona) {
+	private double getFirstDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 698 * 1.7 * 0.85 / 2
-		return 504d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 203 * 1.1 * 1.05 = 234d
+		return 234d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
-	public double getAttackDamage(Player player, boolean persona) {
+	private double getWindDamage(Player player, int stack) {
 		Jobs job = ConfigStore.getJob(player);
-		// 698 * 1.7
-		return 1186d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 166 * 1.1 * 1.05 = 191d
+		return 191d * (job != null ? job.getAttackDamagePercent(player) : 1) * Math.min(1.9d, (1 + stack * 0.09d));
+	}
+
+	private double getExplodeDamage(Player player, int stack) {
+		Jobs job = ConfigStore.getJob(player);
+		// (234 + 191 * 40) * 1.4 = 11023
+		return 11023d * (job != null ? job.getAttackDamagePercent(player) : 1) * Math.min(1.9d, (1 + stack * 0.09d));
 	}
 
 	@Override
 	public boolean Use(Player player, int slot) {
 		if (super.Use(player, slot))
 			return true;
-		Skills persona = Skills.Persona;
-		Location loc = player.getLocation();
-		Location eyeloc = player.getEyeLocation();
-		Vector dir = loc.getDirection();
+		Location loc = player.getEyeLocation();
+		for (Entity et : loc.getWorld().getNearbyEntities(loc, 1.5d, 1.5d, 1.5d))
+			if (Skills.canAttack(player, et))
+				damage(player, (LivingEntity) et, getFirstDamage(player), 0, 0);
+		new BukkitRunnable() {
+			private int time = 0;
+			private int max = 80;
+			private HashMap<UUID, Integer> stacks = new HashMap<UUID, Integer>();
 
-		new RageDrain(eyeloc, dir, 8, player, BuffRunnable.has(player, persona)).runTaskTimer(Core.getCore(), 0, 2);
-
-		persona.BuffEnd(player, -1);
-		return false;
-	}
-
-	private class RageDrain extends BukkitRunnable {
-		private Location start;
-		private Vector dir;
-		private Location end;
-		private final int range;
-		private final OfflinePlayer off;
-		private final boolean persona;
-		private Location move;
-		private int time;
-
-		public RageDrain(Location start, Vector dir, int range, OfflinePlayer off, boolean persona) {
-			this.start = start;
-			this.dir = dir;
-			this.end = start.clone().add(dir.clone().multiply(range));
-			this.range = range;
-			this.off = off;
-			this.persona = persona;
-			this.move = end.clone();
-			this.time = range;
-		}
-
-		@Override
-		public void run() {
-			if (off.isOnline() && ConfigStore.getPlayerStatus(off.getPlayer())) {
-				Player player = off.getPlayer();
-				this.start = player.getEyeLocation();
-				this.dir = start.getDirection();
-				this.end = start.clone().add(dir.clone().multiply(range));
-				this.move = end.clone().subtract(dir.clone().multiply(this.range - this.time));
-				if (this.time > 0) {
-					Location now = start.clone();
-					List<UUID> list = new ArrayList<UUID>();
-					list.add(off.getUniqueId());
-					double identity = HashMapStore.getIdentity(player);
-					for (int c = 0; c <= range; c++) {
-						if (time % 4 == 2)
-							for (Entity et : now.getWorld().getNearbyEntities(now, 1, 1, 1)) {
-								if (!list.contains(et.getUniqueId()) && Skills.canAttack(player, et)) {
-									LivingEntity le = (LivingEntity) et;
-									Stats.Critical.setImportantStat(player, 0.4d
-											+ (AttackType.getAttackType(et, player).equals(getAttackType()) ? 0.1 : 0));
-									damage(player, le, getDrainDamage(player, persona));
-									Stats.Critical.removeImportantStat(player);
-									list.add(et.getUniqueId());
+			@Override
+			public void run() {
+				Location loc = player.getEyeLocation();
+				if (player.isOnline() && ConfigStore.getPlayerStatus(player)) {
+					if (time < max) {
+						Vector dir = loc.getDirection().clone().setY(0).normalize();
+						if (time % 2 == 0) {
+							for (Entity et : loc.getWorld().getNearbyEntities(loc, 1.5d, 1.5d, 1.5d))
+								if (Skills.canAttack(player, et)) {
+									UUID uuid = et.getUniqueId();
+									int stack = stacks.containsKey(uuid) ? stacks.get(uuid) : 0;
+									damage(player, (LivingEntity) et, getWindDamage(player, stack), 0, 0);
+									stacks.put(uuid, stack + 1);
 								}
-							}
-						Effects.spawnRedStone(now, 255, 0, 0, 1, 20, 1.2, 1.2, 1.2);
-						now = now.add(dir);
-					}
-					if (time % 4 == 2) {
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);
-					} else
-						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.2f, 0.2f);
-					HashMapStore.setIdentity(player, identity);
-					Effects.spawnRedStone(move, 0, 0, 0, 1.5f, 10, 0.3, 0.3, 0.3);
-					this.time--;
-				} else {
-					new RageAttack(start, dir, range, off, persona).runTaskLater(Core.getCore(), 3);
-					this.cancel();
-				}
-			} else {
-				this.cancel();
-			}
-
-		}
-	}
-
-	public class RageAttack extends BukkitRunnable {
-		private final Location start;
-		private final Vector dir;
-		private final int range;
-		private final OfflinePlayer off;
-		private final boolean persona;
-
-		public RageAttack(Location start, Vector dir, int range, OfflinePlayer off, boolean persona) {
-			this.start = start;
-			this.dir = dir;
-			this.range = range;
-			this.off = off;
-			this.persona = persona;
-		}
-
-		@Override
-		public void run() {
-			if (off.isOnline() && ConfigStore.getPlayerStatus(off.getPlayer())) {
-				Player player = off.getPlayer();
-				Location now = start.clone();
-				List<UUID> list = new ArrayList<UUID>();
-				list.add(off.getUniqueId());
-				double identity = HashMapStore.getIdentity(player);
-				for (int c = 0; c <= range; c++) {
-					for (Entity et : now.getWorld().getNearbyEntities(now, 1, 1, 1)) {
-						if (!list.contains(et.getUniqueId()) && Skills.canAttack(player, et)) {
-							LivingEntity le = (LivingEntity) et;
-							Stats.Critical.setImportantStat(player,
-									0.4d + (AttackType.getAttackType(et, player).equals(getAttackType()) ? 0.1 : 0));
-							damage(player, le, getAttackDamage(player, persona));
-							Stats.Critical.removeImportantStat(player);
-							list.add(et.getUniqueId());
+							player.playSound(player, Sound.ENTITY_PHANTOM_BITE, 0.1f, 1f);
 						}
+						if (time % 10 < 5) {
+							double x = time % 5 / 5d;
+							double z = Math.sqrt(1 - x * x);
+							Effects.spawnRedStone(loc.clone().add(Effects.getRel(dir, x, 0, z)), time * (255 / max),
+									127, 255 - time * (255 / max), 1f, 10, 0.2, 0.1, 0.2);
+							Effects.spawnRedStone(loc.clone().add(Effects.getRel(dir, -x, 0, -z)), time * (255 / max),
+									127, 255 - time * (255 / max), 1f, 10, 0.2, 0.1, 0.2);
+						} else {
+							double x = time % 5 / 5d;
+							double z = Math.sqrt(1 - x * x);
+							Effects.spawnRedStone(loc.clone().add(Effects.getRel(dir, z, 0, -x)), time * (255 / max),
+									127, 255 - time * (255 / max), 1f, 10, 0.2, 0.1, 0.2);
+							Effects.spawnRedStone(loc.clone().add(Effects.getRel(dir, -z, 0, x)), time * (255 / max),
+									127, 255 - time * (255 / max), 1f, 10, 0.2, 0.1, 0.2);
+						}
+						this.time++;
+					} else {
+						for (Entity et : loc.getWorld().getNearbyEntities(loc, 1.5d, 1.5d, 1.5d))
+							if (Skills.canAttack(player, et))
+								damage(player, (LivingEntity) et, getExplodeDamage(player,
+										stacks.containsKey(et.getUniqueId()) ? stacks.get(et.getUniqueId()) : 0));
+						Effects.spawnRedStone(loc.clone(), 255, 127, 0, 1f, 50, 0.5, 0.5, 0.5);
+						player.playSound(player, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1f);
+						this.cancel();
 					}
-					Effects.spawnRedStone(now, 163, 0, 0, 1.5f, 50, 0.7, 0.7, 0.7);
-					now = now.add(dir);
-				}
-				player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 2f, 1f);
-				HashMapStore.setIdentity(player, identity);
+				} else
+					this.cancel();
 			}
-			this.cancel();
-		}
-	}
-
-	@Override
-	public boolean Hit(Player player, LivingEntity entity, int slot) {
-//		entity.setNoDamageTicks(0);
-//		entity.damage(getHitDamage(player), player);
-//		target.put(player.getUniqueId(), entity.getUniqueId());
-//		ComboCoolRunnable.run(player, this, getDuration(), slot);
-//		HashMapStore.setIdentity(player, HashMapStore.getIdentity(player) + getHitIdentity());
-		return true;
-	}
-
-	@Override
-	public void comboEnd(Player player, int slot) {
-//		super.comboEnd(player, slot);
-//		target.remove(player.getUniqueId());
+		}.runTaskTimer(Core.getCore(), 5, 5);
+		return false;
 	}
 
 	@Override

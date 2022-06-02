@@ -26,22 +26,23 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 public class RageSpear extends Skills {
 
 	public RageSpear() {
-		// 25 - 9 = 16
-		super("rage_spear", "레이지 스피어", 16.0d, ChatColor.RED, AttackType.BACK,
+		// 쿨타임 : (25 - 9) = 16d
+		// 무력 : 45 / 3 = 15d
+		super("rage_spear", "레이지 스피어", 16.0d, 15d, ChatColor.RED, new AttackType[] { AttackType.BACK },
 				ChatColor.YELLOW + "일반         " + ChatColor.RED + "[급습 스킬]", "전방의 적을 찌릅니다.", " - 치명타 적중률 +40%",
 				" - 기 모으는 도중 피해");
 	}
 
 	public double getDrainDamage(Player player, boolean persona) {
 		Jobs job = ConfigStore.getJob(player);
-		// 698 * 1.7 * 0.85 / 2
-		return 504d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 2740 * 1.7 * 0.85 / 2 * 1.1 * 1.05 = 2286d 
+		return 2286d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
 	}
 
 	public double getAttackDamage(Player player, boolean persona) {
 		Jobs job = ConfigStore.getJob(player);
-		// 698 * 1.7
-		return 1186d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 2740 * 1.7 * 1.1 * 1.05 = 5380d
+		return 5380d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
 	}
 
 	@Override
@@ -98,8 +99,7 @@ public class RageSpear extends Skills {
 							for (Entity et : now.getWorld().getNearbyEntities(now, 1, 1, 1)) {
 								if (!list.contains(et.getUniqueId()) && Skills.canAttack(player, et)) {
 									LivingEntity le = (LivingEntity) et;
-									Stats.Critical.setImportantStat(player, 0.4d
-											+ (AttackType.getAttackType(et, player).equals(getAttackType()) ? 0.1 : 0));
+									Stats.Critical.setImportantStat(player, 0.4d);
 									damage(player, le, getDrainDamage(player, persona));
 									Stats.Critical.removeImportantStat(player);
 									list.add(et.getUniqueId());
@@ -149,20 +149,19 @@ public class RageSpear extends Skills {
 				List<UUID> list = new ArrayList<UUID>();
 				list.add(off.getUniqueId());
 				double identity = HashMapStore.getIdentity(player);
+				Stats.Critical.setImportantStat(player, 0.4d);
 				for (int c = 0; c <= range; c++) {
 					for (Entity et : now.getWorld().getNearbyEntities(now, 1, 1, 1)) {
 						if (!list.contains(et.getUniqueId()) && Skills.canAttack(player, et)) {
 							LivingEntity le = (LivingEntity) et;
-							Stats.Critical.setImportantStat(player,
-									0.4d + (AttackType.getAttackType(et, player).equals(getAttackType()) ? 0.1 : 0));
 							damage(player, le, getAttackDamage(player, persona));
-							Stats.Critical.removeImportantStat(player);
 							list.add(et.getUniqueId());
 						}
 					}
 					Effects.spawnRedStone(now, 163, 0, 0, 1.5f, 50, 0.7, 0.7, 0.7);
 					now = now.add(dir);
 				}
+				Stats.Critical.removeImportantStat(player);
 				player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 2f, 1f);
 				HashMapStore.setIdentity(player, identity);
 			}

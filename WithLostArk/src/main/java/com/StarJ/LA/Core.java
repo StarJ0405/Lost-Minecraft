@@ -22,6 +22,7 @@ import com.StarJ.LA.Commands.MultiWorldCommand;
 import com.StarJ.LA.Commands.PVPCommand;
 import com.StarJ.LA.Commands.ShopCommand;
 import com.StarJ.LA.Commands.StatusCommand;
+import com.StarJ.LA.Commands.TrainingCommand;
 import com.StarJ.LA.Commands.degopCommand;
 import com.StarJ.LA.Commands.fixexitCommand;
 import com.StarJ.LA.Commands.gopCommand;
@@ -91,6 +92,7 @@ public class Core extends JavaPlugin {
 		getCommand("multiworld").setExecutor(new MultiWorldCommand());
 		getCommand("sudo").setExecutor(new sudoCommand());
 		getCommand("flyspeed").setExecutor(new FlySpeedCommand());
+		getCommand("training").setExecutor(new TrainingCommand());
 		for (World world : Bukkit.getWorlds()) {
 			world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
 			world.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, 15);

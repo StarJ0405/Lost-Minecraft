@@ -16,20 +16,21 @@ import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
-import com.StarJ.LA.Systems.Stats;
 
 public class ShadowStorm extends Skills {
 
 	public ShadowStorm() {
-		super("shadow_storm", "쉐도우 스톰", 10.0d, ChatColor.DARK_PURPLE, AttackType.BACK,
+		// 쿨타임 : 22d
+		// 무력 : 41d
+		super("shadow_storm", "쉐도우 스톰", 22d, 41d, ChatColor.DARK_PURPLE, new AttackType[] { AttackType.BACK },
 				ChatColor.YELLOW + "일반                     " + ChatColor.DARK_PURPLE + "[그림자 스킬]",
 				"전방으로 찌르면서 그림자를 소환합니다.", "- 그림자가 마지막에 폭발");
 	}
 
 	private double getFirstDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 156 * 1.7 = 265
-		return 265d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 613 * 1.7 * 1.1 = 1146d
+		return 1146d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	public double getFirstIdentity() {
@@ -42,8 +43,8 @@ public class ShadowStorm extends Skills {
 
 	private double getShadowDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 315 * 1.7 / 5 = 107
-		return 107d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 1228 * 1.7 / 5 * 1.1 = 459d 
+		return 459d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	public double getShadowIdentity() {
@@ -56,8 +57,8 @@ public class ShadowStorm extends Skills {
 
 	private double getFinalDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 313 * 1.7 * 2.5 = 1330
-		return 1330d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 1230 * 1.7 * 2.5 * 1.1 = 5750d 
+		return 5750d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	public double getFinalIdentity() {
@@ -96,12 +97,7 @@ public class ShadowStorm extends Skills {
 		double add = 0;
 		for (Entity et : player.getWorld().getNearbyEntities(main, 2.5, 3, 2.5))
 			if (Skills.canAttack(player, et)) {
-				if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-					Stats.Critical.setImportantStat(player, 0.1);
-					damage(player, (LivingEntity) et, getFirstDamage(player));
-					Stats.Critical.removeImportantStat(player);
-				} else
-					damage(player, (LivingEntity) et, getFirstDamage(player));
+				damage(player, (LivingEntity) et, getFirstDamage(player));
 				if (add == 0) {
 					add = getFirstIdentity();
 				} else
@@ -139,12 +135,8 @@ public class ShadowStorm extends Skills {
 							double add = 0;
 							for (Entity et : player.getWorld().getNearbyEntities(main, 2.5, 3, 2.5))
 								if (main.distance(et.getLocation()) < (range + 0.5d) && Skills.canAttack(player, et)) {
-									if (AttackType.getAttackType(et, main).equals(getAttackType())) {
-										Stats.Critical.setImportantStat(player, 0.1);
-										damage(player, (LivingEntity) et, getShadowDamage(player));
-										Stats.Critical.removeImportantStat(player);
-									} else
-										damage(player, (LivingEntity) et, getShadowDamage(player));
+									damage(player, (LivingEntity) et, AttackType.getAttackType(et, main),
+											getShadowDamage(player));
 									if (add == 0) {
 										add = getShadowIdentity();
 									} else
@@ -185,12 +177,8 @@ public class ShadowStorm extends Skills {
 					double add = 0;
 					for (Entity et : player.getWorld().getNearbyEntities(main, 2.5, 3, 2.5))
 						if (main.distance(et.getLocation()) < (range + 0.5d) && Skills.canAttack(player, et)) {
-							if (AttackType.getAttackType(et, main).equals(getAttackType())) {
-								Stats.Critical.setImportantStat(player, 0.1);
-								damage(player, (LivingEntity) et, getFinalDamage(player));
-								Stats.Critical.removeImportantStat(player);
-							} else
-								damage(player, (LivingEntity) et, getFinalDamage(player));
+							damage(player, (LivingEntity) et, AttackType.getAttackType(et, main),
+									getFinalDamage(player));
 							if (add == 0) {
 								add = getFinalIdentity();
 							} else

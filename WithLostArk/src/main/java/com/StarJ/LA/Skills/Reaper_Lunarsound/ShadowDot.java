@@ -15,17 +15,15 @@ import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
-import com.StarJ.LA.Systems.Stats;
 import com.StarJ.LA.Systems.Runnable.ComboCoolRunnable;
 import com.StarJ.LA.Systems.Runnable.SkillCoolRunnable;
 
 public class ShadowDot extends Skills {
 
 	public ShadowDot() {
-		// 7
-		// 7 - 3 = 4
-		// 4 * 0.8 = 3.2
-		super("shadow_dot", "쉐도우 닷", 4d, ChatColor.GREEN, AttackType.BACK,
+		// 쿨타임 : (7 - 3) * 0.8 = 3.2d
+		// 무력 : 22 / 2 = 11d
+		super("shadow_dot", "쉐도우 닷", 4d, 11d, ChatColor.GREEN, new AttackType[] { AttackType.BACK },
 				ChatColor.AQUA + "콤보                     " + ChatColor.GREEN + "[단검 스킬]", "적에게 피해를 줍니다.",
 				"- 사용시 급습스킬 쿨타임 감소 1.5초");
 
@@ -33,7 +31,8 @@ public class ShadowDot extends Skills {
 
 	private double getFirstDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		return 50d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 196
+		return 196d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	private double getIdentity() {
@@ -47,7 +46,8 @@ public class ShadowDot extends Skills {
 
 	private double getSecondDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		return 101d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 394
+		return 394d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	public double getReduceCool() {
@@ -67,23 +67,13 @@ public class ShadowDot extends Skills {
 			for (Entity et : loc.getWorld().getNearbyEntities(loc.add(dir), 1.5, 1.5, 1.5)) {
 				if (Skills.canAttack(player, et)) {
 					LivingEntity le = (LivingEntity) et;
-					if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-						Stats.Critical.setImportantStat(player, 0.1);
-						damage(player, le, getSecondDamage(player));
-						Stats.Critical.removeImportantStat(player);
-					} else
-						damage(player, le, getSecondDamage(player));
+					damage(player, le, getSecondDamage(player));
 					player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2f, 1f);
 					new BukkitRunnable() {
 						@Override
 						public void run() {
 							if (Skills.canAttack(player, le)) {
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.1);
-									damage(player, le, getSecondDamage(player));
-									Stats.Critical.removeImportantStat(player);
-								} else
-									damage(player, le, getSecondDamage(player));
+								damage(player, le, getSecondDamage(player));
 								player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2f, 1f);
 							}
 						}
@@ -111,12 +101,7 @@ public class ShadowDot extends Skills {
 			for (Entity et : loc.getWorld().getNearbyEntities(loc.add(dir), 1, 1, 1)) {
 				if (Skills.canAttack(player, et)) {
 					LivingEntity le = (LivingEntity) et;
-					if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-						Stats.Critical.setImportantStat(player, 0.1);
-						damage(player, le, getFirstDamage(player));
-						Stats.Critical.removeImportantStat(player);
-					} else
-						damage(player, le, getFirstDamage(player));
+					damage(player, le, getFirstDamage(player));
 					if (add == 0.0d) {
 						add += getIdentity();
 					} else

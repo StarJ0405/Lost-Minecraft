@@ -19,33 +19,30 @@ import com.StarJ.LA.Skills.ProjectileRunnable;
 import com.StarJ.LA.Skills.Skills;
 import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
-import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
-import com.StarJ.LA.Systems.Stats;
 import com.StarJ.LA.Systems.Runnable.ComboCoolRunnable;
 
 public class Nightmare extends Skills {
 	private static HashMap<UUID, UUID> target = new HashMap<UUID, UUID>();
 
 	public Nightmare() {
-		// 12
-		// 12 - 5 = 7
-		// 7 * 0.8 = 5.6
-		super("nightmare", "나이트메어", 7.0d, ChatColor.GREEN, AttackType.BACK,
+		// 쿨타임 : (12 - 5) * 0.8 = 5.6d
+		// 무력 : 28 / 2 = 14d
+		super("nightmare", "나이트메어", 7.0d, 14d, ChatColor.GREEN, new AttackType[] { AttackType.BACK },
 				ChatColor.BLUE + "체인                 " + ChatColor.GREEN + "[단검 스킬]", "정면으로 단검을 던집니다.",
 				"재입력시 맞은 대상 뒤로 이동", " - 이동시 적에게 피해", " - 이동전까지 이동속도가 +10%");
 	}
 
 	private double getHitDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 317
-		return 371d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 1452
+		return 1452 * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	private double getTelportDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 317 * 0.6 = 222
-		return 222d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 1452 * 0.6 = 871
+		return 871d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	private double getHitIdentity() {
@@ -72,17 +69,10 @@ public class Nightmare extends Skills {
 				loc.setPitch(0f);
 				Vector dir = loc.getDirection().multiply(0.5).setY(0);
 				player.teleport(loc.subtract(dir));
-				double identity = HashMapStore.getIdentity(player);
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-							Stats.Critical.setImportantStat(player, 0.1);
-							damage(player, le, getTelportDamage(player) * 1.05);
-							Stats.Critical.setImportantStat(player, 0);
-						} else
-							damage(player, le, getTelportDamage(player));
-						HashMapStore.setIdentity(player, identity + getTeleportIdentity());
+						damage(player, le, getTelportDamage(player), getTeleportIdentity());
 					}
 				}.runTaskLater(Core.getCore(), 1);
 				player.playSound(le.getLocation(), Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 2f, 1f);
@@ -109,16 +99,9 @@ public class Nightmare extends Skills {
 
 	@Override
 	public boolean Hit(Player att, LivingEntity le, int slot) {
-		double identity = HashMapStore.getIdentity(att);
-		if (AttackType.getAttackType(le, att).equals(getAttackType())) {
-			Stats.Critical.setImportantStat(att, 0.1);
-			damage(att, le, getHitDamage(att));
-			Stats.Critical.setImportantStat(att, 0);
-		} else
-			damage(att, le, getHitDamage(att));
+		damage(att, le, getHitDamage(att), getHitIdentity());
 		target.put(att.getUniqueId(), le.getUniqueId());
 		ComboCoolRunnable.run(att, this, getComboDuration(), slot);
-		HashMapStore.setIdentity(att, identity + getHitIdentity());
 		att.playSound(att, Sound.ENTITY_ARROW_HIT, 2f, 1f);
 		Effects.spawnRedStone(att, le.getEyeLocation(), 50, 255, 50, 1, 25, 0.5, 0.5, 0.5);
 		Jobs job = ConfigStore.getJob(att);

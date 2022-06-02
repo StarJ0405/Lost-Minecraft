@@ -38,7 +38,7 @@ public abstract class Jobs {
 		public <T1, T2> double getAttackDamagePercent(Player player, T1 sudden_attack, T2 persona) {
 			if (sudden_attack instanceof Boolean) {
 				if (persona instanceof Boolean) {
-					return (1 + ConfigStore.getWeaponLevel(player, this) * 0.05) * ((boolean) persona ? 1.25 : 1)
+					return (1 + ConfigStore.getWeaponLevel(player, this) * 0.05) * ((boolean) persona ? 2.6 : 1)
 							* ((boolean) sudden_attack ? Stats.Specialization.getStatPercent(player) : 1);
 				} else
 					return (1 + ConfigStore.getWeaponLevel(player, this) * 0.05)
@@ -51,8 +51,8 @@ public abstract class Jobs {
 	public final static Jobs Battlemaster_Beginner = new Jobs("battlemaster_beginner", ChatColor.DARK_RED + "배틀마스터: 초심",
 			Skills.RoarofCourage, Skills.WindsWhisper, Skills.SweepingKick, Skills.MoonFlashKick, Skills.FlashHeatFang,
 			Skills.SkyShatteringBlow, Skills.LightningKick, Skills.EnergyCombustion, Skills.OnesHeart_MomentaryBlow,
-			Skills.Fascination, WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "매혹의 본능", 100,
-			IdentityType.Buff, new String[] { "매혹 피해량" }) {
+			Skills.Fascination, WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "매혹의 본능",
+			Skills.Fascination.getDuration(), IdentityType.Buff, new String[] { "매혹 피해량" }) {
 		@Override
 		public float getWalkspeed(Player player) {
 			return walkspeed * Math.max(0f, Math.min(1.4f, 1f + SpeedRobeItem.getPower(player)
@@ -61,8 +61,36 @@ public abstract class Jobs {
 		}
 
 		@Override
-		public <T> double getAttackDamagePercent(Player player) {
-			return super.getAttackDamagePercent(player) * (BuffRunnable.has(player, Skills.WindsWhisper) ? 1.497d : 1d);
+		public double getAttackDamagePercent(Player player) {
+			return super.getAttackDamagePercent(player) * (1
+					+ (BuffRunnable.has(player, Skills.WindsWhisper) ? Skills.WindsWhisper.getPower() : 0d)
+					+ (BuffRunnable.has(player, Skills.SkyShatteringBlow) ? Skills.SkyShatteringBlow.getPower() : 0d))
+					* 1.32;
+		}
+
+		@Override
+		public double getReduceDamage(Player player) {
+			return BuffRunnable.has(player, Skills.WindsWhisper) ? Skills.WindsWhisper.getReduceDamage() : 0;
+		}
+	};
+	public final static Jobs Blade_Burst = new Jobs("blade_burst", ChatColor.DARK_RED + "블레이드: 버스트",
+			Skills.RoarofCourage, Skills.WindsWhisper, Skills.SweepingKick, Skills.MoonFlashKick, Skills.FlashHeatFang,
+			Skills.SkyShatteringBlow, Skills.LightningKick, Skills.EnergyCombustion, Skills.OnesHeart_MomentaryBlow,
+			Skills.Fascination, WeaponItems.battlemaster_beginner, 5000, 0.14f, ChatColor.DARK_PURPLE + "매혹의 본능",
+			Skills.Fascination.getDuration(), IdentityType.Buff, new String[] { "매혹 피해량" }) {
+		@Override
+		public float getWalkspeed(Player player) {
+			return walkspeed * Math.max(0f, Math.min(1.4f, 1f + SpeedRobeItem.getPower(player)
+					- DebuffRunnable.getSlowness(player)
+					+ (BuffRunnable.has(player, Skills.WindsWhisper) ? Skills.WindsWhisper.getWalkSpeed() : 0f)));
+		}
+
+		@Override
+		public double getAttackDamagePercent(Player player) {
+			return super.getAttackDamagePercent(player) * (1
+					+ (BuffRunnable.has(player, Skills.WindsWhisper) ? Skills.WindsWhisper.getPower() : 0d)
+					+ (BuffRunnable.has(player, Skills.SkyShatteringBlow) ? Skills.SkyShatteringBlow.getPower() : 0d))
+					* 1.32;
 		}
 
 		@Override

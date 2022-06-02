@@ -1,6 +1,7 @@
 package com.StarJ.LA.Skills;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -40,6 +41,7 @@ import com.StarJ.LA.Skills.Reaper_Lunarsound.ShadowDot;
 import com.StarJ.LA.Skills.Reaper_Lunarsound.ShadowStorm;
 import com.StarJ.LA.Skills.Reaper_Lunarsound.SpiritCatch;
 import com.StarJ.LA.Systems.ConfigStore;
+import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.ShopStores;
 import com.StarJ.LA.Systems.Stats;
 import com.StarJ.LA.Systems.Runnable.ActionBarRunnable;
@@ -47,6 +49,7 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 import com.StarJ.LA.Systems.Runnable.ComboCoolRunnable;
 import com.StarJ.LA.Systems.Runnable.DebuffRunnable;
 import com.StarJ.LA.Systems.Runnable.DebuffRunnable.DebuffType;
+import com.StarJ.LA.Systems.Runnable.HoldingRunnable;
 import com.StarJ.LA.Systems.Runnable.SkillCoolRunnable;
 
 public abstract class Skills {
@@ -76,34 +79,41 @@ public abstract class Skills {
 	public static OnesHeart_MomentaryBlow OnesHeart_MomentaryBlow = new OnesHeart_MomentaryBlow();
 	public static Fascination Fascination = new Fascination();
 
+	// BLADE_BURST
+	
 	private final String key;
 	private final String displayname;
 	private final List<String> lore;
 	protected final double cooldown;
+	private final double knockdown;
 	private final ChatColor color;
-	private final AttackType type;
+	private final AttackType[] types;
 
-	public Skills(String key, String displayname, double cooldown, ChatColor color, String... lore) {
-		this(key, displayname, cooldown, color, AttackType.NONE, lore);
+	public Skills(String key, String displayname, double cooldown, double knockdown, ChatColor color, String... lore) {
+		this(key, displayname, cooldown, knockdown, color, new AttackType[0], lore);
 	}
 
-	public Skills(String key, String displayname, double cooldown, ChatColor color, AttackType type, String... lore) {
+	public Skills(String key, String displayname, double cooldown, double knockdown, ChatColor color,
+			AttackType[] types, String... lore) {
 		skills.add(this);
 		this.key = key;
 		this.displayname = displayname;
 		this.lore = new ArrayList<String>();
 		for (String l : lore)
 			this.lore.add(ChatColor.WHITE + l);
-		if (!type.equals(AttackType.NONE))
-			this.lore.add(ChatColor.GREEN + "공격타입 : " + type.getName());
+		if (types.length == 1) {
+			this.lore.add(ChatColor.GREEN + "공격타입 : " + types[0].getName());
+		} else if (types.length == 2)
+			this.lore.add(ChatColor.GREEN + "공격타입 : 백/헤드 어택");
 		this.lore.add(ChatColor.GRAY + "재사용 대기시간 : " + cooldown + "초");
 		this.cooldown = cooldown;
+		this.knockdown = knockdown;
 		this.color = color;
-		this.type = type;
+		this.types = types;
 	}
 
-	public AttackType getAttackType() {
-		return type;
+	public AttackType[] getAttackTypes() {
+		return types;
 	}
 
 	public ItemStack getItemStack() {
@@ -129,10 +139,49 @@ public abstract class Skills {
 	}
 
 	public void damage(Player att, LivingEntity le, double damage) {
-		int ndt = le.getNoDamageTicks();
-		le.setNoDamageTicks(0);
-		le.damage(damage, att);
-		le.setNoDamageTicks(ndt);
+		damage(att, le, AttackType.getAttackType(le, att), damage, 0, this.knockdown);
+	}
+
+	public void damage(Player att, LivingEntity le, AttackType now, double damage) {
+		damage(att, le, now, damage, 0, this.knockdown);
+	}
+
+	public void damage(Player att, LivingEntity le, double damage, double identity) {
+		damage(att, le, AttackType.getAttackType(le, att), damage, identity, this.knockdown);
+	}
+
+	public void damage(Player att, LivingEntity le, double damage, double identity, double kncokdown) {
+		damage(att, le, AttackType.getAttackType(le, att), damage, identity, this.knockdown);
+	}
+
+	public void damage(Player att, LivingEntity le, AttackType now, double damage, double identity, double kncokdown) {
+		double now_identity = HashMapStore.getIdentity(att);
+		if (now != null && Arrays.asList(getAttackTypes()).contains(now)) {
+			double critical = Stats.Critical.getImportantStat(att);
+			Stats.Critical.setImportantStat(att, critical + now.getCritical());
+			int ndt = le.getNoDamageTicks();
+			le.setNoDamageTicks(0);
+			le.damage(damage * now.getDamageMulti(), att);
+			le.setNoDamageTicks(ndt);
+			Stats.Critical.setImportantStat(att, critical);
+		} else {
+			int ndt = le.getNoDamageTicks();
+			le.setNoDamageTicks(0);
+			le.damage(damage, att);
+			le.setNoDamageTicks(ndt);
+		}
+		HashMapStore.setIdentity(att, now_identity + identity);
+		int a;// 무력관련 추가
+	}
+
+	public ItemStack getSneakingItemStack() {
+		ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(color + getDisplayname());
+		meta.setLore(lore);
+		meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS);
+		item.setItemMeta(meta);
+		return item;
 	}
 
 	public ItemStack getComboItemStack() {
@@ -193,16 +242,42 @@ public abstract class Skills {
 		return false;// true=end/false=pass
 	}
 
-	public boolean Attack(Player att) {
+	public boolean Attack(Player att, LivingEntity vic) {
 		return false;
 	}
 
-	public boolean Attacked(Player vic) {
+	public boolean Attacked(Player vic, LivingEntity att) {
 		return false;
 	}
 
 	public boolean Attacked(Player vic, Player att) {
 		return false;
+	}
+
+	public void Holding(Player player, int times) {
+
+	}
+
+	public void HoldingSucceed(Player player, int slot) {
+		if (slot >= 0 && ConfigStore.getPlayerStatus(player)) {
+			double cool = ConfigStore.getSkillCooldown(player, ConfigStore.getJob(player), this);
+			if (cool > 0) {
+				player.getInventory().setItem(slot, getCoolItemStack());
+			} else
+				player.getInventory().setItem(slot, getItemStack());
+		}
+		HoldingRunnable.cancel(player, this);
+	}
+
+	public void HoldingFail(Player player, int slot) {
+		if (slot >= 0 && ConfigStore.getPlayerStatus(player)) {
+			double cool = ConfigStore.getSkillCooldown(player, ConfigStore.getJob(player), this);
+			if (cool > 0) {
+				player.getInventory().setItem(slot, getCoolItemStack());
+			} else
+				player.getInventory().setItem(slot, getItemStack());
+		}
+		HoldingRunnable.cancel(player, this);
 	}
 
 	public void comboEnd(Player player, int slot) {
@@ -291,18 +366,36 @@ public abstract class Skills {
 	}
 
 	public enum AttackType {
-		BACK("백 어택"), HEAD("헤드 어택"), NONE("")
+		BACK("백 어택", 1.05, 0.1, 0), HEAD("헤드 어택", 1.2, 0, 0.1)
 		//
 		;
 
+		private final double damage_multi;
+		private final double critical;
+		private final double knockdown;
 		private final String name;
 
-		private AttackType(String name) {
+		private AttackType(String name, double damage_multi, double critical, double knockdown) {
 			this.name = name;
+			this.damage_multi = damage_multi;
+			this.critical = critical;
+			this.knockdown = knockdown;
 		}
 
 		public String getName() {
 			return name;
+		}
+
+		public double getDamageMulti() {
+			return damage_multi;
+		}
+
+		public double getCritical() {
+			return critical;
+		}
+
+		public double getKnockdown() {
+			return knockdown;
 		}
 
 		public static AttackType getAttackType(Entity vic_e, Entity att_e) {
@@ -320,7 +413,7 @@ public abstract class Skills {
 				// back
 				return BACK;
 			} else
-				return NONE;
+				return null;
 		}
 	}
 }

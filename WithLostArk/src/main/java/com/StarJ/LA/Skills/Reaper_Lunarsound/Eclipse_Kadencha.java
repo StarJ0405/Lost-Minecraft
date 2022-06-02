@@ -28,7 +28,9 @@ public class Eclipse_Kadencha extends Skills {
 	private static HashSet<UUID> speed = new HashSet<UUID>();
 
 	public Eclipse_Kadencha() {
-		super("eclipse_kadencha", "월식: 카덴차", 300.0d, ChatColor.AQUA,
+		// 쿨타임 : 300d
+		// 무력 : 60 / 12 = 5d
+		super("eclipse_kadencha", "월식: 카덴차", 300.0d, 5d, ChatColor.DARK_RED,
 				ChatColor.YELLOW + "일반                                  " + ChatColor.DARK_RED + "[각성기]",
 				"그림자와 달의 기운으로 그림자 지대를 소환한다.", "- 지대가 마지막에 폭발", "- 첫 공격 적중시 아덴 100%", "- 사용 중 페르소나 상태");
 	}

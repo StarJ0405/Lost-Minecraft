@@ -259,6 +259,16 @@ public class HashMapStore {
 		attacks.put(key, list);
 	}
 
+	public static boolean hasAttackList(Player player, Skills skill) {
+		String key = player.getUniqueId().toString();
+		if (!attacks.containsKey(key))
+			return false;
+		List<String> list = attacks.get(key);
+		if (list.contains(skill.getKey()))
+			return true;
+		return false;
+	}
+
 	public static void removeAttackList(Player player, Skills skill) {
 		String key = player.getUniqueId().toString();
 		List<String> list = attacks.containsKey(key) ? attacks.get(key) : new ArrayList<String>();
@@ -281,6 +291,17 @@ public class HashMapStore {
 		if (!list.contains(skill.getKey()))
 			list.add(skill.getKey());
 		attackeds.put(key, list);
+	}
+
+	public static boolean hasAttackedList(Player player, Skills skill) {
+		String key = player.getUniqueId().toString();
+		if (!attackeds.containsKey(key))
+			return false;
+		List<String> list = attackeds.get(key);
+		if (list.contains(skill.getKey()))
+			return true;
+		return false;
+
 	}
 
 	public static void removeAttackedList(Player player, Skills skill) {

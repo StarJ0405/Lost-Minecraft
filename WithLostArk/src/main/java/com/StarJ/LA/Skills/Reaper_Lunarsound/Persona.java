@@ -20,7 +20,9 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 public class Persona extends Skills {
 
 	public Persona() {
-		super("persona", "페르소나", 0, ChatColor.YELLOW, "그림자 분신을 소환합니다.", " - 급습 피해량이 25% 증가합니다.");
+		// 쿨타임 : 0d
+		// 무력 : 0d
+		super("persona", "페르소나", 0, 0, ChatColor.YELLOW, "그림자 분신을 소환합니다.", " - 급습 피해량이 25% 증가합니다.");
 	}
 
 	private double getDuration() {
@@ -72,7 +74,7 @@ public class Persona extends Skills {
 	}
 
 	@Override
-	public boolean Attack(Player att) {
+	public boolean Attack(Player att, LivingEntity vic) {
 		if (!Skills.Eclipse_Kadencha.isActive(att)) {
 			att.removePotionEffect(PotionEffectType.INVISIBILITY);
 			BuffRunnable.cancel(att, this);
@@ -81,7 +83,8 @@ public class Persona extends Skills {
 			if (job != null)
 				att.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(job.getWalkspeed(att));
 		}
-		return super.Attack(att);
+		return super.Attack(att, vic);
+
 	}
 
 	@Override

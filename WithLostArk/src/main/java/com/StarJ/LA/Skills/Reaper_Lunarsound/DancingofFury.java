@@ -22,22 +22,23 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 public class DancingofFury extends Skills {
 
 	public DancingofFury() {
-		// 28
-		super("dancing_of_fury", "댄싱 오브 퓨리", 28.0d, ChatColor.RED, AttackType.BACK,
+		// 쿨타임 : 28d
+		// 무력 : 42 / 7 = 6d
+		super("dancing_of_fury", "댄싱 오브 퓨리", 28d, 6d, ChatColor.RED, new AttackType[] { AttackType.BACK },
 				ChatColor.YELLOW + "일반                    " + ChatColor.RED + "[급습 스킬]", "붉은 그림자 기운으로 피해를 줍니다.",
 				" - 치명타 적중률 +60%");
 	}
 
 	private double getFirstDamage(Player player, boolean persona) {
 		Jobs job = ConfigStore.getJob(player);
-		// 299 * 1.7 * 1.31 / 6 = 111
-		return 111d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 1163 * 1.7 * 1.31 / 6 * 1.1 * 1.05 = 498d
+		return 498d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
 	}
 
 	private double getLastDamage(Player player, boolean persona) {
 		Jobs job = ConfigStore.getJob(player);
-		// 447 * 1.7 * 1.31
-		return 995d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 1759 * 1.7 * 1.31 *1.1 * 1.05 = 4524d
+		return 4524d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
 	}
 
 	@Override
@@ -59,12 +60,7 @@ public class DancingofFury extends Skills {
 		Stats.Critical.setImportantStat(player, 0.6);
 		for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)), 2.5, 2, 2.5))
 			if (Skills.canAttack(player, et)) {
-				if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-					Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-					damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-					Stats.Critical.setImportantStat(player, 0.6);
-				} else
-					damage(player, (LivingEntity) et, getFirstDamage(player, per));
+				damage(player, (LivingEntity) et, getFirstDamage(player, per));
 			}
 		HashMapStore.setIdentity(player, identity);
 		Stats.Critical.removeImportantStat(player);
@@ -89,12 +85,7 @@ public class DancingofFury extends Skills {
 						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
 								2.5, 2, 2.5))
 							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
+								damage(player, (LivingEntity) et, getFirstDamage(player, per));
 						HashMapStore.setIdentity(player, identity);
 						Stats.Critical.removeImportantStat(player);
 						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
@@ -124,12 +115,7 @@ public class DancingofFury extends Skills {
 						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
 								2.5, 2, 2.5))
 							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
+								damage(player, (LivingEntity) et, getFirstDamage(player, per));
 						HashMapStore.setIdentity(player, identity);
 						Stats.Critical.removeImportantStat(player);
 						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
@@ -158,12 +144,7 @@ public class DancingofFury extends Skills {
 						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
 								2.5, 2, 2.5))
 							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
+								damage(player, (LivingEntity) et, getFirstDamage(player, per));
 						HashMapStore.setIdentity(player, identity);
 						Stats.Critical.removeImportantStat(player);
 						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
@@ -193,12 +174,7 @@ public class DancingofFury extends Skills {
 						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
 								2.5, 2, 2.5))
 							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
+								damage(player, (LivingEntity) et, getFirstDamage(player, per));
 						HashMapStore.setIdentity(player, identity);
 						Stats.Critical.removeImportantStat(player);
 						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
@@ -228,12 +204,7 @@ public class DancingofFury extends Skills {
 						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
 								2.5, 2, 2.5))
 							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player, per));
+								damage(player, (LivingEntity) et, getFirstDamage(player, per));
 						HashMapStore.setIdentity(player, identity);
 						Stats.Critical.removeImportantStat(player);
 						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1f, 1f);
@@ -266,12 +237,7 @@ public class DancingofFury extends Skills {
 						for (Entity et : loc.getWorld().getNearbyEntities(loc.clone().add(Effects.getRel(dir, 1, 0, 0)),
 								2.5, 2, 2.5))
 							if (Skills.canAttack(player, et))
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.6 + 0.1);
-									damage(player, (LivingEntity) et, getLastDamage(player, per) * 1.05);
-									Stats.Critical.setImportantStat(player, 0.6);
-								} else
-									damage(player, (LivingEntity) et, getLastDamage(player, per));
+								damage(player, (LivingEntity) et, getLastDamage(player, per));
 						HashMapStore.setIdentity(player, identity);
 						Stats.Critical.removeImportantStat(player);
 						player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);

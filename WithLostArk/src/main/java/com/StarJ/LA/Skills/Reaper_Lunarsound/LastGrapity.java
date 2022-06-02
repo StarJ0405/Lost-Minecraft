@@ -22,16 +22,17 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 public class LastGrapity extends Skills {
 
 	public LastGrapity() {
-		// 22
-		super("last_grapity", "라스트 그래피티", 22.0d, ChatColor.RED, AttackType.BACK,
+		// 쿨타임 : 22d
+		// 무력 : 88d
+		super("last_grapity", "라스트 그래피티", 22d, 88d, ChatColor.RED, new AttackType[] { AttackType.BACK },
 				ChatColor.YELLOW + "일반              " + ChatColor.RED + "[급습 스킬]", "뛰어올라 강하게 내려찍습니다.",
 				" - 치명타 적중률 +40%");
 	}
 
 	private double getDamage(Player player, boolean persona) {
 		Jobs job = ConfigStore.getJob(player);
-		/// 666 * 1.6 * 1.8
-		return 1918d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
+		// 2618 * 1.6 * 1.8 * 1.1 * 1.05 = 8708d
+		return 8708d * (job != null ? job.getAttackDamagePercent(player, true, persona) : 1);
 	}
 
 	@Override
@@ -90,13 +91,7 @@ public class LastGrapity extends Skills {
 							for (Entity et : loc.getWorld().getNearbyEntities(loc, 3, 3, 3))
 								if (loc.distance(et.getLocation()) < (half / 10.0d + 0.5d)
 										&& Skills.canAttack(player, et))
-									if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-										Stats.Critical.setImportantStat(player, 0.4 + 0.1);
-										damage(player, (LivingEntity) et, getDamage(player, per) * 1.05);
-										Stats.Critical.setImportantStat(player, 0.4);
-									} else
-										damage(player, (LivingEntity) et, getDamage(player, per));
-
+									damage(player, (LivingEntity) et, getDamage(player, per));
 							player.playSound(player, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 1f, 1f);
 							Stats.Critical.removeImportantStat(player);
 							HashMapStore.setIdentity(player, identity);

@@ -24,9 +24,9 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 public class Distortion extends Skills {
 
 	public Distortion() {
-		// 12
-		// 12 - 4 = 8
-		super("distortion", "디스토션", 8.0d, ChatColor.DARK_PURPLE,
+		// 쿨타임 : (12 - 4) = 8d
+		// 무력 : 22 /2 = 11d
+		super("distortion", "디스토션", 8.0d, 11d, ChatColor.DARK_PURPLE,
 				ChatColor.YELLOW + "일반                    " + ChatColor.DARK_PURPLE + "[그림자 스킬]", "전방으로 이동하며 피해를 줍니다.",
 				" - 시전 후 4초 동안 이동속도 +30%");
 	}
@@ -51,9 +51,16 @@ public class Distortion extends Skills {
 		return 0.3f;
 	}
 
-	private double getDamage(Player player) {
+	private double getFirstDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		return 185d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 702d
+		return 702d * (job != null ? job.getAttackDamagePercent(player) : 1);
+	}
+
+	private double getSecondDamage(Player player) {
+		Jobs job = ConfigStore.getJob(player);
+		// 694d
+		return 694d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	public double getDuration() {
@@ -86,7 +93,7 @@ public class Distortion extends Skills {
 					if (!et.getUniqueId().equals(player.getUniqueId()))
 						if (!les.contains(le))
 							if (Skills.canAttack(player, et)) {
-								damage(player, le, getDamage(player));
+								damage(player, le, getFirstDamage(player));
 								les.add(le);
 								if (add == 0) {
 									add += getFirstIdentity();
@@ -109,7 +116,7 @@ public class Distortion extends Skills {
 				double add = 0.0d;
 				for (LivingEntity le : les)
 					if (Skills.canAttack(player, le)) {
-						damage(player, le, getDamage(player));
+						damage(player, le, getSecondDamage(player));
 						player.playSound(le.getLocation(), Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 2f, 1f);
 						if (add == 0) {
 							add += getSecondIdentity();

@@ -19,25 +19,26 @@ import com.StarJ.LA.Systems.ConfigStore;
 import com.StarJ.LA.Systems.Effects;
 import com.StarJ.LA.Systems.HashMapStore;
 import com.StarJ.LA.Systems.Jobs;
-import com.StarJ.LA.Systems.Stats;
 
 public class SpiritCatch extends Skills {
 
 	public SpiritCatch() {
-		super("spirit_catch", "스피릿 캐치", 5d, ChatColor.GREEN, AttackType.BACK,
+		// 쿨타임 : 5d
+		// 무력 : 30 / 2 = 15d
+		super("spirit_catch", "스피릿 캐치", 5d, 15d, ChatColor.GREEN, new AttackType[] { AttackType.BACK },
 				ChatColor.YELLOW + "일반             " + ChatColor.GREEN + "[단검 스킬]", "전방을 향해 빠르게 찌릅니다.");
 	}
 
 	private double getFirstDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 208
-		return 208d * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 813
+		return 813d * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	private double getSecondDamage(Player player) {
 		Jobs job = ConfigStore.getJob(player);
-		// 208 * 1
-		return 208 * (job != null ? job.getAttackDamagePercent(player) : 1);
+		// 813 * 1
+		return 813 * (job != null ? job.getAttackDamagePercent(player) : 1);
 	}
 
 	private double getIdentity() {
@@ -70,12 +71,7 @@ public class SpiritCatch extends Skills {
 					for (Entity et : loc.getWorld().getNearbyEntities(now, 0.25, 0.25, 0.25))
 						if (Skills.canAttack(player, et))
 							if (!uuids.contains(et.getUniqueId())) {
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.1);
-									damage(player, (LivingEntity) et, getFirstDamage(player));
-									Stats.Critical.removeImportantStat(player);
-								} else
-									damage(player, (LivingEntity) et, getFirstDamage(player));
+								damage(player, (LivingEntity) et, getFirstDamage(player));
 								uuids.add(et.getUniqueId());
 								if (add == 0.0d) {
 									add += getIdentity();
@@ -103,12 +99,7 @@ public class SpiritCatch extends Skills {
 					for (Entity et : loc.getWorld().getNearbyEntities(now, 0.25, 0.25, 0.25))
 						if (Skills.canAttack(player, et))
 							if (!uuids.contains(et.getUniqueId())) {
-								if (AttackType.getAttackType(et, player).equals(getAttackType())) {
-									Stats.Critical.setImportantStat(player, 0.1);
-									damage(player, (LivingEntity) et, getSecondDamage(player));
-									Stats.Critical.removeImportantStat(player);
-								} else
-									damage(player, (LivingEntity) et, getSecondDamage(player));
+								damage(player, (LivingEntity) et, getSecondDamage(player));
 								uuids.add(et.getUniqueId());
 								if (add == 0.0d) {
 									add += getIdentity();

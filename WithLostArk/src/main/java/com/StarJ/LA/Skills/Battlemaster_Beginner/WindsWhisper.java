@@ -16,11 +16,16 @@ import com.StarJ.LA.Systems.Runnable.BuffRunnable;
 public class WindsWhisper extends Skills {
 
 	public WindsWhisper() {
-		// 30 - 9
-		super("winds_whisper", "바람의 속삭임", 21d, ChatColor.GREEN, AttackType.NONE,
-				ChatColor.YELLOW + "일반          " + ChatColor.GRAY + "[일반 스킬]", "바람의 힘을 깃들입니다.", "- 이동속도 11% 증가", "- 피해 35.5% 감소",
-				"- 스킬 피해량 49.7% 증가");
+		// 쿨타임 : (30- 9) = 21d
+		// 무력 : 0d
+		super("winds_whisper", "바람의 속삭임", 21d, 0, ChatColor.GRAY,
+				ChatColor.YELLOW + "일반          " + ChatColor.GRAY + "[일반 스킬]", "바람의 힘을 깃들입니다.", "- 이동속도 16% 증가",
+				"- 피해 35.5% 감소", "- 스킬 피해량 49.7% 증가");
 
+	}
+
+	public double getPower() {
+		return 0.497d;
 	}
 
 	public double getReduceDamage() {
@@ -28,7 +33,7 @@ public class WindsWhisper extends Skills {
 	}
 
 	public float getWalkSpeed() {
-		return 0.11f;
+		return 0.16f;
 	}
 
 	private double getDuration() {

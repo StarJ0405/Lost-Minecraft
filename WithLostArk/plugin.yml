@@ -77,6 +77,9 @@ commands:
     description: "§3/fs <speed>"
     aliases: [fs]
     permission: operator
+  training:
+    description: "§3/tr"
+    aliases: [tr]
 
 permission:
     gambler:
